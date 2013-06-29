@@ -1,3 +1,19 @@
-// Place all the styles related to the scoreboard controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.scoreboard-scene
+  @include perspective(500px)
+  @include perspective-origin(50% 50%)
+  width: 960px
+  margin: 0 auto
+  $flex: 4deg
+  table.names
+    @include transform(rotateY($flex))
+    float: left
+    background-color: $parchment
+    td, th
+      text-align: right
+  table.scores
+    @include transform(rotateY(-$flex))
+    float: right
+    background-color: $parchment
+    td
+      font-family: "Ubuntu Mono"
+      text-align: right

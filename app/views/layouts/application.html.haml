@@ -5,7 +5,9 @@
     = stylesheet_link_tag 'application'
   %body{class: body_class}
     = yield
-    = javascript_include_tag 'application'
     .scene
+      = yield :scene
       .floor
     .underlay
+
+    = javascript_include_tag 'application'
