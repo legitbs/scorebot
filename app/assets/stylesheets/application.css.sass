@@ -1,1 +1,45 @@
+@import 'bourbon'
+@import 'color'
 @import 'scoreboard'
+
+@include keyframes(stripe-conveyor)
+  from
+    background-position-x: 0px
+  to
+    background-position-x: 60px
+
+@include keyframes(linen-conveyor)
+  from
+    background-position-y: 0px
+  to
+    background-position-y: -1024px
+
+body
+  // background-color: $pinku
+  background-image: image-url('strawberry-linen-layer.png')
+  @include animation(linen-conveyor 27s linear infinite)
+.underlay
+  z-index: -2
+  position: fixed
+  top: 0
+  width: 2048px
+  height: 2048px
+  background-image: image-url('strawberry-linen-layer.png')
+  @include transform(rotateZ(90deg))
+  @include animation(linen-conveyor 31s linear infinite)
+.scene
+  @include perspective(500px)
+  @include perspective-origin(50% 50%)
+  height: 512px
+  margin: 0 auto
+  position: fixed
+  bottom: 0
+  left: 0
+  right: 0
+  z-index: -1
+  .floor
+    background-image: image-url('stripes.png')
+    width: 100%
+    height: 100%
+    @include transform(rotateZ(90deg) rotateY(-75deg))
+    @include animation(stripe-conveyor 2s linear infinite)

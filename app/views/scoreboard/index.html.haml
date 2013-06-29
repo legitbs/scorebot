@@ -1,2 +1,4 @@
-%h1 Scoreboard#index
-%p Find me in app/views/scoreboard/index.html.haml
+%ul.teams
+  - @teams.each do |t|
+    %li
+      = t.name
