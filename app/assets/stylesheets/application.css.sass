@@ -1,4 +1,5 @@
 @import 'bourbon'
+@import 'fonts'
 @import 'color'
 @import 'scoreboard'
 
@@ -18,10 +19,14 @@ body
   // background-color: $pinku
   background-image: image-url('strawberry-linen-layer.png')
   @include animation(linen-conveyor 27s linear infinite)
+  font-family: Ubuntu
+
 .underlay
   z-index: -2
   position: fixed
+  margin: 0
   top: 0
+  left: -40px
   width: 2048px
   height: 2048px
   background-image: image-url('strawberry-linen-layer.png')
