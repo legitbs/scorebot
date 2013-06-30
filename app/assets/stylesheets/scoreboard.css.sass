@@ -3,17 +3,58 @@
   @include perspective-origin(50% 50%)
   width: 960px
   margin: 0 auto
-  $flex: 4deg
-  table.names
-    @include transform(rotateY($flex))
-    float: left
-    background-color: $parchment
-    td, th
-      text-align: right
-  table.scores
-    @include transform(rotateY(-$flex))
-    float: right
-    background-color: $parchment
-    td
-      font-family: "Ubuntu Mono"
-      text-align: right
+  .scoreboard-holder
+    @include perspective(1000px)
+    @include perspective-origin(50% 50%)
+    -webkit-animation-name: scoreboard-ooze
+    @include animation-name(scoreboard-ooze)
+    @include animation-duration(61s)
+    @include animation-direction(alternate)
+    @include animation-timing-function(ease) 
+    @include animation-iteration-count(infinite)
+
+    table
+      float: left
+      background-color: $parchment
+      td, th
+        text-align: right
+      tbody tr:nth-child(odd)
+        background-color: darken($parchment, 5%)
+      &.names
+        @include transform(rotateY(14deg))
+        margin-right: 10px
+        th
+          padding: 3px
+      &.scores
+        @include transform(rotateY(-7deg) translateZ(20px))
+        td
+          text-align: right
+          &.sla
+            width: 80px
+          &.queue
+            width: 100px
+          &.flags
+            width: 150px
+        th.total
+          width: 300px
+          text-align: left
+        .points
+          z-index: 1
+          position: relative
+          background-color: $pinku
+          width: 30px
+          color: white
+          padding: 2px
+          &.right
+            float: right
+          &.left
+            float: left
+        .bar
+          z-index: 0
+          position: relative
+          background-color: $pinku
+          padding: 2px
+          &.left
+            float: left
+          &.right
+            float: right

@@ -15,11 +15,20 @@
   to
     background-position-y: -1024px
 
+@include keyframes(scoreboard-ooze)
+  from
+    @include transform(rotateX(-5deg))
+  to
+    @include transform(rotateX(5deg))
+
 body
   // background-color: $pinku
   background-image: image-url('strawberry-linen-layer.png')
   @include animation(linen-conveyor 27s linear infinite)
   font-family: Ubuntu
+
+br.clear
+  clear: both
 
 .underlay
   z-index: -2
