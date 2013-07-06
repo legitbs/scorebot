@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class TokenTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should belong_to :service
+  should belong_to :team
 end
