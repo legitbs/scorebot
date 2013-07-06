@@ -1,0 +1,54 @@
+.dashboard.scene
+  .banner
+    %h1 DEF CON CTF 2013
+    %p You're #{current_team.name}
+    %br.clear
+  .howto
+    :markdown
+      # Scoreboard
+
+      The scoreboard is visible at [#{scoreboard_path}](#{scoreboard_path}).
+      The columns are:
+
+      * SLA: the percentage of availability checks we've made that have succeeded.
+      * Flags: the number of flags that haven't been made available for capture.
+        This column has two colors; the dark crimson portion is ones that are
+        available to capture, and the pink band represents queued flags.
+      * Total: SLA × Flags.
+
+      # Scoring
+
+      Hack services, retrieve tokens. Redeem tokens for flags.
+
+      Token redemption is done via a signed HTTPS POST request to
+      [#{redemption_path}](#{redemption_path}).
+
+          curl --verbose \
+            --cacert legitbs2013.crt \
+            -E #{current_team.certname}.crt \
+            --key #{current_team.certname}.key \
+            #{redemption_url}
+  .status
+    %h1 Service Status
+    %table
+      %thead
+        %th service
+        %th -15m
+        %th -10m
+        %th -5m
+        %th now
+      %tbody
+        - %w{ beans potatoes tacos gravy cheeseburger coke gasoline vindsl }.each do |s|
+          %tr
+            %th{rowspan: 2}&= s
+            - 4.times do
+              - if rand() > 0.5
+                %td.ok OK
+              - else
+                %td.down DOWN
+          %tr
+            - 4.times do
+              - if rand() > 0.5
+                %td.safe SAFE
+              - else
+                %td.owned OWNED
