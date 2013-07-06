@@ -1,7 +1,9 @@
 @import 'bourbon'
 @import 'fonts'
 @import 'color'
+@import 'scene'
 @import 'scoreboard'
+@import 'dashboard'
 
 @include keyframes(stripe-conveyor)
   from
@@ -17,14 +19,14 @@
 
 @include keyframes(scoreboard-ooze)
   from
-    @include transform(rotateX(-5deg))
-  to
     @include transform(rotateX(5deg))
+  to
+    @include transform(rotateX(-5deg))
 
 body
   // background-color: $pinku
-  background-image: image-url('strawberry-linen-layer.png')
-  @include animation(linen-conveyor 27s linear infinite)
+  background-image: image-url('strawberry-linen.jpg')
+  // @include animation(linen-conveyor 27s linear infinite)
   font-family: Ubuntu
 
 br.clear
@@ -41,11 +43,8 @@ br.clear
   background-image: image-url('strawberry-linen-layer.png')
   @include transform(rotateZ(90deg))
   @include animation(linen-conveyor 31s linear infinite)
-.scene
-  @include perspective(500px)
-  @include perspective-origin(50% 50%)
+.street.scene
   height: 512px
-  margin: 0 auto
   position: fixed
   bottom: 0
   left: 0

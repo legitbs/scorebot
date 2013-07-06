@@ -1,8 +1,4 @@
-.scoreboard-scene
-  @include perspective(500px)
-  @include perspective-origin(50% 50%)
-  width: 960px
-  margin: 0 auto
+.scoreboard.scene
   .scoreboard-holder
     @include perspective(1000px)
     @include perspective-origin(50% 50%)
@@ -30,19 +26,19 @@
         td
           text-align: right
           &.sla
-            width: 80px
+            width: 4em
           &.queue
-            width: 100px
+            width: 4em
           &.flags
-            width: 150px
+            width: 10em
         th.total
-          width: 300px
+          width: 15em
           text-align: left
         .points
           z-index: 1
           position: relative
           background-color: $pinku
-          width: 30px
+          width: 4em
           color: white
           padding: 2px
           &.right
@@ -58,3 +54,11 @@
             float: left
           &.right
             float: right
+
+@media screen and (min-width: 1400px)
+  .scoreboard.scene
+    font-size: 1.45em
+    width: 1200px
+    table.names
+      @include transform(rotateY(7deg) translateZ(-20px))
+    table.scores

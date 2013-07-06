@@ -1,0 +1,52 @@
+.dashboard.scene
+  .banner
+    float: left
+    width: 960px
+    background-color: $blue
+    color: white
+    padding: 4px
+    margin-top: -15px
+    margin-bottom: 10px
+    h1
+      margin: 0
+      float: left
+      font-size: 1em
+    p
+      margin: 0
+      float: right
+  .howto
+    @include transform(rotateY(5deg))
+    width: 500px
+    float: left
+    background-color: $parchment
+    margin: 8px
+    padding: 8px
+    code
+      font-family: 'Ubuntu Mono', monospace
+  .status
+    @include transform(rotateY(-5deg))
+    width: 380px
+    float: right
+    background-color: $parchment
+    padding: 8px
+    margin: 8px
+    table
+      th,td
+        text-align: center
+      th
+        background-color: white
+      td.ok
+        background-color: $green
+        color: black
+      td.safe
+        background-color: $blue
+        color: white
+      td.down
+        background-color: $salmon
+      td.owned
+        background-color: red
+        color: white
+      tbody th
+        border-top: 1px black
+        background-color: $pinku
+        color: white
