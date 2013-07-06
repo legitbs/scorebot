@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  team_id: 
+  service_id: 
+  round_id: 
+
+two:
+  team_id: 
+  service_id: 
+  round_id: 
