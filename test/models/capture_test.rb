@@ -1,7 +1,5 @@
 require 'test_helper'
 
 class CaptureTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should "create captures for a given redemption"
 end

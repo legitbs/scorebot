@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class RoundTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should 'happen periodically'
+  should 'process redemptions into captures at round end'
 end

@@ -2,6 +2,11 @@ class Token < ActiveRecord::Base
   include BCrypt
   belongs_to :team
   belongs_to :service
+  belongs_to :round
+
+  validates :team, presence: true
+  validates :service, presence: true
+  validates :round, presence: true
 
   before_create :set_keys
 
@@ -10,8 +15,8 @@ class Token < ActiveRecord::Base
   end
 
   def self.from_token_string(token_string)
-    key, secret = token.chars.each_slice(2).to_a.transpose.map(&:join)
-    candidate = self.where(key: key)
+    key, secret = token_string.chars.each_slice(2).to_a.transpose.map(&:join)
+    candidate = self.where(key: key).first
 
     return nil unless candidate.secret == secret
     
@@ -24,8 +29,14 @@ class Token < ActiveRecord::Base
 
   private
   def set_keys
-    self.key = SecureRandom.random_number(2**128).to_s(36)
-    @secret = SecureRandom.random_number(2**128).to_s(36)
+    self.key = random_dingus
+    @secret = random_dingus
     self.digest = Password.create @secret, cost: 7
+  end
+
+  def random_dingus
+    extender = 36 ** 25
+    random = SecureRandom.random_number(36**24)
+    (extender + random).to_s(36)
   end
 end

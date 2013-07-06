@@ -1,7 +1,5 @@
 require 'test_helper'
 
 class TeamTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should 'find a team by ssl key guid'
 end

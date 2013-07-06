@@ -17,4 +17,8 @@ class ActiveSupport::TestCase
   # fixtures :all
 
   # Add more helper methods to be used by all tests here...
+
+  def assert_uniqueness_constraint(&block)
+    assert_raises(ActiveRecord::RecordNotUnique, &block)
+  end
 end

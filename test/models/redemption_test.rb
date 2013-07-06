@@ -1,7 +1,11 @@
 require 'test_helper'
 
 class RedemptionTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should "resist redeeming the token more than once per team" do
+    redemption = FactoryGirl.create :redemption
+
+    assert_uniqueness_constraint do
+      redemption2 = Redemption.create redemption.attributes
+    end
+  end
 end
