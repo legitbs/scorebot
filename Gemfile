@@ -36,8 +36,17 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+group :development do
+  gem 'rails-erd'
+end
+
+group :development, :test do
+  gem 'shoulda'
+  gem 'factory_girl_rails'
+end
+
 # Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
+gem 'bcrypt-ruby', '~> 3.0.0', require: 'bcrypt'
 
 # Use unicorn as the app server
 # gem 'unicorn'
