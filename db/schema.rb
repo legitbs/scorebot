@@ -11,23 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130706202136) do
+ActiveRecord::Schema.define(version: 20130707040802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "availabilities", force: true do |t|
-    t.integer  "team_id"
-    t.integer  "service_id"
+    t.integer  "instance_id"
     t.integer  "round_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "memo"
   end
 
+  add_index "availabilities", ["instance_id", "round_id"], name: "index_availabilities_on_instance_id_and_round_id", unique: true, using: :btree
+  add_index "availabilities", ["instance_id"], name: "index_availabilities_on_instance_id", using: :btree
   add_index "availabilities", ["round_id"], name: "index_availabilities_on_round_id", using: :btree
-  add_index "availabilities", ["service_id"], name: "index_availabilities_on_service_id", using: :btree
-  add_index "availabilities", ["team_id"], name: "index_availabilities_on_team_id", using: :btree
 
   create_table "captures", force: true do |t|
     t.integer  "redemption_id"
@@ -47,6 +46,16 @@ ActiveRecord::Schema.define(version: 20130706202136) do
   end
 
   add_index "flags", ["team_id"], name: "index_flags_on_team_id", using: :btree
+
+  create_table "instances", force: true do |t|
+    t.integer  "team_id"
+    t.integer  "service_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "instances", ["service_id"], name: "index_instances_on_service_id", using: :btree
+  add_index "instances", ["team_id"], name: "index_instances_on_team_id", using: :btree
 
   create_table "redemptions", force: true do |t|
     t.integer  "team_id"
@@ -85,14 +94,14 @@ ActiveRecord::Schema.define(version: 20130706202136) do
   create_table "tokens", force: true do |t|
     t.string   "key"
     t.string   "digest"
-    t.integer  "team_id"
-    t.integer  "service_id"
+    t.integer  "instance_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "round_id"
+    t.text     "memo"
   end
 
-  add_index "tokens", ["service_id"], name: "index_tokens_on_service_id", using: :btree
-  add_index "tokens", ["team_id"], name: "index_tokens_on_team_id", using: :btree
+  add_index "tokens", ["instance_id", "round_id"], name: "index_tokens_on_instance_id_and_round_id", unique: true, using: :btree
+  add_index "tokens", ["instance_id"], name: "index_tokens_on_instance_id", using: :btree
 
 end
