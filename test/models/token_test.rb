@@ -1,12 +1,10 @@
 require 'test_helper'
 
 class TokenTest < ActiveSupport::TestCase
-  should belong_to :service
-  should belong_to :team
+  should belong_to :instance
   should belong_to :round
 
-  should validate_presence_of :service
-  should validate_presence_of :team
+  should validate_presence_of :instance
   should validate_presence_of :round
 
   should "generate and validate a token string" do
@@ -19,7 +17,7 @@ class TokenTest < ActiveSupport::TestCase
    token.destroy
   end
 
-  should "resist creating multiple tokens per service-team-round" do
+  should "resist creating multiple tokens per instance-round" do
     token = FactoryGirl.create :token
 
     assert_uniqueness_constraint do

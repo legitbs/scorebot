@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class AvailabilityTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  should belong_to :instance
+  should belong_to :round
 end

@@ -13,8 +13,12 @@ FactoryGirl.define do
   end
 
   factory :token do
-    service
-    team
+    instance
+    round
+  end
+
+  factory :availability do
+    instance
     round
   end
 
