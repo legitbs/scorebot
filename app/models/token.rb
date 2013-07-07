@@ -1,11 +1,9 @@
 class Token < ActiveRecord::Base
   include BCrypt
-  belongs_to :team
-  belongs_to :service
+  belongs_to :instance
   belongs_to :round
 
-  validates :team, presence: true
-  validates :service, presence: true
+  validates :instance, presence: true
   validates :round, presence: true
 
   before_create :set_keys
