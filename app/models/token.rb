@@ -25,6 +25,21 @@ class Token < ActiveRecord::Base
     Password.new self.digest
   end
 
+  def deposit
+    service_name = instance.service.name
+    team_address = instance.team.address
+
+    shell = ShellProcess.
+      new(
+          Rails.root.join('scripts', service_name, 'deposit'),
+          team_address,
+          to_token_string
+          )
+
+    self.status = shell.status
+    self.memo = shell.output
+  end
+
   private
   def set_keys
     self.key = random_dingus
