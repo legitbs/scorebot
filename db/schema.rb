@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130707040802) do
+ActiveRecord::Schema.define(version: 20130714215448) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20130707040802) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "memo"
+    t.integer  "status"
   end
 
   add_index "availabilities", ["instance_id", "round_id"], name: "index_availabilities_on_instance_id_and_round_id", unique: true, using: :btree
@@ -99,6 +100,7 @@ ActiveRecord::Schema.define(version: 20130707040802) do
     t.datetime "updated_at"
     t.integer  "round_id"
     t.text     "memo"
+    t.integer  "status"
   end
 
   add_index "tokens", ["instance_id", "round_id"], name: "index_tokens_on_instance_id_and_round_id", unique: true, using: :btree
