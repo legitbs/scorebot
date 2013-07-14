@@ -15,7 +15,7 @@
   from
     background-position-y: 0px
   to
-    background-position-y: -1024px
+    background-position-y: 1024px
 
 @include keyframes(scoreboard-ooze)
   from
@@ -24,25 +24,13 @@
     @include transform(rotateX(-5deg))
 
 body
-  // background-color: $pinku
-  background-image: image-url('strawberry-linen.jpg')
-  // @include animation(linen-conveyor 27s linear infinite)
+  background: $pinku image-url('strawberry-linen.jpg') repeat top left
+  @include animation(stripe-conveyor 27s linear infinite)
   font-family: Ubuntu
 
 br.clear
   clear: both
 
-.underlay
-  z-index: -2
-  position: fixed
-  margin: 0
-  top: 0
-  left: -40px
-  width: 2048px
-  height: 2048px
-  background-image: image-url('strawberry-linen-layer.png')
-  @include transform(rotateZ(90deg))
-  @include animation(linen-conveyor 31s linear infinite)
 .street.scene
   height: 512px
   position: fixed
