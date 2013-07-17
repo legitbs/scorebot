@@ -1,5 +1,9 @@
 require 'test_helper'
 
 class CaptureTest < ActiveSupport::TestCase
-  should "create captures for a given redemption"
+  should have_one(:team).through(:redemption)
+  should belong_to :flag
+  should belong_to :redemption
+
+  should 'update the captured flag'
 end
