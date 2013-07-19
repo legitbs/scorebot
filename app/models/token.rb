@@ -8,6 +8,9 @@ class Token < ActiveRecord::Base
 
   before_create :set_keys
 
+  # how many rounds do tokens last after deposit?
+  EXPIRATION = 2
+
   def to_token_string
     key.chars.zip(@secret.chars).join
   end
@@ -19,6 +22,10 @@ class Token < ActiveRecord::Base
     return nil unless candidate.secret == secret
     
     return candidate
+  end
+
+  def eligible?
+    Round.since(round) <= EXPIRATION
   end
 
   def secret

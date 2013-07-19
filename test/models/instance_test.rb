@@ -6,6 +6,4 @@ class InstanceTest < ActiveSupport::TestCase
   should have_many :tokens
   should have_many :availabilities
   should have_many(:redemptions).through(:tokens)
-
-  should 'process redemptions into captures'
 end
