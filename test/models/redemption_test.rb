@@ -23,6 +23,4 @@ class RedemptionTest < ActiveSupport::TestCase
     assert r.persisted?
     assert_empty r.errors
   end
-
-  should "refuse to redeem after token expiration"
 end
