@@ -2,6 +2,7 @@ class Token < ActiveRecord::Base
   include BCrypt
   belongs_to :instance
   belongs_to :round
+  has_many :redemptions
 
   validates :instance, presence: true
   validates :round, presence: true

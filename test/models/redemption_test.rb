@@ -23,4 +23,19 @@ class RedemptionTest < ActiveSupport::TestCase
     assert r.persisted?
     assert_empty r.errors
   end
+
+  should "refuse to redeem after token expiration" do
+    team = FactoryGirl.create :team
+    token = FactoryGirl.create :token
+    assert token.eligible?
+    
+    Token::EXPIRATION.times do
+      FactoryGirl.create :round
+      assert_nothing_raised { Redemption.redeem_for team, token.to_token_string }
+      token.redemptions.destroy_all
+    end
+    
+    FactoryGirl.create :round
+    assert_raises(Redemption::OldTokenError) { Redemption.redeem_for team, token.to_token_string }
+  end
 end

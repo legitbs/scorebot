@@ -4,6 +4,8 @@ class TokenTest < ActiveSupport::TestCase
   should belong_to :instance
   should belong_to :round
 
+  should have_many :redemptions
+
   should validate_presence_of :instance
   should validate_presence_of :round
 
