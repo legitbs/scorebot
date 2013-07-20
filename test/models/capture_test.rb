@@ -5,5 +5,12 @@ class CaptureTest < ActiveSupport::TestCase
   should belong_to :flag
   should belong_to :redemption
 
-  should 'update the captured flag'
+  should 'update the captured flag' do
+    @flag = FactoryGirl.create :flag
+
+    old_tem = @flag.team
+    @capture = FactoryGirl.create :capture, flag: @flag
+
+    assert_equal @capture.team, @flag.team
+  end
 end
