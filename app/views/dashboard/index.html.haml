@@ -23,11 +23,24 @@
       Token redemption is done via a signed HTTPS POST request to
       [#{redemption_path}](#{redemption_path}).
 
-          curl --verbose \
+          curl \
+            -F "token[]=TOKEN_GOES_HERE" \
+            -F "token[]=ANOTHER_TOKEN_GOES_HERE" \
             --cacert legitbs2013.crt \
             -E #{current_team.certname}.crt \
             --key #{current_team.certname}.key \
             #{redemption_url}
+
+      The response body is a JSON object describing what happened with each
+      token:
+
+          {
+            "valid token": "442f3a75-fd29-4f58-a22a-30032c47bf9b",
+            "invalid token": "error: Token doesn't exist",
+            "the same valid token": "error: Already redeemed that token",
+            "old valid token": "error: Token too old",
+            "call legitbs if you see": "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147" 
+          }
   .status
     %h1 Service Status
     %table
