@@ -22,3 +22,5 @@ class ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordNotUnique, &block)
   end
 end
+
+require 'mocha/setup'

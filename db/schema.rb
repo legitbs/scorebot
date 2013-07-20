@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130719021347) do
+ActiveRecord::Schema.define(version: 20130720204802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 20130719021347) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "certname"
+    t.string   "address"
   end
 
   add_index "teams", ["certname"], name: "index_teams_on_certname", unique: true, using: :btree

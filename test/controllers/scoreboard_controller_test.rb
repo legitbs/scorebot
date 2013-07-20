@@ -1,9 +1,7 @@
 require 'test_helper'
 
 class ScoreboardControllerTest < ActionController::TestCase
-  test "should get index" do
-    get :index
-    assert_response :success
-  end
-
+  should 'render a scoreboard'
+  should 'provide json updates'
+  should 'cut off an hour before game ends'
 end

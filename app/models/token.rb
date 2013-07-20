@@ -17,8 +17,12 @@ class Token < ActiveRecord::Base
   end
 
   def self.from_token_string(token_string)
-    key, secret = token_string.chars.each_slice(2).to_a.transpose.map(&:join)
-    candidate = self.where(key: key).first
+    begin
+      key, secret = token_string.chars.each_slice(2).to_a.transpose.map(&:join)
+      candidate = self.where(key: key).first
+    rescue
+      return nil
+    end
 
     return nil unless candidate && (candidate.secret == secret)
     

@@ -24,8 +24,8 @@
       [#{redemption_path}](#{redemption_path}).
 
           curl \
-            -F "token[]=TOKEN_GOES_HERE" \
-            -F "token[]=ANOTHER_TOKEN_GOES_HERE" \
+            -F "tokens[]=TOKEN_GOES_HERE" \
+            -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
             --cacert legitbs2013.crt \
             -E #{current_team.certname}.crt \
             --key #{current_team.certname}.key \
