@@ -26,4 +26,10 @@ class Availability < ActiveRecord::Base
   def healthy?
     status == 0
   end
+
+  def legitbs_healthy?
+    lbs = Team.legitbs
+    lbs_inst = Instance.where(team_id: lbs.id, service_id: instance.service_id).first
+    lbs_inst.healthy?
+  end
 end
