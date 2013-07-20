@@ -3,4 +3,6 @@ Scorebot::Application.routes.draw do
   get "dashboard", to: 'dashboard#index', as: 'dashboard'
 
   post "redeem", to: 'redemption#create', as: 'redemption'
+
+  root to: redirect('/dashboard')
 end
