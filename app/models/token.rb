@@ -20,7 +20,7 @@ class Token < ActiveRecord::Base
     key, secret = token_string.chars.each_slice(2).to_a.transpose.map(&:join)
     candidate = self.where(key: key).first
 
-    return nil unless candidate.secret == secret
+    return nil unless candidate && (candidate.secret == secret)
     
     return candidate
   end
