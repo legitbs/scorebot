@@ -43,6 +43,7 @@ end
 group :development, :test do
   gem 'shoulda'
   gem 'factory_girl_rails'
+  gem 'mocha', require: false
 end
 
 # Use ActiveModel has_secure_password
