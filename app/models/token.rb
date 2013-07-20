@@ -48,6 +48,35 @@ class Token < ActiveRecord::Base
     self.memo = shell.output
   end
 
+  def process_redemptions(round)
+    capture_count = redemptions.length
+    return if capture_count == 0
+
+    each_team_gets = 19 / capture_count
+    floor_flags = 19 % capture_count
+
+    flags_to_distribute = instance.team.flags.limit 19
+
+    floor_flags.times do 
+      flag = flags_to_distribute.pop
+      flag.team = Team.legitbs
+      flag.save
+    end
+
+    redemptions.each do |r|
+      each_team_gets.times do |g|
+        capture = r.captures.build
+        captured_flag = flags_to_distribute.pop
+        raise "ran out of flags, wtf" unless captured_flag.is_a? Flag
+        capture.flag = captured_flag
+        capture.round = round
+        capture.save
+      end
+    end
+
+    raise "didn't distribute enough flags, wtf" unless flags_to_distribute.empty?
+  end
+
   private
   def set_keys
     self.key = random_dingus

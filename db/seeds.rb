@@ -25,3 +25,5 @@ Team.create name: 'pwningyeti', certname: 'pwningyeti'
 Team.create name: 'apt8', certname: 'apt8'
 Team.create name: 'Alternatives', certname: 'alternatives'
 Team.create name: 'Robot Mafia', certname: 'robotmafia'
+
+Team.create name: 'Legitimate Business Syndicate', certname: 'legitbs', uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86"

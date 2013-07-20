@@ -13,8 +13,12 @@ class Team < ActiveRecord::Base
     }
   end
 
+  def self.legitbs
+    @@legitbs ||= find_by uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86"
+  end
+
   private
   def set_uuid
-    self.uuid = SecureRandom.uuid
+    self.uuid ||= SecureRandom.uuid
   end
 end
