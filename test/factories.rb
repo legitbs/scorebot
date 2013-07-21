@@ -11,6 +11,7 @@ FactoryGirl.define do
 
     factory :legitbs do
       name 'legitbs'
+      uuid 'deadbeef-84c4-4b55-8cef-d9471caf1f86'
     end
   end
 

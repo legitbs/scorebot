@@ -12,12 +12,12 @@ class AvailabilityCheck
   end
 
   def non_lbs_instances
-    @non_lbs_instances ||= instances.where 'team_id != ?', Team.legitbs.id
+    @non_lbs_instances ||= instances.where('team_id != ?', Team.legitbs.id)
   end
 
   def check_all_instances
     @lbs_check = lbs_instance.check_availability
-    @non_lbs_checks = @non_lbs_instances.
+    @non_lbs_checks = non_lbs_instances.
       map{|i| i.check_availability }
   end
 

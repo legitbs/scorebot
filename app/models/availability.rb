@@ -3,7 +3,7 @@ class Availability < ActiveRecord::Base
   belongs_to :round
 
   def self.check(instance)
-    candidate = new instance: instance
+    candidate = new instance: instance, round: Round.current
     candidate.check
     candidate.save
     return candidate

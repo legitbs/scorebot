@@ -6,7 +6,22 @@ class RoundTest < ActiveSupport::TestCase
   should have_many :redemptions
 
   should 'happen periodically'
-  should 'run availability checks once and only once'
+  should 'run availability checks once and only once' do
+    @round = FactoryGirl.create :round
+    @service = FactoryGirl.create :service
+    @instance = FactoryGirl.create :instance, service: @service
+    FactoryGirl.create(:instance, team: FactoryGirl.create(:legitbs), service: @service)
+    @shell = stub 'shell process', status: 0, output: 'okay'
+    ShellProcess.stubs(:new).returns(@shell)
+
+    refute @round.availability_checks_done?
+
+    @round.check_availability
+
+    assert @round.availability_checks_done?
+
+    @round.check_availability
+  end
 
   context 'class methods' do
     should 'get the current round' do
