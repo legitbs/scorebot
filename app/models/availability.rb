@@ -27,9 +27,29 @@ class Availability < ActiveRecord::Base
     status == 0
   end
 
-  def legitbs_healthy?
-    lbs = Team.legitbs
-    lbs_inst = Instance.where(team_id: lbs.id, service_id: instance.service_id).first
-    lbs_inst.healthy?
+  def distribute!
+    flags = instance.team.flags.limit(19)
+
+    return distribute_parking(flags) if flags.count < 19
+    return distribute_everywhere(flags)
+  end
+
+  private
+  def distribute_everywhere(flags)
+    teams = Team.where('id != ? and id != ?', 
+                       Team.legitbs.id, 
+                       instance.team.id)
+    flags.each do |f|
+      t = teams.pop
+      f.team = t
+      f.save
+    end
+  end
+
+  def distribute_parking(flags)
+    flags.each do |f|
+      f.team = Team.legitbs
+      f.save
+    end
   end
 end

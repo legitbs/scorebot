@@ -8,6 +8,10 @@ FactoryGirl.define do
     sequence :certname
 
     address '10.69.4.20'
+
+    factory :legitbs do
+      name 'legitbs'
+    end
   end
 
   factory :round do
