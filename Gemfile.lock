@@ -32,6 +32,12 @@ GEM
       sass (>= 3.2.0)
       thor
     builder (3.1.4)
+    capistrano (2.14.2)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     choice (0.1.6)
     coffee-rails (4.0.0)
       coffee-script (>= 2.2.0)
@@ -57,6 +63,7 @@ GEM
       activesupport (>= 3.1, < 4.1)
       haml (>= 3.1, < 4.1)
       railties (>= 3.1, < 4.1)
+    highline (1.6.16)
     hike (1.2.3)
     i18n (0.6.4)
     immigrant (0.1.4)
@@ -78,6 +85,13 @@ GEM
     mocha (0.14.0)
       metaclass (~> 0.0.1)
     multi_json (1.7.7)
+    net-scp (1.1.1)
+      net-ssh (>= 2.6.5)
+    net-sftp (2.1.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.6.7)
+    net-ssh-gateway (1.2.0)
+      net-ssh (>= 2.6.5)
     pg (0.15.1)
     polyglot (0.3.3)
     rack (1.5.2)
@@ -149,6 +163,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt-ruby (~> 3.0.0)
   bourbon
+  capistrano
   coffee-rails (~> 4.0.0)
   factory_girl_rails
   haml-rails
