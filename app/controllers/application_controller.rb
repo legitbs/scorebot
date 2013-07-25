@@ -5,7 +5,15 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_team
 
+  def client_cn
+    request.env['HTTP_CLIENT_CN']
+  end
+
   def current_team
-    Team.first
+    if Rails.env.development?
+      return Team.first
+    end
+    
+    @current_team ||= Team.find_by uuid: client_cn
   end
 end
