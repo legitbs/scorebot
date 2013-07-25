@@ -52,5 +52,3 @@ production:
   encoding: unicode
   database: scorebot_production
   pool: 5
-  username: scorebot
-  password:
