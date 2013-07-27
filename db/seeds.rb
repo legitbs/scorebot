@@ -7,10 +7,10 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 Team.find_or_create_by name: 'Samurai', certname: 'samurai'
 Team.find_or_create_by name: 'PPP', certname: 'ppp'
-Team.find_or_create_by name: 'Technopandas', certname: 'technopandas'
-Team.find_or_create_by name: 'whois', certname: 'whois'
+Team.find_or_create_by name: '[Technopandas]', certname: 'technopandas'
+Team.find_or_create_by name: 'raon_ASRT', certname: 'whois'
 Team.find_or_create_by name: 'pwnies', certname: 'pwnies'
-Team.find_or_create_by name: 'Euronop', certname: 'euronop'
+Team.find_or_create_by name: 'The European Nopsled Team', certname: 'euronop'
 Team.find_or_create_by name: 'more smoked leet chicken', certname: 'moresmoked'
 Team.find_or_create_by name: 'blue lotus', certname: 'bluelotus'
 Team.find_or_create_by name: 'routards', certname: 'routards'
@@ -22,7 +22,7 @@ Team.find_or_create_by name: 'men in black hats', certname: 'meninblackhats'
 Team.find_or_create_by name: 'clgt', certname: 'clgt'
 Team.find_or_create_by name: 'sutegoma2', certname: 'sutegoma2'
 Team.find_or_create_by name: 'pwningyeti', certname: 'pwningyeti'
-Team.find_or_create_by name: 'apt8', certname: 'apt8'
+Team.find_or_create_by name: 'APT88', certname: 'apt8'
 Team.find_or_create_by name: 'Alternatives', certname: 'alternatives'
 Team.find_or_create_by name: 'Robot Mafia', certname: 'robotmafia'
 
@@ -49,6 +49,12 @@ end
 
 Timer.find_or_create_by name: 'game'
 Timer.find_or_create_by name: 'round'
-Timer.find_or_create_by name: 'friday'
-Timer.find_or_create_by name: 'saturday'
-Timer.find_or_create_by name: 'sunday'
+Timer.
+  find_or_create_by(name: 'friday').
+  update_attributes(ending: Time.zone.parse('2-aug-2013 8pm pdt'))
+Timer.
+  find_or_create_by(name: 'saturday').
+  update_attributes(ending: Time.zone.parse('3-aug-2013 8pm pdt'))
+Timer.
+  find_or_create_by(name: 'sunday').
+  update_attributes(ending: Time.zone.parse('4-aug-2013 2pm pdt'))
