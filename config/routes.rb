@@ -5,5 +5,7 @@ Scorebot::Application.routes.draw do
 
   post "redeem", to: 'redemption#create', as: 'redemption'
 
+  get 'timers', to: 'timers#index', as: 'timers'
+
   root to: redirect('/dashboard')
 end
