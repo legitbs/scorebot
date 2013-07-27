@@ -37,9 +37,13 @@ class TokenTest < ActiveSupport::TestCase
       FactoryGirl.create :round
       assert token.eligible?
     end
+
+    refute_includes Token.expiring, token
     
     FactoryGirl.create :round
     refute token.eligible?
+
+    assert_includes Token.expiring, token
   end
 
   context 'Token redemption processing' do
