@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_team
-    if Rails.env.development?
+    unless Rails.env.production?
       return Team.first
     end
     
