@@ -1,5 +1,7 @@
-body.scoreboard .banner
-  display: none
+body.scoreboard
+  @include animation(stripe-conveyor 27s linear infinite)
+  .banner
+    display: none
 .scoreboard.scene
   .scoreboard-holder
     @include perspective(1000px)
@@ -25,17 +27,15 @@ body.scoreboard .banner
           padding: 3px
       &.scores
         @include transform(rotateY(-7deg) translateZ(20px))
+        th
+          text-align: left
+          div
+            text-align: right
+            width: 4em
         td
           text-align: right
-          &.sla
-            width: 4em
-          &.queue
-            width: 4em
           &.flags
-            width: 10em
-        th.total
-          width: 15em
-          text-align: left
+            width: 700px
         .points
           z-index: 1
           position: relative
@@ -56,6 +56,24 @@ body.scoreboard .banner
             float: left
           &.right
             float: right
+
+  #timers
+    position: absolute
+    top: 4px
+    right: 4px
+    z-index: 10
+    background-color: $parchment
+    text-align: center
+    border: 5px solid $pinku
+    border-radius: 5px
+    box-shadow: 0px 4px 16px 2px black 
+    h1
+      display: none
+    .desc
+      background-color: $pinku
+      color: white
+    .timer
+      padding: 2px
 
 @media screen and (min-width: 1400px)
   .scoreboard.scene
