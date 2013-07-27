@@ -38,6 +38,8 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
+    celluloid (0.14.1)
+      timers (>= 1.0.0)
     choice (0.1.6)
     coffee-rails (4.0.0)
       coffee-script (>= 2.2.0)
@@ -63,6 +65,7 @@ GEM
       activesupport (>= 3.1, < 4.1)
       haml (>= 3.1, < 4.1)
       railties (>= 3.1, < 4.1)
+    high_voltage (1.2.4)
     highline (1.6.19)
     hike (1.2.3)
     i18n (0.6.4)
@@ -147,6 +150,7 @@ GEM
     thread_safe (0.1.0)
       atomic
     tilt (1.4.1)
+    timers (1.1.0)
     treetop (1.4.14)
       polyglot
       polyglot (>= 0.3.1)
@@ -164,9 +168,11 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.0.0)
   bourbon
   capistrano
+  celluloid
   coffee-rails (~> 4.0.0)
   factory_girl_rails
   haml-rails
+  high_voltage
   immigrant
   jbuilder (~> 1.2)
   jquery-rails
