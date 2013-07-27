@@ -1,4 +1,5 @@
 .scoreboard.scene
+  = render partial: 'shared/timers'
   .scoreboard-holder
     %table.names
       %thead
@@ -7,27 +8,16 @@
       %tbody
         - @teams.each do |t|
           %tr
-            %th= t.name
+            %th= t[:name]
     %table.scores
       %thead
         %tr
-          %th sla
-          %th queue
-          %th flags
-          %th.total total
+          %th 
+            %div flags
       %tbody
         - @teams.each do |t|
-          - sla = t.id * 4.20
-          - flags = t.name.chars.last.ord
-          - total = (sla / 100) * flags
           %tr
-            %td.sla= number_to_percentage(sla, precision: 1)
-            %td.queue= t.name.chars.first.ord
             %td.flags
-              .points.right= flags
-              .bar.right{style: "width: #{flags * 0.8}px"} &nbsp;
-              %br.clear
-            %th.total
-              .points.left= number_with_precision total, precision: 1
-              .bar.left{style: "width: #{total * 2.0}px"} &nbsp;
+              .points.left= t[:score]
+              .bar.left{style: "width: #{t[:score].to_i * 0.01}px"} &nbsp;
               %br.clear

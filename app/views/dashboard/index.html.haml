@@ -1,12 +1,5 @@
 .dashboard.scene
-  #timers
-    %h1 Timers
-    .game
-      Game: {{game.h}}:{{game.m}}:{{game.s}}
-    .today
-      Today: {{today.h}}:{{today.m}}:{{today.s}}
-    .round
-      Round: {{round.h}}:{{round.m}}:{{round.s}}
+  = render partial: 'shared/timers'
   #messages
     %h1 Messages
     %ul.messages
