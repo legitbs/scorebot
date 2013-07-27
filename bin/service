@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require ::File.expand_path('../config/environment',  __FILE__)
+
+
+loop do
+  now = Round.current
+end
+# in a loop...
+
+# determine current round
+# has it been availability-checked? if not, schedule it
+# does it need to be scored? if so, score it
