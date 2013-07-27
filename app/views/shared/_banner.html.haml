@@ -1,0 +1,8 @@
+.banner
+  %h1 DEF CON CTF 2013
+  %p You're #{current_team.name}
+  %ul
+    %li= link_to_unless_current 'Scoreboard', scoreboard_path
+    %li= link_to_unless_current 'Team Information', dashboard_path
+    %li= link_to_unless_current 'How to play', howto_path
+  %br.clear

@@ -4,6 +4,7 @@
     %title DEF CON CTF 2013
     = stylesheet_link_tag 'application'
   %body{class: body_class}
+    = render partial: 'shared/banner'
     = yield
     .street.scene
       = yield :scene
