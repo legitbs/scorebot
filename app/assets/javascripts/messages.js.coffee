@@ -4,12 +4,14 @@ jQuery ($) ->
   class Messenger
     constructor: ->
       @messages = $('#messages')
+      @messageList = @messages.children('ul')
       @path = @messages.data 'path'
       @interval = @messages.data 'interval'
-      @template = @messages.html()
-      @messages.html('')
+      @template = @messageList.html()
+      @messageList.html('')
       @since = 0
       @startPoll()
+      @built = false
     startPoll: ->
       window.setTimeout @poll(), 0
     requeue: ->
@@ -30,7 +32,7 @@ jQuery ($) ->
       return (data, textStatus, jqx) =>
         @since = data.since
         h = Mustache.render @template, data
-        @messages.html h
+        @messageList.prepend h
         @requeue()
 
   Messenger.messenger = new Messenger
