@@ -6,6 +6,7 @@ class Redemption < ActiveRecord::Base
   has_many :flags, through: :captures
 
   before_create :set_uuid
+  after_create :log_spew
 
   def self.redeem_for(team, token_str)
     transaction do
@@ -61,5 +62,9 @@ class Redemption < ActiveRecord::Base
   private
   def set_uuid
     self.uuid = SecureRandom.uuid
+  end
+
+  def log_spew
+    Rails.logger.info "Redeemed token #{token_id} for team #{team_id} as #{uuid}"
   end
 end
