@@ -58,3 +58,12 @@ Timer.
 Timer.
   find_or_create_by(name: 'sunday').
   update_attributes(ending: Time.zone.parse('4-aug-2013 2pm pdt'))
+
+Flag.transaction do
+  (Flag::TOTAL_FLAGS - Flag.count).times do
+    Flag.create
+  end
+end
+
+Message.
+  find_or_create_by(body: "Welcome to DEF CON CTF 2013.")
