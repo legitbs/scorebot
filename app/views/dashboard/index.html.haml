@@ -7,6 +7,14 @@
         %span.when {{when}}
         %span.who {{who}}
         %p.what {{what}}
+  #redeem
+    %h1 Redeem
+    %p
+      You really should automate this.
+      = link_to 'Read the "How to Play" screen.', howto_path
+    = form_tag redemption_path, method: :post, target: 'redeem_target' do
+      %p= text_field_tag 'tokens[]'
+    %iframe{id: 'redeem_target', name: 'redeem_target'}
   .status
     %h1 Service Status
     %table
