@@ -27,13 +27,15 @@
                   %td.owned OWNED
 
   .parcel.left
-    #messages
+    #messages{'data-path'=> messages_path, 'data-interval' => 15_000}
       %h1 Messages
       %ul.messages
+        {{#messages}}
         %li
           %span.when {{when}}
           %span.who {{who}}
           %p.what {{what}}
+        {{/messages}}
     #redeem
       %h1 Redeem
       %p
