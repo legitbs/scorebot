@@ -1,41 +1,49 @@
 .dashboard.scene
-  = render partial: 'shared/timers'
-  #messages
-    %h1 Messages
-    %ul.messages
-      %li
-        %span.when {{when}}
-        %span.who {{who}}
-        %p.what {{what}}
-  #redeem
-    %h1 Redeem
-    %p
-      You really should automate this.
-      = link_to 'Read the "How to Play" screen.', howto_path
-    = form_tag redemption_path, method: :post, target: 'redeem_target' do
-      %p= text_field_tag 'tokens[]'
-    %iframe{id: 'redeem_target', name: 'redeem_target'}
-  .status
-    %h1 Service Status
-    %table
-      %thead
-        %th service
-        %th -15m
-        %th -10m
-        %th -5m
-        %th now
-      %tbody
-        - %w{ beans potatoes tacos gravy cheeseburger coke gasoline vindsl }.each do |s|
-          %tr
-            %th{rowspan: 2}&= s
-            - 4.times do
-              - if rand() > 0.5
-                %td.ok OK
-              - else
-                %td.down DOWN
-          %tr
-            - 4.times do
-              - if rand() > 0.5
-                %td.safe SAFE
-              - else
-                %td.owned OWNED
+  .parcel.right
+    = render partial: 'shared/timers'
+    .status
+      %h1 Service Status
+      %table
+        %thead
+          %th service
+          %th -15m
+          %th -10m
+          %th -5m
+          %th now
+        %tbody
+          - @instances.each do |s|
+            %tr
+              %th{rowspan: 2}&= s.service.name
+              - 4.times do
+                - if rand() > 0.5
+                  %td.ok OK
+                - else
+                  %td.down DOWN
+            %tr
+              - 4.times do
+                - if rand() > 0.5
+                  %td.safe SAFE
+                - else
+                  %td.owned OWNED
+
+  .parcel.left
+    #messages
+      %h1 Messages
+      %ul.messages
+        %li
+          %span.when {{when}}
+          %span.who {{who}}
+          %p.what {{what}}
+    #redeem
+      %h1 Redeem
+      %p
+        You really should automate this.
+        = link_to 'Read the "How to Play" screen.', howto_path
+      = form_tag redemption_path, method: :post, target: 'redeem_target' do
+        - 2.times do
+          %p
+            = text_field_tag 'tokens[]', '', placeholder: 'token'
+        %p
+          = text_field_tag 'tokens[]', '', placeholder: 'token'
+          = submit_tag 'punch it'
+      %iframe{id: 'redeem_target', name: 'redeem_target'}

@@ -1,18 +1,53 @@
 .dashboard.scene
-  .howto
-    width: 900px
-    background-color: $parchment
-    margin: 8px auto 80px
-    padding: 8px
-    code
-      font-family: 'Ubuntu Mono', monospace
-  .status
-    @include transform(rotateY(-5deg))
-    width: 380px
-    float: right
+  .parcel
+    margin: 0
+    padding: 0
+    &.left
+      @include transform(rotateY(5deg))
+      width: 540px
+      float: left
+    &.right
+      @include transform(rotateY(-5deg))
+      width: 400px
+      float: right
+      h1
+        text-align: right
+  @mixin panel
     background-color: $parchment
     padding: 8px
     margin: 8px
+    h1
+      margin-top: 0
+      font-size: 1.2em
+  #messages
+    @include panel
+    ul.messages
+      height: 120px
+      overflow: scroll
+  #redeem
+    @include panel
+    form
+      input[type='text']
+        width: 400px
+        border: 1px solid grey
+    iframe
+      width: 400px
+      background-color: white
+      border: 1px solid grey
+  #timers
+    @include panel
+    #actual_timers
+      $width: 360px
+      width: $width
+      >div
+        width: ($width / 3) - 3
+        display: inline-block
+        text-align: center
+        overflow: hide
+        height: 2em
+  .status
+    @include panel
+    margin-bottom: 60px
     table
       th,td
         text-align: center
