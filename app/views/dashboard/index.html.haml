@@ -9,19 +9,18 @@
           %th -15m
           %th -10m
           %th -5m
-          %th now
         %tbody
           - @instances.each do |s|
             %tr
               %th{rowspan: 2}&= s.service.name
-              - 4.times do
-                - if rand() > 0.5
+              - s.uptime_check.each do |c|
+                - if c
                   %td.ok OK
                 - else
                   %td.down DOWN
             %tr
-              - 4.times do
-                - if rand() > 0.5
+              - s.owned_check.each do |c|
+                - unless c
                   %td.safe SAFE
                 - else
                   %td.owned OWNED
