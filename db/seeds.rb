@@ -5,30 +5,53 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-Team.find_or_create_by name: 'Samurai', certname: 'samurai'
-Team.find_or_create_by name: 'PPP', certname: 'ppp'
-Team.find_or_create_by name: '[Technopandas]', certname: 'technopandas'
-Team.find_or_create_by name: 'raon_ASRT', certname: 'whois'
-Team.find_or_create_by name: 'pwnies', certname: 'pwnies'
-Team.find_or_create_by name: 'The European Nopsled Team', certname: 'euronop'
-Team.find_or_create_by name: 'more smoked leet chicken', certname: 'moresmoked'
-Team.find_or_create_by name: 'blue lotus', certname: 'bluelotus'
-Team.find_or_create_by name: 'routards', certname: 'routards'
-Team.find_or_create_by name: 'shell corp', certname: '1shellcorp'
-Team.find_or_create_by name: 'shellphish', certname: 'shellphish'
-Team.find_or_create_by name: 'WOWHacker-BI0S', certname: 'wowhacker'
-Team.find_or_create_by name: '9447', certname: '9447'
-Team.find_or_create_by name: 'men in black hats', certname: 'meninblackhats'
-Team.find_or_create_by name: 'clgt', certname: 'clgt'
-Team.find_or_create_by name: 'sutegoma2', certname: 'sutegoma2'
-Team.find_or_create_by name: 'pwningyeti', certname: 'pwningyeti'
-Team.find_or_create_by name: 'APT88', certname: 'apt8'
-Team.find_or_create_by name: 'Alternatives', certname: 'alternatives'
-Team.find_or_create_by name: 'Robot Mafia', certname: 'robotmafia'
+Team.find_or_create_by name: 'Samurai', certname: 'samurai', joe_name: "samurai", address: "10.5.6.2"
+
+Team.find_or_create_by name: 'PPP', certname: 'ppp', joe_name: "ppp", address: "10.5.1.2"
+
+Team.find_or_create_by name: '[Technopandas]', certname: 'technopandas', joe_name: "technopandas", address: "10.5.2.2"
+
+Team.find_or_create_by name: 'raon_ASRT', certname: 'whois', joe_name: "whois", address: "10.5.4.2"
+
+Team.find_or_create_by name: 'pwnies', certname: 'pwnies', joe_name: "pwnies", address: "10.5.5.2"
+
+Team.find_or_create_by name: 'The European Nopsled Team', certname: 'euronop', joe_name: "euronop", address: "10.5.7.2"
+
+Team.find_or_create_by name: 'more smoked leet chicken', certname: 'moresmoked', joe_name: "moresmoked", address: "10.5.9.2"
+
+Team.find_or_create_by name: 'blue lotus', certname: 'bluelotus', joe_name: "bluelotus", address: "10.5.10.2"
+
+Team.find_or_create_by name: 'routards', certname: 'routards', joe_name: "routards", address: "10.5.11.2"
+
+Team.find_or_create_by name: 'shell corp', certname: '1shellcorp', joe_name: "shellcorp", address: "10.5.12.2"
+
+Team.find_or_create_by name: 'shellphish', certname: 'shellphish', joe_name: "shellphish", address: "10.5.13.2"
+
+Team.find_or_create_by name: 'WOWHacker-BI0S', certname: 'wowhacker', joe_name: "wowhacker", address: "10.5.14.2"
+
+Team.find_or_create_by name: '9447', certname: '9447', joe_name: "team9447", address: "10.5.15.2"
+
+Team.find_or_create_by name: 'men in black hats', certname: 'meninblackhats', joe_name: "meninblackhats", address: "10.5.16.2"
+
+Team.find_or_create_by name: 'clgt', certname: 'clgt', joe_name: "clgt", address: "10.5.3.2"
+
+Team.find_or_create_by name: 'sutegoma2', certname: 'sutegoma2', joe_name: "sutegoma2", address: "10.5.8.2"
+
+Team.find_or_create_by name: 'pwningyeti', certname: 'pwningyeti', joe_name: "pwningyeti", address: "10.5.17.2"
+
+Team.find_or_create_by name: 'APT88', certname: 'apt8', joe_name: "apt8", address: "10.5.18.2"
+
+Team.find_or_create_by name: 'Alternatives', certname: 'alternatives', joe_name: "alternatives", address: "10.5.19.2"
+
+Team.find_or_create_by name: 'Robot Mafia', certname: 'robotmafia', joe_name: "robotmafia", address: "10.5.20.2"
+
 
 Team.find_or_create_by(name: 'Legitimate Business Syndicate', 
                        certname: 'legitbs', 
-                       uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86")
+                       uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86",
+                       joe_name: 'oracle',
+                       address: "10.5.21.2"
+                       )
 
 Service.find_or_create_by name: 'trouver'
 Service.find_or_create_by name: 'lonetuna'
