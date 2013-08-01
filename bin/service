@@ -73,14 +73,7 @@ loop do
     
     l "Running checks"
     check_start = now_sec
-    Service.find_each do |s|
-      l "Checking #{s.name}"
-      service_start = now_sec
-      check = AvailabilityCheck.new s
-      check.check_all_instances
-      check.distribute_flags
-      l "#{s.name} took #{now_sec - service_start} seconds"
-    end
+    AvailabilityCheck.run!
     check_end = now_sec
 
     @availabilty_history.push check_end - check_start
@@ -98,7 +91,7 @@ loop do
     
     l "Depositing"
     new_tokens = []
-    Instance.find_each.map do |i|
+    Instance.find_each do |i|
       new_tokens << Token.create(
                                  instance: i,
                                  round: new_round
@@ -109,6 +102,10 @@ loop do
     l "Scoring"
     Token.expiring.find_each do |t|
       t.process_redemptions current_round
+    end
+
+    l "Reallocating flags"
+    Flag.reallocate current_round
     end
   end
 end
