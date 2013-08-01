@@ -40,6 +40,14 @@ def average_check
   @availability_history.sum.to_f / @availability_history.length
 end
 
+if Round.current.nil?
+  l "No current round. Press enter to start game."
+  gets
+
+  new_round = Round.create
+  new_round.commence!
+end
+
 loop do
   loop_start = Time.now
 
@@ -75,7 +83,7 @@ loop do
       
       l "Running checks"
       check_start = now_sec
-      AvailabilityCheck.run!
+      current_round.check_availability
       check_end = now_sec
 
       @availabilty_history.push check_end - check_start
@@ -90,27 +98,17 @@ loop do
     l "Ending round"
     current_round.ended_at ||= Time.now
     current_round.save
-    new_round = Round.create
-    l "Started round #{new_round.id}"
-    round_timer.ending = new_round.created_at
-    round_timer.save
-    
-    l "Depositing"
-    new_tokens = []
-    Instance.find_each do |i|
-      new_tokens << Token.create(
-                                 instance: i,
-                                 round: new_round
-                                 )
-    end
-    new_tokens.each(&:deposit)
 
-    l "Scoring"
-    Token.expiring.find_each do |t|
-      t.process_redemptions current_round
+    if Timer.today.ended?
+      @ending = true
+    else
+      new_round = Round.create
+      l "Started round #{new_round.id}"
+      new_round.commence!
     end
-
-    l "Reallocating flags"
-    Flag.reallocate current_round
+ 
+    current_round.finalize!
   end
+
+  break if @ending
 end
