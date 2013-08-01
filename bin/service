@@ -1,12 +1,114 @@
 #!/usr/bin/env ruby
-require ::File.expand_path('../config/environment',  __FILE__)
+$stderr.puts "#{Time.now} Loading service script"
+require ::File.expand_path('../../config/environment',  __FILE__)
 
+ROUND_LENGTH = 5 * 60
+
+def l(str)
+  Rails.logger.info str
+  $stderr.puts "#{Time.now} #{str}"
+end
+
+def now_sec
+  Time.now.to_i
+end
+
+def chillax(ending)
+  l "Waiting #{ending - now_sec} seconds"
+  if (ending - now_sec) < 5
+    midpoint = now_sec + ((ending - now_sec) / 2)
+  else
+    # never reached
+    midpoint = ending + 1
+  end
+
+  while now_sec < ending
+    if (now_sec > midpoint) && (ending - now_sec > 5)
+      midpoint = now_sec + ((ending - now_sec) / 2)
+      l "Waiting #{ending - now_sec} more seconds"
+    end
+    sleep 0.1
+  end
+end
+
+# availability check lengths, in seconds
+# defaults to four minutes so we tend to schedule
+# earlier
+@availability_history = [ 4 * 60 ]
+
+def average_check
+  @availability_history.sum.to_f / @availability_history.length
+end
 
 loop do
-  now = Round.current
-end
-# in a loop...
+  loop_start = Time.now
 
-# determine current round
-# has it been availability-checked? if not, schedule it
-# does it need to be scored? if so, score it
+  l "Started service check"
+
+  current_round = Round.current
+
+  round_timer = Timer.round.reload
+  ending_sec = round_timer.ending.to_i
+
+  unless current_round.availability_checks_done?
+    l "Scheduling availability checks"
+    envelope = ending_sec - now_sec
+    longest_wait = envelope - average_check
+
+    l "#{envelope} remaining, #{longest_wait} is the longest i should wait"
+
+    if longest_wait < 0
+      l "I THINK I'VE RUN OUT OF TIME FOR AVAILABILITY CHECKS :("
+      l "GONNA DO THEM NOW AND JUST DWI IF THE ROUND IS DELAYED"
+      longest_wait = 0
+    end
+
+    if longest_wait > 1
+      wait = rand(longest_wait)
+      l "Waiting #{wait} for availability check"
+      alarm = now_sec + wait
+
+      chillax alarm
+    end
+    
+    l "Running checks"
+    check_start = now_sec
+    Service.find_each do |s|
+      l "Checking #{s.name}"
+      service_start = now_sec
+      check = AvailabilityCheck.new s
+      check.check_all_instances
+      check.distribute_flags
+      l "#{s.name} took #{now_sec - service_start} seconds"
+    end
+    check_end = now_sec
+
+    @availabilty_history.push check_end - check_start
+  end
+
+  l "Waiting for round end"
+  chillax ending_sec
+
+  current_round.transaction do
+    l "Ending round"
+    new_round = Round.create
+    l "Started round #{new_round.id}"
+    round_timer.ending = new_round.created_at
+    round_timer.save
+    
+    l "Depositing"
+    new_tokens = []
+    Instance.find_each.map do |i|
+      new_tokens << Token.create(
+                                 instance: i,
+                                 round: new_round
+                                 )
+    end
+    new_tokens.each(&:deposit)
+
+    l "Scoring"
+    Token.expiring.find_each do |t|
+      t.process_redemptions current_round
+    end
+  end
+end
