@@ -60,8 +60,11 @@ Timer.
   update_attributes(ending: Time.zone.parse('4-aug-2013 2pm pdt'))
 
 Flag.transaction do
+  teams = Team.without_legitbs.to_a
   (Flag::TOTAL_FLAGS - Flag.count).times do
-    Flag.create
+    t = teams.shift
+    Flag.create team: t
+    teams.push t
   end
 end
 
