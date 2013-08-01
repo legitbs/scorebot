@@ -47,43 +47,49 @@ loop do
 
   current_round = Round.current
 
-  round_timer = Timer.round.reload
-  ending_sec = round_timer.ending.to_i
+  if current_round.ended_at > Time.now
 
-  unless current_round.availability_checks_done?
-    l "Scheduling availability checks"
-    envelope = ending_sec - now_sec
-    longest_wait = envelope - average_check
+    round_timer = Timer.round.reload
+    ending_sec = round_timer.ending.to_i
 
-    l "#{envelope} remaining, #{longest_wait} is the longest i should wait"
+    unless current_round.availability_checks_done?
+      l "Scheduling availability checks"
+      envelope = ending_sec - now_sec
+      longest_wait = envelope - average_check
 
-    if longest_wait < 0
-      l "I THINK I'VE RUN OUT OF TIME FOR AVAILABILITY CHECKS :("
-      l "GONNA DO THEM NOW AND JUST DWI IF THE ROUND IS DELAYED"
-      longest_wait = 0
+      l "#{envelope} remaining, #{longest_wait} is the longest i should wait"
+
+      if longest_wait < 0
+        l "I THINK I'VE RUN OUT OF TIME FOR AVAILABILITY CHECKS :("
+        l "GONNA DO THEM NOW AND JUST DWI IF THE ROUND IS DELAYED"
+        longest_wait = 0
+      end
+
+      if longest_wait > 1
+        wait = rand(longest_wait)
+        l "Waiting #{wait} for availability check"
+        alarm = now_sec + wait
+
+        chillax alarm
+      end
+      
+      l "Running checks"
+      check_start = now_sec
+      AvailabilityCheck.run!
+      check_end = now_sec
+
+      @availabilty_history.push check_end - check_start
     end
 
-    if longest_wait > 1
-      wait = rand(longest_wait)
-      l "Waiting #{wait} for availability check"
-      alarm = now_sec + wait
+    l "Waiting for round end"
+    chillax ending_sec
 
-      chillax alarm
-    end
-    
-    l "Running checks"
-    check_start = now_sec
-    AvailabilityCheck.run!
-    check_end = now_sec
-
-    @availabilty_history.push check_end - check_start
   end
-
-  l "Waiting for round end"
-  chillax ending_sec
 
   current_round.transaction do
     l "Ending round"
+    current_round.ended_at ||= Time.now
+    current_round.save
     new_round = Round.create
     l "Started round #{new_round.id}"
     round_timer.ending = new_round.created_at
@@ -106,6 +112,5 @@ loop do
 
     l "Reallocating flags"
     Flag.reallocate current_round
-    end
   end
 end
