@@ -16,7 +16,7 @@ class Availability < ActiveRecord::Base
     shell = ShellProcess.
       new(
           Rails.root.join('scripts', service_name, 'availability'),
-          team_address
+          instance.team.joe_name
           )
     
     self.status = shell.status

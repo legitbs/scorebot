@@ -9,7 +9,8 @@ class Team < ActiveRecord::Base
     {
       teamname: name,
       uuid: uuid,
-      certname: certname
+      certname: certname,
+      joe_name: joe_name
     }
   end
 

@@ -19,4 +19,11 @@ class Timer < ActiveRecord::Base
     Timer.where(name: 'round').first
   end
     
+  def remaining
+    ending.to_i - Time.now.to_i
+  end
+
+  def ended?
+    ending < Time.now
+  end
 end

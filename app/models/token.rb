@@ -54,8 +54,9 @@ class Token < ActiveRecord::Base
 
     shell = ShellProcess.
       new(
-          Rails.root.join('scripts', service_name, 'deposit'),
-          team_address,
+          Rails.root.join('scripts', 'deposit'),
+          instance.team.joe_name,
+          service_name,
           to_token_string
           )
 

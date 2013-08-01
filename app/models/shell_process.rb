@@ -1,7 +1,7 @@
 require 'open3'
 class ShellProcess
   def initialize(*args)
-    @args = args
+    @args = args.map(&:to_s)
   end
 
   def success?

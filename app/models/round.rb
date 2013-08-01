@@ -3,6 +3,8 @@ class Round < ActiveRecord::Base
   has_many :tokens
   has_many :redemptions
 
+  ROUND_LENGTH = 5.minutes
+
   def self.current
     order('created_at desc').first
   end
@@ -17,12 +19,37 @@ class Round < ActiveRecord::Base
 
   def check_availability
     return if availability_checks_done?
-    Service.all.each do |s|
+    Service.where(enabled: true).find_each do |s|
       s.transaction do
         check = AvailabilityCheck.new s
         check.check_all_instances
         check.distribute_flags
       end
     end
+  end
+
+  def commence!
+    round_timer = Timer.round
+    round_timer.ending = Time.now + ROUND_LENGTH
+    round_timer.save
+
+    # distribute tokens
+    new_tokens = []
+    Instance.find_each do |i|
+      new_tokens << Token.create(
+                                 instance: i,
+                                 round: self
+                                 )
+    end
+    new_tokens.each(&:deposit)
+  end
+
+  def finalize!
+    # process redemptions
+    Token.expiring.find_each do |t|
+      t.process_redemptions self
+    end
+
+    Flag.reallocate self
   end
 end

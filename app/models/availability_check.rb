@@ -1,15 +1,4 @@
-class AvailabilityCheck
-  def self.run!
-    Service.where(enabled: true).find_each do |s|
-      Rails.logger.info "Checking #{s.name}"
-      service_start = Time.now.to_i
-      check = AvailabilityCheck.new s
-      check.check_all_instances
-      check.distribute_flags
-      Rails.logger.info "#{s.name} took #{Time.now.to_i - service_start} seconds"
-    end
-  end
-  
+class AvailabilityCheck  
   def initialize(service)
     @service = service
   end
