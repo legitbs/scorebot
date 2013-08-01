@@ -35,6 +35,11 @@ class Token < ActiveRecord::Base
     r.tokens
   end
 
+  def self.live
+    r = Round.order('created_at desc').offset(EXPIRATION + 1).first
+    self.where('round_id > ?', r.id)
+  end
+
   def eligible?
     Round.since(round) <= EXPIRATION
   end
