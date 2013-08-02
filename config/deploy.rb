@@ -4,9 +4,9 @@ set :repository,  "git@waitingf.org:scorebot.git"
 # set :scm, :git # You can set :scm explicitly or Capistrano will make an intelligent guess based on known version control directory names
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
-role :web, "scorebot.ctf"                          # Your HTTP server, Apache/etc
-role :app, "scorebot.ctf"                          # This may be the same as your `Web` server
-role :db,  "scorebot.ctf", :primary => true # This is where Rails migrations will run
+role :web, "scorebot"                          # Your HTTP server, Apache/etc
+role :app, "scorebot"                          # This may be the same as your `Web` server
+role :db,  "scorebot", :primary => true # This is where Rails migrations will run
 # role :db,  "your slave db-server here"
 
 set :user, 'scorebot'
