@@ -2,7 +2,7 @@ class Flag < ActiveRecord::Base
   belongs_to :team
   has_many :captures
 
-  TOTAL_FLAGS = 400
+  TOTAL_FLAGS = 50_000
 
   def self.reallocate(ending_round)
     transaction do
