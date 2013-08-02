@@ -50,19 +50,21 @@ Team.find_or_create_by(name: 'Legitimate Business Syndicate',
                        certname: 'legitbs', 
                        uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86",
                        joe_name: 'oracle',
-                       address: "10.5.21.2"
+                       address: "10.5.22.2"
                        )
 
-Service.find_or_create_by name: 'trouver'
-Service.find_or_create_by name: 'lonetuna'
-Service.find_or_create_by name: 'redmoose'
-Service.find_or_create_by name: 'coldfinger'
-Service.find_or_create_by name: 'avoir'
-Service.find_or_create_by name: 'bookworm'
-Service.find_or_create_by name: 'hopper'
-Service.find_or_create_by name: 'nginsh'
-Service.find_or_create_by name: 'where in the world is edward'
-Service.find_or_create_by name: 'The Symz'
+Service.find_or_create_by name: 'atmail', enabled: true
+Service.find_or_create_by name: 'bookworm', enabled: true
+# Service.find_or_create_by name: 'trouver'
+Service.find_or_create_by name: 'lonetuna', enabled: true
+# Service.find_or_create_by name: 'redmoose'
+# Service.find_or_create_by name: 'coldfinger'
+# Service.find_or_create_by name: 'avoir'
+# Service.find_or_create_by name: 'bookworm'
+# Service.find_or_create_by name: 'hopper'
+# Service.find_or_create_by name: 'nginsh'
+# Service.find_or_create_by name: 'where in the world is edward'
+# Service.find_or_create_by name: 'The Symz'
 
 Team.find_each do |t|
   Service.find_each do |s|
@@ -70,7 +72,8 @@ Team.find_each do |t|
   end
 end
 
-Timer.find_or_create_by name: 'game'
+Timer.find_or_create_by(name: 'game').
+  update_attributes(ending: (Time.zone.parse('2-aug-2013 8pm pdt') + 14.hours))
 Timer.find_or_create_by name: 'round'
 Timer.
   find_or_create_by(name: 'friday').

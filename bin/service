@@ -5,8 +5,7 @@ require ::File.expand_path('../../config/environment',  __FILE__)
 ROUND_LENGTH = 5 * 60
 
 def l(str)
-  Rails.logger.info str
-  $stderr.puts "#{Time.now} #{str}"
+  Scorebot.log str
 end
 
 def now_sec
@@ -45,7 +44,9 @@ if Round.current.nil?
   gets
 
   new_round = Round.create
+  l "Commencing..."
   new_round.commence!
+  l "It's on!"
 end
 
 loop do
@@ -55,7 +56,7 @@ loop do
 
   current_round = Round.current
 
-  if current_round.ended_at > Time.now
+  unless Timer.round.ended?
 
     round_timer = Timer.round.reload
     ending_sec = round_timer.ending.to_i
@@ -86,7 +87,9 @@ loop do
       current_round.check_availability
       check_end = now_sec
 
-      @availabilty_history.push check_end - check_start
+      @availability_history.push check_end - check_start
+
+      l "Checks ran in #{@availability_history.last} seconds"
     end
 
     l "Waiting for round end"

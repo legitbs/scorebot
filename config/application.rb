@@ -20,4 +20,12 @@ module Scorebot
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
   end
+
+  def self.log(*args)
+    timestamp = Time.now.to_s
+    body = args.map{|a| a.is_a?(String) ? a : a.inspect }.join(' ')
+
+    $stderr.puts "#{timestamp} #{body}"
+    Rails.logger.info "#{timestamp} [scorebot] #{body}"
+  end
 end

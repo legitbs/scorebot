@@ -31,12 +31,12 @@ class Redemption < ActiveRecord::Base
   class OtherTokenError < ArgumentError
     def initialize(e)
       correlation = SecureRandom.uuid
-      Rails.logger.fatal(
-                         [correlation, 
-                          e.class.name,
-                          e.message, 
-                          e.backtrace.join(', ')].
-                         join('; '))
+      Scorebot.log(
+                   [correlation, 
+                    e.class.name,
+                    e.message, 
+                    e.backtrace.join(', ')].
+                   join('; '))
       super "some other error #{correlation}"
     end
   end
@@ -65,6 +65,6 @@ class Redemption < ActiveRecord::Base
   end
 
   def log_spew
-    Rails.logger.info "Redeemed token #{token_id} for team #{team_id} as #{uuid}"
+    Scorebot.log "Redeemed token #{token_id} for team #{team_id} as #{uuid}"
   end
 end

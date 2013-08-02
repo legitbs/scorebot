@@ -2,7 +2,7 @@ class Flag < ActiveRecord::Base
   belongs_to :team
   has_many :captures
 
-  TOTAL_FLAGS = 200
+  TOTAL_FLAGS = 400
 
   def self.reallocate(ending_round)
     transaction do
@@ -13,6 +13,8 @@ class Flag < ActiveRecord::Base
 
       divisor = scoring_teams.length
       available = Team.legitbs.flags.length
+
+      return if (divisor == 0) || (available == 0)
       
       bundle_size = (available / divisor).floor
       remainder = available % divisor

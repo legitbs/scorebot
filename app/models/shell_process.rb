@@ -31,6 +31,8 @@ class ShellProcess
   def run
     return if has_run?
 
+    Scorebot.log "running #{@args.join ' '}"
+
     @output = ''
 
     IO.popen @args, 'r', err: %i{child out} do |stdout|
@@ -38,5 +40,7 @@ class ShellProcess
     end
 
     @status = $?
+
+    Scorebot.log @status, @output.inspect
   end
 end

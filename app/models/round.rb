@@ -46,7 +46,7 @@ class Round < ActiveRecord::Base
 
   def finalize!
     # process redemptions
-    Token.expiring.find_each do |t|
+    Token.expiring.each do |t|
       t.process_redemptions self
     end
 

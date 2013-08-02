@@ -51,17 +51,27 @@ class Token < ActiveRecord::Base
   def deposit
     service_name = instance.service.name
     team_address = instance.team.address
+    begin
+      shell = ShellProcess.
+        new(
+            Rails.root.join('scripts', 'deposit'),
+            instance.team.joe_name,
+            service_name,
+            to_token_string
+            )
 
-    shell = ShellProcess.
-      new(
-          Rails.root.join('scripts', 'deposit'),
-          instance.team.joe_name,
-          service_name,
-          to_token_string
-          )
+      self.status = shell.status
+      self.memo = shell.output
+    rescue => e
+      Scorebot.log "serious deposit issue :( #{e.inspect}"
+      self.status = -420
+      self.memo = e
+    end
 
-    self.status = shell.status
-    self.memo = shell.output
+    save
+
+    Scorebot.log "deposit status #{status}"
+    Scorebot.log memo
   end
 
   def process_redemptions(round)

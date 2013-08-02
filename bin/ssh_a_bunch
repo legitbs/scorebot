@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+$stderr.puts "#{Time.now} Loading ssh_a_bunch"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+@ssh_procs = Team.all.map do |t|
+  addr = t.address.gsub('10.5', '10.4')
+  $stderr.puts fork{ `ssh -o "BatchMode yes" root@#{addr}` }.inspect
+end
+
+$stderr.puts 'waiting'
+loop { sleep 60 }

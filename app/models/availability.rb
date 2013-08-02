@@ -13,14 +13,19 @@ class Availability < ActiveRecord::Base
     service_name = instance.service.name
     team_address = instance.team.address
 
+    script = Rails.root.join('scripts', service_name, 'availability')
+
+    Dir.chdir File.dirname script
     shell = ShellProcess.
       new(
-          Rails.root.join('scripts', service_name, 'availability'),
-          instance.team.joe_name
+          script,
+          team_address
           )
     
     self.status = shell.status
     self.memo = shell.output
+
+    save
   end
 
   def healthy?
