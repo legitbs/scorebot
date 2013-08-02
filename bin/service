@@ -14,7 +14,7 @@ end
 
 def chillax(ending)
   l "Waiting #{ending - now_sec} seconds"
-  if (ending - now_sec) < 5
+  if (ending - now_sec) > 5
     midpoint = now_sec + ((ending - now_sec) / 2)
   else
     # never reached
