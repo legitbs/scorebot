@@ -3,6 +3,7 @@ import sys
 import socket
 import struct
 import os
+import signal
 import random
 
 def randstr( leng=6 ):
@@ -12,6 +13,7 @@ def randstr( leng=6 ):
         return x
 
 if __name__== '__main__':
+  signal.alarm( 5 )
   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   try:
     s.connect((sys.argv[1], 4321))
@@ -22,8 +24,10 @@ if __name__== '__main__':
   f = open("slafont.font", 'rb')
   font = f.read()
   f.close()
-
   data = s.recv(1024)
+  while data.startswith('Connect') == False:
+    data = s.recv(1024)
+
   sfd = data[11:data.find(' to view')]
   s.recv(1024)
   port = int(sfd)
@@ -33,7 +37,7 @@ if __name__== '__main__':
     c = c.connect( (sys.argv[1], port ) )
   except socket.error, (value,message):
     sys.exit(1)
-
+  signal.alarm( 10 )
   s.send('2\n')
   s.send(struct.pack('I', len(font)))
   s.send(font)
