@@ -2,10 +2,9 @@ class Availability < ActiveRecord::Base
   belongs_to :instance
   belongs_to :round
 
-  def self.check(instance)
-    candidate = new instance: instance, round: Round.current
+  def self.check(instance, round)
+    candidate = new instance: instance, round: round
     candidate.check
-    candidate.save
     return candidate
   end
 
@@ -25,7 +24,7 @@ class Availability < ActiveRecord::Base
     self.status = shell.status
     self.memo = shell.output
 
-    save
+    self
   end
 
   def healthy?

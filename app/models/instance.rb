@@ -7,10 +7,8 @@ class Instance < ActiveRecord::Base
   
   has_many :availabilities
 
-  def check_availability
-    round = Round.current
-    return if availabilities.where(round_id: round).size != 0
-    availability = Availability.check self
+  def check_availability(round)
+    availability = Availability.check self, round
   end
 
   def owned_check
