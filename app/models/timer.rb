@@ -10,7 +10,7 @@ class Timer < ActiveRecord::Base
   end
 
   def self.today
-    Timer.where(name: 'friday').first
+    Timer.where(name: 'saturday').first
   end
   def self.game
     Timer.where(name: 'game').first
