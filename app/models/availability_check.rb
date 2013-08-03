@@ -18,7 +18,7 @@ class AvailabilityCheck
   def check_all_instances
     @lbs_check = lbs_instance.check_availability
     @non_lbs_checks = non_lbs_instances.
-      map{|i| i.check_availability }
+      map{|i| next unless i.service.enabled?; i.check_availability }
   end
 
   def distribute_flags
