@@ -18,6 +18,8 @@ our $sock = new IO::Socket::INET (
 ); 
 die "Could not create socket: $!\n" unless $sock; 
 
+alarm(20);
+
 srand(time());
 my $rnd = int(rand(100));
 
