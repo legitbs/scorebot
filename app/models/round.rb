@@ -6,7 +6,7 @@ class Round < ActiveRecord::Base
   ROUND_LENGTH = 5.minutes
 
   def self.current
-    order('created_at desc').first
+    where('ended_at is not null').order('created_at desc').first
   end
 
   def self.since(round)
