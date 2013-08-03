@@ -50,8 +50,8 @@ jQuery ($) ->
       @requeue()
     toRemnant: (now, ending) ->
       diff =
-        s: pad(Math.floor(now.diffSeconds(ending) % 60))
-        m: pad(Math.floor(now.diffMinutes(ending) % 60))
+        s: pad(Math.abs(Math.floor(now.diffSeconds(ending) % 60)))
+        m: pad(Math.abs(Math.floor(now.diffMinutes(ending) % 60)))
         h: pad(Math.floor(now.diffHours(ending)))
         next: now.diffMilliseconds(ending)
         ending: ending
