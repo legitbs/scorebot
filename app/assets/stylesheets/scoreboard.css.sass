@@ -82,3 +82,17 @@ body.scoreboard
     table.names
       @include transform(rotateY(7deg) translateZ(-20px))
     table.scores
+
+@media screen and (max-width: 840px)
+  .scoreboard.scene
+    margin-top: 4em
+    width: 600px
+    font-size: 0.82em
+    table.names
+      @include transform(rotateY(10deg) translateZ(-30px))
+      width: 220px
+    table.scores
+      @include transform(rotateY(-20deg))
+      width: 340px
+    #timers
+      display: none
