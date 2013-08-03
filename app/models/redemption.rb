@@ -65,6 +65,6 @@ class Redemption < ActiveRecord::Base
   end
 
   def log_spew
-    Scorebot.log "Redeemed token #{token_id} for team #{team_id} as #{uuid}"
+    Scorebot.log "Redeemed token #{token_id} from #{token.instance.team.name} #{token.instance.service.name} for team #{team.name} as #{uuid}"
   end
 end

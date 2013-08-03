@@ -90,6 +90,7 @@ class Token < ActiveRecord::Base
     end
 
     redemptions.each do |r|
+      Scorebot.log "Giving #{each_team_gets} flags from #{r.token.instance.team.name} #{r.token.instance.service.name} to #{r.team.name}"
       each_team_gets.times do |g|
         capture = r.captures.build
         captured_flag = flags_to_distribute.pop
