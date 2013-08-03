@@ -43,6 +43,7 @@ body.scoreboard
           width: 4em
           color: white
           padding: 2px
+          font-weight: bold
           &.right
             float: right
           &.left
@@ -91,9 +92,10 @@ body.scoreboard
     #timers
       top: 340px
       right: -80px
-    table.names
-      @include transform(rotateY(10deg) translateZ(-30px))
-      width: 220px
-    table.scores
-      @include transform(rotateY(-20deg))
-      width: 340px
+    .scoreboard-holder
+      table.names
+        @include transform(rotateY(10deg) translateZ(-20px))
+        width: 220px
+      table.scores
+        @include transform(rotateY(-10deg))
+        width: 340px
