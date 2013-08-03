@@ -12,18 +12,12 @@
         %tbody
           - @instances.each do |s|
             %tr
-              %th{rowspan: 2}&= s.service.name
+              %th&= s.service.name
               - s.uptime_check.each do |c|
                 - if c
                   %td.ok OK
                 - else
                   %td.down DOWN
-            %tr
-              - s.owned_check.each do |c|
-                - unless c
-                  %td.safe SAFE
-                - else
-                  %td.owned OWNED
 
   .parcel.left
     #messages{'data-path'=> messages_path, 'data-interval' => 15_000}
