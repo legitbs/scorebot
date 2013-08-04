@@ -25,6 +25,6 @@ class Instance < ActiveRecord::Base
 
   private
   def health_check_rounds
-    @health_check_rounds ||= Round.limit(3).offset(1).order('created_at asc')
+    @health_check_rounds ||= Round.limit(3).offset(1).order('created_at desc').reverse
   end
 end

@@ -43,6 +43,9 @@ class Availability < ActiveRecord::Base
     teams = Team.where('id != ? and id != ?', 
                        Team.legitbs.id, 
                        instance.team.id)
+
+    Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams} teams"
+
     flags.each do |f|
       t = teams.pop
       f.team = t

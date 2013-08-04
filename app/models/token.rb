@@ -78,10 +78,11 @@ class Token < ActiveRecord::Base
     capture_count = redemptions.length
     return if capture_count == 0
 
-    each_team_gets = 19 / capture_count
-    floor_flags = 19 % capture_count
-
     flags_to_distribute = instance.team.flags.limit 19
+
+    each_team_gets = flags_to_distribute.length / capture_count
+    floor_flags = flags_to_distribute.length % capture_count
+
 
     floor_flags.times do 
       flag = flags_to_distribute.pop
@@ -94,7 +95,6 @@ class Token < ActiveRecord::Base
       each_team_gets.times do |g|
         capture = r.captures.build
         captured_flag = flags_to_distribute.pop
-        raise "ran out of flags, wtf" unless captured_flag.is_a? Flag
         capture.flag = captured_flag
         capture.round = round
         capture.save
