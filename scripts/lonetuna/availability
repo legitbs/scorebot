@@ -20,11 +20,12 @@ def makefont( ):
 	for i in range(0, numglyphs):
 		for x in range(0, 21):
 			font += struct.pack('B', x)
+		font += '\x00'
 	font += '\x96\x96\x96'
 	for i in range(0, 0x5e):
 		font += struct.pack('B', random.randint(0, numglyphs-1))
 	print len(font)
-	print 'expexted: %d' % (7+(numglyphs*21)+0x5e)
+	print 'expexted: %d' % (7+(numglyphs*21)+0x5e + numglyphs)
 
 	return font	
 
@@ -43,13 +44,15 @@ if __name__== '__main__':
   sfd = data[11:data.find(' to view')]
   s.recv(1024)
   port = int(sfd)
-
+  print 'Going to port: %d'% port
   try:
     c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    c = c.connect( (sys.argv[1], port ) )
+    c.connect( (sys.argv[1], port ) )
   except socket.error, (value,message):
+    print 'random port connect failed'
     sys.exit(1)
 
+  print 'connected to %d' %port
   numfonts = random.randint( 1, 4 )
   for i in range(0, numfonts):
     s.send('2\n')
@@ -60,9 +63,11 @@ if __name__== '__main__':
     s.send('1\n')
     s.send(randstr(5) + '\n')
     s.recv(1024)
+    c.recv(1024)
 
   s.send('3\n')
   y = s.recv(1024)
   if y.startswith('Thank you') == False:
     sys.exit(1)
   s.close()
+  print 'Successful sla'

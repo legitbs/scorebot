@@ -28,8 +28,10 @@ $select->add($sock);
 my $timeout = 1;
 
 # List available books
-print readit();
-syswrite $sock, "1\n", 2; print $line;
+#print readit();
+readit();
+syswrite $sock, "1\n", 2; 
+#print $line;
 my $line = readit();
 #print $line;
 my @a = split(/\n/, $line);
@@ -45,7 +47,8 @@ my $rnd2 = int(rand(100));
 syswrite $sock, "3\n$rnd\n$rnd2\n", length("3\n$book\n$rnd2\n");
 
 # Make sure the review was accepted
-print readit();
+#print readit();
+readit();
 syswrite $sock, "2\n", 2;
 my $line = readit();
 if ($line =~ /$book/) {

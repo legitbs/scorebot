@@ -209,7 +209,7 @@ def sla_echo( ip_addr, port ):
 		rand_strings = (rand_string( random.randint( 5, 20 ) ) for x in range( random.randint( 2, 7 ) ))
 		
 		for x in rand_strings:	
-			time.sleep(0.2)
+			time.sleep(0.5)
 			
 			print "Sending %s\n" % x
 
@@ -248,7 +248,7 @@ def sla_sha256( ip_addr, port ):
 		rand_strings = (rand_allstring( random.randint( 5, 25 ) ) for x in range( random.randint( 3, 6 ) ))
 		
 		for x in rand_strings:	
-			time.sleep(.2)
+			time.sleep(.5)
 			
 			print "Sending %s\n" % x
 
@@ -284,7 +284,7 @@ def sla_rc4( ip_addr, port ):
 		rc4_state = rc4_init( key, 256 )
 	
 		for x in rand_strings:	
-			time.sleep(0.2)
+			time.sleep(0.5)
 			
 			print "Sending %s\n" % x
 			packed_size = struct.pack("i", long(len(x)))
@@ -316,16 +316,16 @@ def sla_rc4( ip_addr, port ):
 	exit(0)
 
 def sla_lzss( ip_addr, port ):
-	fileName = "test.out"
+	fileName = ip_addr
 	random.seed()
 	r = random.randint(1000,5000)
-	randfile = open("infile","w")
+	randfile = open(fileName + ".in","w")
 	for i in randbytes(r):
 		randfile.write(chr(i))
 	randfile.close()
-	subprocess.call(["./lzss", "e", "infile", "test.out"])
+	subprocess.call(["./lzss", "e", fileName + ".in", fileName + ".out"])
 
-	curFile = open("test.out","r")
+	curFile = open(fileName + ".out","r")
 	fileData = curFile.read()
 	curFile.close()
 
@@ -349,7 +349,7 @@ def sla_lzss( ip_addr, port ):
 
 		recv_string = recv_until(s, long(dataLen))
 
-		if (recv_string == open("infile","r").read()):
+		if (recv_string == open(fileName + ".in","r").read()):
 			print "Success!"
 			retval = 0 
 		else:

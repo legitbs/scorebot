@@ -23,6 +23,7 @@ srand(time());
 
 my $select = IO::Select->new();
 $select->add($sock);
+sleep 5;
 my $timeout = 0.3;
 
 # check the banner
