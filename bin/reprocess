@@ -1,0 +1,145 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+class Stale
+  attr_accessor :timestamp, :token, :capturing_team
+  def initialize(opts={})
+    self.timestamp = Time.parse opts[:timestamp]
+    self.token = Token.from_token_string opts[:token]
+    self.capturing_team = Team.find_by name: opts[:capturing_team]
+
+    self.class.collect self
+  end
+
+  def self.collect(stale)
+    @by_token ||= Hash.new{Hash.new}
+    new = @by_token[stale.token]
+    new[stale.capturing_team] = stale
+    @by_token[stale.token] = new
+  end
+
+  def self.by_token(token)
+    @by_token[token]
+  end
+
+  def instance
+    token.instance
+  end
+
+  def losing_team
+    instance.team
+  end
+
+  def old_redemptions
+    token.redemptions
+  end
+
+  def old_redeemers
+    old_redemptions.map(&:team)
+  end
+
+  def new_redemptions
+    old_redemptions + self.class.by_token(token).values
+  end
+
+  def first_blood?
+    old_redemptions.length == 0
+  end
+
+  def old_flags_per
+    return 0 if first_blood?
+    19 / old_redemptions.length
+  end
+
+  def old_floor_flags
+    return 0 if first_blood?
+    19 % old_redemptions.length
+  end
+
+  def new_flags_per
+    19 / new_redemptions.length
+  end
+
+  def new_floor_flags
+    19 % new_redemptions.length
+  end
+
+  def victim_loses
+    return 19 if first_blood?
+    0
+  end
+
+  def old_redeemers_lose
+    return 0 if first_blood?
+    old_flags_per - new_flags_per
+  end
+
+  def legitbs_loses
+    return 0 if new_floor_flags > old_floor_flags
+    old_floor_flags - new_floor_flags
+  end
+
+  def legitbs_gains
+    return 0 if old_floor_flags > new_floor_flags
+    new_floor_flags - old_floor_flags
+  end
+
+  def capturing_team_flatline?
+    capturing_team.flags.size < 100
+  end
+
+  def operation
+    @operation ||= {
+      victim: losing_team,
+      victim_loses: victim_loses,
+      old_redeemers: old_redeemers,
+      old_redeemers_lose: old_redeemers_lose,
+      legitbs_loses: legitbs_loses,
+      legitbs_gains: legitbs_gains,
+      capturing_team: capturing_team,
+      capturing_gains: new_flags_per
+    }
+  end
+
+  def operate
+    return if capturing_team_flatline?
+    pool = []
+    pool += operation[:victim].flags.limit(operation[:victim_loses])
+    pool += operation[:old_redeemers].map do |r| 
+      r.flags.limit(operation[:old_redeemers_lose])
+    end.flatten
+    pool += Team.legitbs.flags.limit(operation[:legitbs_loses])
+
+    needed_pool = operation[:capturing_gains]
+    wanted_pool = needed_pool + operation[:legitbs_gains]
+    victim_empty = operation[:victim].flags.size < operation[:victim_loses]
+    raise "needed #{needed_pool} had #{pool.length}" unless victim_empty || (pool.length >= needed_pool)
+
+    pool[0...operation[:capturing_gains]].each {|f| f.update_attributes team_id: capturing_team.id }
+    pool[operation[:capturing_gains]...-1].try(:each){|f| f.update_attributes team_id: Team.legitbs.id }
+
+    {
+      to_redeemer: pool[0...operation[:capturing_gains]],
+      to_legitbs: pool[operation[:capturing_gains]...-1]
+    }
+  end
+end
+
+stales = JSON.parse(File.read('tmp/reprocessed_redemptions.json'), symbolize_names: true).
+  map{|e| Stale.new e}
+
+puts "#{stales.length} stales"
+
+Team.legitbs.transaction do
+  stales.each do |s|
+    begin
+      s.operate
+    rescue => e
+      pp e
+      pp s
+      raise e
+    end
+  end
+end
+
