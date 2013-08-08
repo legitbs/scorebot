@@ -41,6 +41,7 @@ GEM
     celluloid (0.14.1)
       timers (>= 1.0.0)
     choice (0.1.6)
+    coderay (1.0.9)
     coffee-rails (4.0.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0.beta, < 5.0)
@@ -83,6 +84,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     metaclass (0.0.1)
+    method_source (0.8.2)
     mime-types (1.23)
     minitest (4.7.5)
     mocha (0.14.0)
@@ -97,6 +99,10 @@ GEM
       net-ssh (>= 2.6.5)
     pg (0.15.1)
     polyglot (0.3.3)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -137,6 +143,7 @@ GEM
     shoulda-context (1.1.4)
     shoulda-matchers (2.2.0)
       activesupport (>= 3.0.0)
+    slop (3.4.6)
     sprockets (2.10.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -178,6 +185,7 @@ DEPENDENCIES
   jquery-rails
   mocha
   pg
+  pry
   rails (~> 4.0.0)
   rails-erd
   rdiscount
