@@ -17,7 +17,7 @@ class Redemption < ActiveRecord::Base
       raise OldTokenError.new unless token.eligible?
 
       begin
-        candidate = create team: team, token: token
+        candidate = create team: team, token: token, round: round
       rescue ActiveRecord::RecordNotUnique => e
         raise DuplicateTokenError.new
       rescue => e
