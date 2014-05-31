@@ -1,5 +1,38 @@
+@include keyframes(clouds)
+  from 
+    background-position: 0px 0px
+  to
+    background-position: 2048px 0px
+
 .scene
-  @include perspective(500px)
-  @include perspective-origin(50% 50%)
   width: 960px
   margin: 0 auto
+  .layer
+    position: absolute
+    &.cloud
+      background-repeat: repeat-x
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+      z-index: -1
+      @include animation(clouds 55s linear infinite)
+      &#cloudbase
+        background-image: image-url('cloudbase.png')
+        @include transform(scaleX(1.05))
+      &#cloudhighlight
+        background-image: image-url('cloudhighlight.png')
+  #sun
+    background-repeat: none
+    bottom: -512px
+    width: 1024px
+    height: 1024px
+    margin: auto
+    background-image: image-url('setting-sun.png')
+  #casinos
+    background-repeat: none
+    bottom: 0px
+    width: 1024px
+    height: 256px
+    margin: auto
+    background-image: image-url('casinos.png')

@@ -1,17 +1,8 @@
 body.scoreboard
-  @include animation(stripe-conveyor 27s linear infinite)
   .banner
     display: none
 .scoreboard.scene
   .scoreboard-holder
-    @include perspective(1000px)
-    @include perspective-origin(50% 50%)
-    -webkit-animation-name: scoreboard-ooze
-    @include animation-name(scoreboard-ooze)
-    @include animation-duration(61s)
-    @include animation-direction(alternate)
-    @include animation-timing-function(ease) 
-    @include animation-iteration-count(infinite)
 
     table
       float: left

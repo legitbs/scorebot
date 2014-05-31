@@ -1,89 +1,21 @@
 @import 'bourbon'
 @import 'fonts'
 @import 'color'
+@import 'banner'
 @import 'scene'
 @import 'scoreboard'
 @import 'dashboard'
 @import 'howto'
 
-@include keyframes(stripe-conveyor)
-  from
-    background-position-x: 0px
-  to
-    background-position-x: 60px
-
-@include keyframes(linen-conveyor)
-  from
-    background-position-y: 0px
-  to
-    background-position-y: -1024px
-
-@include keyframes(scoreboard-ooze)
-  from
-    @include transform(rotateX(5deg))
-  to
-    @include transform(rotateX(-5deg))
-
 body
-  background: $pinku image-url('strawberry-linen.jpg') repeat top left
-  font-family: Ubuntu
-  .banner
-    width: 960px
-    background-color: $blue
-    color: white
-    padding: 4px
-    margin: -9px auto 10px
-    h1
-      margin: 0
-      float: left
-      font-size: 1em
-    p
-      margin: 0
-      margin-left: 1em
-      float: left
-    ul
-      list-style-type: none
-      margin: 0
-      margin-right: 1em
-      float: right
-      li
-        display: inline-block
-        color: $blue
-        background-color: white
-        margin: -4px
-        padding: 4px
-        margin-left: 0.5em
-        a:link, a:visited
-          display: inline-block
-          color: white
-          margin: -4px
-          padding: 4px
-          background-color: $blue
-          text-decoration: none
-          font-weight: bold
+  width: 100%
+  height: 100%
+  margin: 0
+  @include background(linear-gradient($dark_purple 0%, $purple 100%) fixed no-repeat)
+  background-size: cover
+  background-color: $brown
+  font-family: "Merriweather Sans"
+    
 
 br.clear
   clear: both
-
-.street.scene
-  height: 512px
-  position: fixed
-  bottom: 0
-  left: 0
-  right: 0
-  z-index: -1
-  .floor
-    background-image: image-url('stripes.png')
-    width: 100%
-    height: 100%
-    @include transform(rotateZ(90deg) rotateY(-75deg))
-      
-.scoreboard
-  .street.scene
-    .floor
-      @include animation(stripe-conveyor 2s linear infinite)
-
-#timers
-  text-align: right
-  .timer
-    font-family: "Ubuntu Mono"

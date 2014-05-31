@@ -1,14 +1,16 @@
 !!! 5
 %html
   %head
-    %title DEF CON CTF 2013
+    %title DEF CON CTF 2014
     = stylesheet_link_tag 'application'
     = yield :head
   %body{class: body_class}
     = render partial: 'shared/banner'
     = yield
-    .street.scene
-      = yield :scene
-      .floor
+    .scene
+      .layer#sun
+      .layer.cloud#cloudbase
+      .layer.cloud#cloudhighlight
+      .layer#casinos
 
     = javascript_include_tag 'application'
