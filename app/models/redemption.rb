@@ -15,6 +15,7 @@ class Redemption < ActiveRecord::Base
       token = Token.from_token_string token_str
       raise NoTokenError.new if token.blank?
       raise OldTokenError.new unless token.eligible?
+      raise SelfScoringError.new if team == token.instance.team
 
       begin
         candidate = create team: team, token: token, round: round
