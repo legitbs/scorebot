@@ -4,7 +4,10 @@ class TicketsController < ApplicationController
 
   # GET /tickets
   def index
-    @tickets = current_team.tickets.all
+    @tickets = ticket_scope.order(created_at: :desc)
+    if params[:scope] != 'all'
+      @tickets = @tickets.unresolved
+    end
   end
 
   # GET /tickets/1

@@ -8,8 +8,15 @@
   = @ticket.body
 %p
   %b Resolved at:
-  = @ticket.resolved_at
+  - if @ticket.resolved_at
+    = @ticket.resolved_at
+    (#{time_ago_in_words @ticket.resolved_at} ago)
+  - else
+    %em unresolved
 
-= link_to 'Edit', edit_ticket_path(@ticket)
-\|
-= link_to 'Back', tickets_path
+%nav
+  %ul
+    %li= link_to 'Edit', edit_ticket_path(@ticket)
+    - if is_legitbs?
+      %li= link_to 'Resolve', resolve_ticket_path(@ticket), method: :post
+    %li= link_to 'Back', tickets_path

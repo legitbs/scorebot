@@ -1,5 +1,12 @@
 %h1 Listing tickets
 
+%nav
+  %ul
+    %li= link_to 'New Ticket', new_ticket_path
+    - if params[:scope] != 'all'
+      %li= link_to 'Include resolved tickets', tickets_path(scope: 'all')
+    - else
+      %li= link_to 'Exclude resolved tickets', tickets_path
 %table
   %tr
     - if is_legitbs?
@@ -13,13 +20,16 @@
       - if is_legitbs?
         %td= ticket.team.name
       %td= ticket.body.truncate 20
-      %td= ticket.resolved_at or "unresolved"
       %td
-        = link_to 'Show', ticket
-        = link_to 'Edit', edit_ticket_path(ticket)
-        - if is_legitbs?
-          = link_to 'Resolve', resolve_ticket_path(ticket), method: :post
-
-%br
-
-= link_to 'New Ticket', new_ticket_path
+        - if ticket.resolved_at
+          = time_ago_in_words(ticket.resolved_at)
+          ago
+        - else
+          unresolved
+      %td
+        %nav
+          %ul
+            %li= link_to 'Show', ticket
+            %li= link_to 'Edit', edit_ticket_path(ticket)
+            - if is_legitbs?
+              %li= link_to 'Resolve', resolve_ticket_path(ticket), method: :post
