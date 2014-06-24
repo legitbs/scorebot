@@ -11,9 +11,13 @@ class ApplicationController < ActionController::Base
 
   def current_team
     unless Rails.env.production?
-      return Team.first
+      return Team.legitbs
     end
     
     @current_team ||= Team.find_by uuid: client_cn
+  end
+
+  def require_legitbs
+    raise ActionController::RoutingError.new('Not Found') unless current_team == Team.legitbs
   end
 end

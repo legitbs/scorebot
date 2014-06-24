@@ -3,6 +3,7 @@ class Team < ActiveRecord::Base
   has_many :flags
   has_many :captures, through: :redemptions
   has_many :instances
+  has_many :tickets
   before_create :set_uuid
 
   def as_ca_json

@@ -1,9 +1,10 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
+  before_filter :require_legitbs, except: %i{ new create }
 
   # GET /tickets
   def index
-    @tickets = Ticket.all
+    @tickets = current_team.tickets.all
   end
 
   # GET /tickets/1
@@ -12,7 +13,7 @@ class TicketsController < ApplicationController
 
   # GET /tickets/new
   def new
-    @ticket = Ticket.new
+    @ticket = current_team.tickets.new
   end
 
   # GET /tickets/1/edit
@@ -21,7 +22,7 @@ class TicketsController < ApplicationController
 
   # POST /tickets
   def create
-    @ticket = Ticket.new(ticket_params)
+    @ticket = current_team.tickets.new(ticket_params)
 
     if @ticket.save
       redirect_to @ticket, notice: 'Ticket was successfully created.'
@@ -48,11 +49,11 @@ class TicketsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_ticket
-      @ticket = Ticket.find(params[:id])
+      @ticket = current_team.tickets.find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def ticket_params
-      params.require(:ticket).permit(:team_id, :body, :resolved_at)
+      params.require(:ticket).permit(:body)
     end
 end

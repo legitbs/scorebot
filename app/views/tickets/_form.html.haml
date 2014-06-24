@@ -7,13 +7,7 @@
           %li= msg
 
   .field
-    = f.label :team
-    = f.text_field :team
-  .field
     = f.label :body
     = f.text_area :body
-  .field
-    = f.label :resolved_at
-    = f.datetime_select :resolved_at
   .actions
     = f.submit 'Save'
