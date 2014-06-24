@@ -1,29 +1,61 @@
-.howto.scene
-  .howto
-    :markdown
-      # How to Play
+.howto
+  :markdown
+    # How to Play
 
-      Hack services, retrieve tokens. Redeem tokens for flags.
+    Hack services, retrieve tokens. Redeem tokens for flags.
 
-      Token redemption is done via a signed HTTPS POST request to
-      [#{redemption_path}](#{redemption_path}).
+    Token redemption is done via a signed HTTPS POST request to
+    "#{redemption_url}" . You can submit as many tokens
+    per request as you want.
 
-          curl \
-            -F "tokens[]=TOKEN_GOES_HERE" \
-            -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
-            --cacert ca.crt \
-            -E #{current_team.certname}.crt \
-            --key #{current_team.certname}.key \
-            #{redemption_url}
+        curl \
+          -F "tokens[]=TOKEN_GOES_HERE" \
+          -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
+          -F "tokens[]=RocyGt0kXt8z0dVM2nKqQUc4qb" \
+          -F "tokens[]=gYAMrepyqzITctw5sVOxAqXWfH" \
+          --cacert ca.crt \
+          -E #{current_team.certname}.crt \
+          --key #{current_team.certname}.key \
+          #{redemption_url}
 
-      The response body is a JSON object describing what happened with each
-      token:
+    The response body is a JSON hash of how each token was processed:
 
-          {
-            "valid token": "442f3a75-fd29-4f58-a22a-30032c47bf9b",
-            "invalid token": "error: Token doesn't exist",
-            "the same valid token": "error: Already redeemed that token",
-            "old valid token": "error: Token too old",
-            "call legitbs if you see": 
-              "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147" 
-          }
+        {
+          "RocyGt0kXt8z0dVM2nKqQUc4qb": "442f3a75-fd29-4f58-a22a-30032c47bf9b",
+          "gYAMrepyqzITctw5sVOxAqXWfH": "error: Token doesn't exist",
+          "55Lw0715kKspPThe0TameKPYel": "error: Already redeemed that token",
+          "goIbfzcFaUN0gr4luo2C7DcLhQ": "error: Token too old",
+          "RJohZ3XESG3oOhRUGGQjgUIeN1": "error: Can't redeem your own tokens",
+          "6ABiZBfN4vURgUGakmjnsnpT9r": 
+            "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147" 
+        }
+
+    Here's what the messages mean:
+
+        "RocyGt0kXt8z0dVM2nKqQUc4qb": "442f3a75-fd29-4f58-a22a-30032c47bf9b"
+
+    The token was redeemed successfully. The uuid given can be looked up in
+    the "redemptions" table after the game.
+
+        "gYAMrepyqzITctw5sVOxAqXWfH": "error: Token doesn't exist"
+
+    The scoring system can't find that token. Sorry!
+
+        "55Lw0715kKspPThe0TameKPYel": "error: Already redeemed that token"
+
+    Your team has already redeemed that token. You don't need to submit it 
+    again.
+
+         "goIbfzcFaUN0gr4luo2C7DcLhQ": "error: Token too old"
+
+    This token has expired. Go faster next time.
+
+         "RJohZ3XESG3oOhRUGGQjgUIeN1": "error: Can't redeem your own tokens"
+
+    You can't score on yourself.
+
+         "6ABiZBfN4vURgUGakmjnsnpT9r": 
+            "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147"
+
+    Please write down the uuid and the token, and bring it to us! This is our 
+    fault, not yours.

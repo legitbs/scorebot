@@ -5,10 +5,14 @@
     background-position: 2048px 0px
 
 .scene
-  width: 960px
   margin: 0 auto
+  position: fixed
+  height: 100%
+  width: 100%
+  z-index: -1
   .layer
     position: absolute
+    z-index: -1
     &.cloud
       background-repeat: repeat-x
       left: 0
@@ -36,3 +40,8 @@
     height: 256px
     margin: auto
     background-image: image-url('casinos.png')
+
+.content
+  width: 960px
+  margin: 0 auto
+  z-index: 1

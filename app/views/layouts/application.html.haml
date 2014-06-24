@@ -5,12 +5,13 @@
     = stylesheet_link_tag 'application'
     = yield :head
   %body{class: body_class}
-    = render partial: 'shared/banner'
-    = yield
     .scene
       .layer#sun
       .layer.cloud#cloudbase
       .layer.cloud#cloudhighlight
       .layer#casinos
+    = render partial: 'shared/banner'
+    .content
+      = yield
 
     = javascript_include_tag 'application'
