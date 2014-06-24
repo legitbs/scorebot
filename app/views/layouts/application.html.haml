@@ -4,6 +4,7 @@
     %title DEF CON CTF 2014
     = stylesheet_link_tag 'application'
     = yield :head
+    = csrf_meta_tag
   %body{class: body_class}
     .scene
       .layer#sun

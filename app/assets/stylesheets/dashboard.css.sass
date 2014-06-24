@@ -1,26 +1,27 @@
 .dashboard.scene
-  .parcel
-    margin: 0
-    padding: 0
-    &.left
-      @include transform(rotateY(5deg))
-      width: 540px
-      float: left
-    &.right
-      @include transform(rotateY(-5deg))
-      width: 400px
-      float: right
-      h1
-        text-align: right
   @mixin panel
-    background-color: $parchment
+    background-color: $dark_purple
+    color: white
     padding: 8px
     margin: 8px
     h1
       margin-top: 0
       font-size: 1.2em
+  .parcel
+    margin: 0
+    padding: 0
+    div
+      @include panel
+    &.left
+      width: 540px
+      float: left
+    &.right
+      width: 400px
+      float: right
+      h1
+        text-align: right
+
   #messages
-    @include panel
     ul.messages
       height: 120px
       overflow: scroll
@@ -36,7 +37,6 @@
         p
           margin: 0
   #redeem
-    @include panel
     form
       input[type='text']
         width: 400px
@@ -46,7 +46,6 @@
       background-color: white
       border: 1px solid grey
   #timers
-    @include panel
     #actual_timers
       $width: 360px
       width: $width
@@ -55,8 +54,6 @@
         display: inline-block
         text-align: center
   .status
-    @include panel
-    margin-bottom: 60px
     table
       th,td
         text-align: center
@@ -65,14 +62,8 @@
       td.ok
         background-color: $green
         color: black
-      td.safe
-        background-color: $blue
-        color: white
       td.down
         background-color: $salmon
-      td.owned
-        background-color: red
-        color: white
       tbody th
         border-top: 1px black
         background-color: $pinku

@@ -2,21 +2,23 @@
 
 %table
   %tr
-    %th Team
+    - if is_legitbs?
+      %th Team
     %th Body
     %th Resolved at
-    %th
-    %th
-    %th
+    %th fun activities
 
   - @tickets.each do |ticket|
     %tr
-      %td= ticket.team
-      %td= ticket.body
-      %td= ticket.resolved_at
-      %td= link_to 'Show', ticket
-      %td= link_to 'Edit', edit_ticket_path(ticket)
-      %td= link_to 'Destroy', ticket, :method => :delete, :data => { :confirm => 'Are you sure?' }
+      - if is_legitbs?
+        %td= ticket.team.name
+      %td= ticket.body.truncate 20
+      %td= ticket.resolved_at or "unresolved"
+      %td
+        = link_to 'Show', ticket
+        = link_to 'Edit', edit_ticket_path(ticket)
+        - if is_legitbs?
+          = link_to 'Resolve', resolve_ticket_path(ticket), method: :post
 
 %br
 

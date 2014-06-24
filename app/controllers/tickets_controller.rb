@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
-  before_filter :require_legitbs, except: %i{ new create }
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :resolve]
+  before_filter :require_legitbs, only: %i{ resolve }
 
   # GET /tickets
   def index
@@ -40,18 +40,25 @@ class TicketsController < ApplicationController
     end
   end
 
-  # DELETE /tickets/1
-  def destroy
-    @ticket.destroy
-    redirect_to tickets_url, notice: 'Ticket was successfully destroyed.'
+  def resolve
+    @ticket.resolve!
+    redirect_to tickets_path
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_ticket
-      @ticket = current_team.tickets.find(params[:id])
+      @ticket = ticket_scope.find(params[:id])
     end
 
+    def ticket_scope
+      if is_legitbs?
+        Ticket
+      else
+        current_team.tickets
+      end
+    end
+    
     # Only allow a trusted parameter "white list" through.
     def ticket_params
       params.require(:ticket).permit(:body)

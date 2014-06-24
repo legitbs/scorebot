@@ -1,5 +1,9 @@
 Scorebot::Application.routes.draw do
-  resources :tickets
+  resources :tickets do
+    member do
+      post :resolve
+    end
+  end
 
   get "scoreboard", to: 'scoreboard#index', as: 'scoreboard'
   get "dashboard", to: 'dashboard#index', as: 'dashboard'

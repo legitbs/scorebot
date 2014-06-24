@@ -20,6 +20,17 @@
                   %td.down DOWN
 
   .parcel.left
+    #tickets
+      %h1 Tickets
+      %nav
+        %ul
+          %li= link_to 'List my tickets', tickets_path
+      = form_for current_team.tickets.new do |f|
+        %p
+          = f.label :body
+          = f.text_area :body
+        %p
+          = f.submit 'Submit ticket'
     #messages{'data-path'=> messages_path, 'data-interval' => 15_000}
       %h1 Messages
       %ul.messages
