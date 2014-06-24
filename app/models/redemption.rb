@@ -60,6 +60,12 @@ class Redemption < ActiveRecord::Base
     end
   end
 
+  class SelfScoringError < ArgumentError
+    def initialize
+      super "Can't redeem your own tokens"
+    end
+  end
+
   private
   def set_uuid
     self.uuid = SecureRandom.uuid
