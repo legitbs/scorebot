@@ -28,6 +28,7 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     arel (5.0.1.20140414130214)
+    base62 (1.0.0)
     bcrypt-ruby (3.0.1)
     bourbon (3.2.3)
       sass (~> 3.2)
@@ -172,6 +173,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  base62
   bcrypt-ruby (~> 3.0.0)
   bourbon
   capistrano

@@ -112,8 +112,11 @@ class Token < ActiveRecord::Base
   end
 
   def random_dingus
-    extender = 36 ** 25
-    random = SecureRandom.random_number(36**24)
-    (extender + random).to_s(36)
+    radix = 62
+    max_len = 13
+    extender = radix ** (max_len - 1)
+    range = (radix ** max_len) - extender
+    random = SecureRandom.random_number(range)
+    (extender + random).base62_encode
   end
 end
