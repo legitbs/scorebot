@@ -1,10 +1,12 @@
 body
   .banner
     width: 960px
-    background-color: $purple
+    background-color: $dark_purple
+    border: 1px solid $light_purple
     color: white
     padding: 4px
-    margin: 0px auto 10px
+    margin: -1px auto 10px
+    @include exo
     h1
       margin: 0
       float: left
@@ -20,16 +22,17 @@ body
       float: right
       li
         display: inline-block
-        color: $blue
-        background-color: white
+        color: $dark_purple
+        background-color: $light_purple
         margin: -4px
         padding: 4px
         margin-left: 0.5em
+        font-weight: bold
         a:link, a:visited
           display: inline-block
           color: white
           margin: -4px
           padding: 4px
-          background-color: $purple
+          background-color: $dark_purple
           text-decoration: none
-          font-weight: bold
+          font-weight: 100
