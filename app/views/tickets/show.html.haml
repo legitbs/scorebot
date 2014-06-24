@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Team:
+  = @ticket.team
+%p
+  %b Body:
+  = @ticket.body
+%p
+  %b Resolved at:
+  = @ticket.resolved_at
+
+= link_to 'Edit', edit_ticket_path(@ticket)
+\|
+= link_to 'Back', tickets_path
