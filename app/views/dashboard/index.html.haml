@@ -21,35 +21,25 @@
 
   .parcel.left
     #tickets
-      %h1 Tickets
+      %h1 Trouble Tickets
       %nav
         %ul
           %li= link_to 'List my tickets', tickets_path
       = form_for current_team.tickets.new do |f|
         %p
-          = f.label :body
-          = f.text_area :body
+          = f.text_area :body, placeholder: "Problems? Securely send a message to Legitimate Business Syndicate. Definitely paste any tokens or UUIDs from redemptions."
         %p
           = f.submit 'Submit ticket'
-    #messages{'data-path'=> messages_path, 'data-interval' => 15_000}
-      %h1 Messages
-      %ul.messages
-        {{#messages}}
-        %li
-          %span.when {{when}}
-          %span.who {{who}}
-          %p.what {{what}}
-        {{/messages}}
     #redeem
       %h1 Redeem
       %p
         You really should automate this.
         = link_to 'Read the "How to Play" screen.', howto_path
-      = form_tag redemption_path, method: :post, target: 'redeem_target' do
+      = form_tag redemption_path, method: :post, target: 'redeem_target', id: 'redemption_form' do
         - 2.times do
           %p
             = text_field_tag 'tokens[]', '', placeholder: 'token'
         %p
           = text_field_tag 'tokens[]', '', placeholder: 'token'
           = submit_tag 'punch it'
-      %iframe{id: 'redeem_target', name: 'redeem_target'}
+      %iframe{id: 'redeem_target', name: 'redeem_target', style: 'display: none'}
