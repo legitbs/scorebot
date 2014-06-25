@@ -1,5 +1,7 @@
 @mixin exo
   font-family: "Exo 2.0", Exo, sans-serif
+@mixin mono
+  font-family: 'Ubuntu Mono', monospace
 @mixin prose-mode
   width: 900px
   background-color: $content_background
@@ -18,9 +20,9 @@
   font-size: 16px
   @include exo
 @mixin console
+  @include mono
   background-color: black
   border: 1px solid $content_highlight
   padding: 1em
   width: 40em
-  font-family: 'Ubuntu Mono', monospace
   color: $content_highlight

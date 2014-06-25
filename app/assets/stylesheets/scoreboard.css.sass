@@ -42,9 +42,9 @@ body.scoreboard
               float: left
 
   #timers
-    position: absolute
-    top: 4px
-    right: 4px
+    position: fixed
+    top: 2em
+    right: 2em
     z-index: 10
     background-color: $dark_purple
     text-align: center
@@ -58,6 +58,9 @@ body.scoreboard
       color: black
     .timer
       padding: 2px
+      background-color: $dark_purple
+      color: $light_purple
+      @include mono
 
 @media screen and (min-width: 1400px)
   .scoreboard.scene
