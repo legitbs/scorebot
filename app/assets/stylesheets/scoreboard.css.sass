@@ -5,13 +5,14 @@ body.scoreboard
   .scoreboard-holder
 
     table
+      $alpha_adjustment: -.15
       float: left
-      background-color: $dark_purple
       margin-top: 1em
+      background-color: adjust-color($dark_purple, $alpha: $alpha_adjustment)
+      tbody tr:nth-child(odd)
+        background-color: adjust-color(black, $alpha: $alpha_adjustment)
       td, th
         text-align: right
-      tbody tr:nth-child(odd)
-        background-color: black
       th
         text-align: left
         color: $light_purple
