@@ -22,14 +22,13 @@
   .parcel.left
     #tickets
       %h1 Trouble Tickets
-      %nav
-        %ul
-          %li= link_to 'List my tickets', tickets_path
       = form_for current_team.tickets.new do |f|
         %p
           = f.text_area :body, placeholder: "Problems? Securely send a message to Legitimate Business Syndicate. Definitely paste any tokens or UUIDs from redemptions."
-        %p
-          = f.submit 'Submit ticket'
+        %nav
+          %ul
+            %li= f.submit 'Submit ticket'
+            %li= link_to 'List my tickets', tickets_path
     #redeem
       %h1 Redeem
       %p
