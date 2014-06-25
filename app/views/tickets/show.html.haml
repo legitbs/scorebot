@@ -3,9 +3,8 @@
 %p
   %b Team:
   = @ticket.team.name
-%p
-  %b Body:
-  = @ticket.body
+.ticket-body
+  = simple_format @ticket.body
 %p
   %b Resolved at:
   - if @ticket.resolved_at
