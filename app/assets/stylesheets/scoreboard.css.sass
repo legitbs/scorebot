@@ -6,64 +6,56 @@ body.scoreboard
 
     table
       float: left
-      background-color: $parchment
+      background-color: $dark_purple
+      margin-top: 1em
       td, th
         text-align: right
       tbody tr:nth-child(odd)
-        background-color: darken($parchment, 5%)
-      &.names
-        @include transform(rotateY(14deg))
-        margin-right: 10px
-        th
-          padding: 3px
-      &.scores
-        @include transform(rotateY(-7deg) translateZ(20px))
-        th
-          text-align: left
-          div
-            text-align: right
+        background-color: black
+      th
+        text-align: left
+        color: $light_purple
+      tbody th
+        text-align: right
+        width: 16em
+        font-size: 0.8em
+      td
+        text-align: right
+        &.flags
+          width: 700px
+          .points
+            z-index: 1
+            position: relative
+            background-color: $light_purple
             width: 4em
-        td
-          text-align: right
-          &.flags
-            width: 700px
-        .points
-          z-index: 1
-          position: relative
-          background-color: $pinku
-          width: 4em
-          color: white
-          padding: 2px
-          font-weight: bold
-          &.right
-            float: right
-          &.left
-            float: left
-        .bar
-          z-index: 0
-          position: relative
-          background-color: $pinku
-          padding: 2px
-          &.left
-            float: left
-          &.right
-            float: right
+            color: black
+            padding: 2px
+            font-weight: bold
+            &.left
+              float: left
+          .bar
+            z-index: 0
+            position: relative
+            background-color: $light_purple
+            padding: 2px
+            &.left
+              float: left
 
   #timers
     position: absolute
     top: 4px
     right: 4px
     z-index: 10
-    background-color: $parchment
+    background-color: $dark_purple
     text-align: center
-    border: 5px solid $pinku
+    border: 5px solid $light_purple
     border-radius: 5px
     box-shadow: 0px 4px 16px 2px black 
     h1
       display: none
     .desc
-      background-color: $pinku
-      color: white
+      background-color: $light_purple
+      color: black
     .timer
       padding: 2px
 

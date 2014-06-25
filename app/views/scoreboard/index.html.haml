@@ -7,19 +7,13 @@
       %thead
         %tr
           %th team
+          %th flags
       %tbody
         - @teams.each do |t|
           %tr
             %th= t[:name]
-    %table.scores
-      %thead
-        %tr
-          %th 
-            %div flags
-      %tbody
-        - @teams.each do |t|
-          %tr
             %td.flags
               .points.left= t[:score]
-              .bar.left{style: "width: #{t[:score].to_i * 0.01}px"} &nbsp;
+              .bar.left{style: "width: #{t[:score].to_i * 0.02}px"} &nbsp;
               %br.clear
+            
