@@ -4,6 +4,7 @@ class RedemptionController < ApplicationController
   def create
     tokens = params[:tokens] || []
     redemptions = tokens.inject({}) do |m, t|
+      next m if t.blank?
       r = begin 
             Redemption.redeem_for(current_team, t).uuid
           rescue => e
