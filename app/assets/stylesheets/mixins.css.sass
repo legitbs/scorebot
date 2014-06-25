@@ -8,3 +8,19 @@
   margin: 8px auto 80px
   padding: 1em
   font-size: 1.1em
+@mixin button
+  border: 1px solid $light_purple
+  color: $light_purple
+  border-radius: 4px
+  padding: 0.5em
+  background-color: $dark_purple
+  text-decoration: none
+  font-size: 16px
+  @include exo
+@mixin console
+  background-color: black
+  border: 1px solid $content_highlight
+  padding: 1em
+  width: 40em
+  font-family: 'Ubuntu Mono', monospace
+  color: $content_highlight

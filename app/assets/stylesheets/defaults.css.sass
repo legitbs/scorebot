@@ -1,3 +1,14 @@
 h1
   @include exo
   font-weight: 100
+
+input[type='text'], textarea
+  color: $light_purple
+  background-color: black
+  padding: 0.5em
+  border: 1px solid $light_purple
+  font-family: "Ubuntu Mono"
+  font-size: 18px
+
+input[type='submit']
+  @include button
