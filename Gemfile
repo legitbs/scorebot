@@ -5,6 +5,7 @@ gem 'rails', '~> 4.1.1'
 
 gem 'pry-rails'
 gem 'base62'
+gem 'pngqr'
 
 # Use postgresql as the database for Active Record
 gem 'pg'
