@@ -61,15 +61,20 @@ class Round < ActiveRecord::Base
   end
 
   def store_signature
-    self.payload = Team.for_scoreboard.to_json
-    self.signature = OpenSSL::HMAC.hexdigest(
-                                             OpenSSL::Digest::SHA1.new,
-                                             self.nonce,
-                                             self.payload.to_json
-                                             )
+    payload = Team.for_scoreboard.to_json
+    signature = OpenSSL::HMAC.hexdigest(
+                                        OpenSSL::Digest::SHA1.new,
+                                        self.nonce,
+                                        payload
+                                        )
+    update_attributes payload: payload, signature: signature
   end
 
   def qr_signature
-    "legitbs-2014-round-#{id}-#{signature}"
+    "legitbs-2014-round-#{id}-#{self.signature}"
+  end
+
+  def qr
+    Pngqr.encode qr_signature, scale: 9
   end
 end
