@@ -5,6 +5,8 @@ class Round < ActiveRecord::Base
 
   ROUND_LENGTH = 5.minutes
 
+  before_create :add_nonce
+
   def self.current
     where('ended_at is null', Time.now).order('created_at desc').first
   end
@@ -51,5 +53,9 @@ class Round < ActiveRecord::Base
     end
 
     Flag.reallocate self
+  end
+
+  def add_nonce
+    self.nonce = SecureRandom.uuid
   end
 end
