@@ -11,6 +11,9 @@ class RoundsController < ApplicationController
 
   private
   def round
+    if params[:id] == 'latest'
+      return @round ||= Round.where.not(signature: nil).first
+    end
     @round ||= Round.find_by id: params[:id]
   end
 end
