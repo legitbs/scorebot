@@ -78,7 +78,7 @@ class Token < ActiveRecord::Base
     capture_count = redemptions.length
     return if capture_count == 0
 
-    flags_to_distribute = instance.team.flags.limit 19
+    flags_to_distribute = instance.team.flags.limit(19).to_a
 
     each_team_gets = flags_to_distribute.length / capture_count
     floor_flags = flags_to_distribute.length % capture_count

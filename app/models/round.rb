@@ -53,9 +53,23 @@ class Round < ActiveRecord::Base
     end
 
     Flag.reallocate self
+    store_signature
   end
 
   def add_nonce
     self.nonce = SecureRandom.uuid
+  end
+
+  def store_signature
+    self.payload = Team.for_scoreboard.to_json
+    self.signature = OpenSSL::HMAC.hexdigest(
+                                             OpenSSL::Digest::SHA1.new,
+                                             self.nonce,
+                                             self.payload.to_json
+                                             )
+  end
+
+  def qr_signature
+    "legitbs-2014-round-#{id}-#{signature}"
   end
 end
