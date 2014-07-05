@@ -5,4 +5,8 @@ class Ticket < ActiveRecord::Base
   def resolve!
     update_attribute :resolved_at, Time.now
   end
+
+  def unresolve!
+    update_attribute :resolved_at, nil
+  end
 end

@@ -2,6 +2,7 @@ Scorebot::Application.routes.draw do
   resources :tickets do
     member do
       post :resolve
+      post :unresolve
     end
   end
 

@@ -34,5 +34,7 @@
             %ul
               %li= link_to 'Show', ticket
               %li= link_to 'Edit', edit_ticket_path(ticket)
-              - if is_legitbs?
+              - if is_legitbs? && !ticket.resolved_at
                 %li= link_to 'Resolve', resolve_ticket_path(ticket), method: :post
+              - if ticket.resolved_at
+                %li= link_to 'Unresolve', unresolve_ticket_path(ticket), method: :post
