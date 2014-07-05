@@ -4,9 +4,15 @@ class TicketsController < ApplicationController
 
   # GET /tickets
   def index
+    @title = "All Tickets"
     @tickets = ticket_scope.order(created_at: :desc)
     if params[:scope] != 'all'
+      @title = 'Unresolved Tickets'
       @tickets = @tickets.unresolved
+    end
+
+    if is_legitbs?
+      @title += " from Everyone"
     end
   end
 
