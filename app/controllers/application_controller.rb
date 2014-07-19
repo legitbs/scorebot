@@ -6,11 +6,11 @@ class ApplicationController < ActionController::Base
   helper_method :current_team, :is_legitbs?
 
   def client_cn
-    request.env['HTTP_CLIENT_CN']
+    request.env['HTTP_X_SSL_SUBJECT_CN']
   end
 
   def current_team
-    unless Rails.env.production?
+    if Rails.env.development?
       return Team.legitbs
     end
     
