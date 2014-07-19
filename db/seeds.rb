@@ -33,18 +33,13 @@ Team.find_or_create_by(id: 21,
                        address: "10.5.22.2"
                        )
 
-Service.find_or_create_by name: 'atmail', enabled: true
-Service.find_or_create_by name: 'bookworm', enabled: true
-# Service.find_or_create_by name: 'trouver'
-Service.find_or_create_by name: 'lonetuna', enabled: true
-# Service.find_or_create_by name: 'redmoose'
-# Service.find_or_create_by name: 'coldfinger'
-# Service.find_or_create_by name: 'avoir'
-# Service.find_or_create_by name: 'bookworm'
-# Service.find_or_create_by name: 'hopper'
-# Service.find_or_create_by name: 'nginsh'
-# Service.find_or_create_by name: 'where in the world is edward'
-# Service.find_or_create_by name: 'The Symz'
+Service.find_or_create_by(name: 'eliza')
+Service.find_or_create_by(name: 'wdub')
+Service.find_or_create_by(name: 'malvo')
+Service.find_or_create_by(name: 'badge')
+Service.find_or_create_by(name: 'justify')
+Service.find_or_create_by(name: 'imap')
+Service.find_or_create_by(name: 'hellnet')
 
 Team.find_each do |t|
   Service.find_each do |s|
@@ -53,29 +48,46 @@ Team.find_each do |t|
 end
 
 Timer.find_or_create_by(name: 'game').
-  update_attributes(ending: (Time.zone.parse('2-aug-2013 8pm pdt') + 14.hours))
+  update_attributes(ending: (Time.zone.parse('8-aug-2014 8pm pdt') + 14.hours))
 Timer.find_or_create_by name: 'round'
 Timer.
   find_or_create_by(name: 'friday').
-  update_attributes(ending: Time.zone.parse('2-aug-2013 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('8-aug-2014 8pm pdt'))
 Timer.
   find_or_create_by(name: 'saturday').
-  update_attributes(ending: Time.zone.parse('3-aug-2013 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('9-aug-2014 8pm pdt'))
 Timer.
   find_or_create_by(name: 'sunday').
-  update_attributes(ending: Time.zone.parse('4-aug-2013 2pm pdt'))
+  update_attributes(ending: Time.zone.parse('10-aug-2014 2pm pdt'))
+
+Flag.delete_all
 
 Flag.transaction do
   teams = Team.without_legitbs.to_a
-  n = Flag::TOTAL_FLAGS - Flag.count
-  (Flag::TOTAL_FLAGS - Flag.count).times do
-    n -= 1
-    Scorebot.log n if n % 100 == 0
-    t = teams.shift
-    Flag.create team: t
-    teams.push t
+  services = Service.all
+
+  tranche_count = teams.count * services.count
+  tranche_size = Flag::TOTAL_FLAGS / (tranche_count)
+  tranche_remainder = Flag::TOTAL_FLAGS % (tranche_count)
+
+  unless tranche_remainder == 0
+    puts "#{teams.count} teams * #{services.count} services = #{tranche_count} tranches"
+    puts "#{Flag::TOTAL_FLAGS} / #{tranche_count} = #{Flag::TOTAL_FLAGS.to_f / tranche_count.to_f}"
+    puts "add #{tranche_size - tranche_remainder} or remove #{tranche_remainder}"
+    raise "had flags left over when planning allocation"
+  end
+
+  puts "#{services.count} services, #{teams.count} teams, #{tranche_size} flags per"
+
+  teams.each do |t|
+    print "flags for #{t.name}: "
+    services.each do |s|
+      tranche_size.times do
+        Flag.create team: t, service: s
+      end
+      print '.'
+    end
+
+    puts
   end
 end
-
-Message.
-  find_or_create_by(body: "Welcome to DEF CON CTF 2013.")
