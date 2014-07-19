@@ -75,36 +75,6 @@ class Token < ActiveRecord::Base
     Scorebot.log memo
   end
 
-  def process_redemptions(round)
-    capture_count = redemptions.length
-    return if capture_count == 0
-
-    flags_to_distribute = instance.team.flags.limit(19).to_a
-
-    each_team_gets = flags_to_distribute.length / capture_count
-    floor_flags = flags_to_distribute.length % capture_count
-
-
-    floor_flags.times do 
-      flag = flags_to_distribute.pop
-      flag.team = Team.legitbs
-      flag.save
-    end
-
-    redemptions.each do |r|
-      Scorebot.log "Giving #{each_team_gets} flags from #{r.token.instance.team.name} #{r.token.instance.service.name} to #{r.team.name}"
-      each_team_gets.times do |g|
-        capture = r.captures.build
-        captured_flag = flags_to_distribute.pop
-        capture.flag = captured_flag
-        capture.round = round
-        capture.save
-      end
-    end
-
-    raise "didn't distribute enough flags, wtf" unless flags_to_distribute.empty?
-  end
-
   private
   def set_keys
     self.key = random_dingus
