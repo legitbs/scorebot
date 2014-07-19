@@ -8,7 +8,7 @@ class RedemptionController < ApplicationController
       r = begin 
             Redemption.redeem_for(current_team, t).uuid
           rescue => e
-            Scorebot.log "Redeem #{t} failed for #{current_team.name}: #{e.message}"
+            Scorebot.log "Redeem #{t} failed for #{current_team.try(:name)}: #{e.message}"
             "error: #{e.message}"
           end
       m[t] = r
