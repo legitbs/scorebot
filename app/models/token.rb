@@ -62,6 +62,7 @@ class Token < ActiveRecord::Base
 
       self.status = shell.status
       self.memo = shell.output
+
     rescue => e
       Scorebot.log "serious deposit issue :( #{e.inspect}"
       self.status = -420
