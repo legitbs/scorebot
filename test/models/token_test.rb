@@ -29,6 +29,11 @@ class TokenTest < ActiveSupport::TestCase
     end
   end
 
+  context 'token deposition' do
+    should 'run a per-service deposit script'
+    should 'allow deposit scripts to substitute tokens'
+  end
+
   should "not be eligible after #{Token::EXPIRATION} rounds" do
     token = FactoryGirl.create :token
     assert token.eligible?

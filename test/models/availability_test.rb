@@ -37,4 +37,6 @@ class AvailabilityTest < ActiveSupport::TestCase
 
     assert @flags.all?{|f| f.reload.team != @instance.team}
   end
+
+  should 'log flag distribution'
 end

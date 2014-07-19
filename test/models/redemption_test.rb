@@ -6,14 +6,6 @@ class RedemptionTest < ActiveSupport::TestCase
   should have_many :captures
   should have_many(:flags).through(:captures)
 
-  should "resist redeeming the token more than once per team" do
-    redemption = FactoryGirl.create :redemption
-
-    assert_uniqueness_constraint do
-      redemption2 = Redemption.create redemption.attributes
-    end
-  end
-
   should "redeem for a team" do
     team = FactoryGirl.create :team
     token = FactoryGirl.create :token
@@ -24,18 +16,31 @@ class RedemptionTest < ActiveSupport::TestCase
     assert_empty r.errors
   end
 
-  should "refuse to redeem after token expiration" do
-    team = FactoryGirl.create :team
-    token = FactoryGirl.create :token
-    assert token.eligible?
+  context 'error cases' do
     
-    Token::EXPIRATION.times do
-      FactoryGirl.create :round
-      assert_nothing_raised { Redemption.redeem_for team, token.to_token_string }
-      token.redemptions.destroy_all
+    should "resist redeeming the token more than once per team" do
+      redemption = FactoryGirl.create :redemption
+
+      assert_uniqueness_constraint do
+        redemption2 = Redemption.create redemption.attributes
+      end
     end
-    
-    FactoryGirl.create :round
-    assert_raises(Redemption::OldTokenError) { Redemption.redeem_for team, token.to_token_string }
+
+    should "refuse to redeem after token expiration" do
+      team = FactoryGirl.create :team
+      token = FactoryGirl.create :token
+      assert token.eligible?
+      
+      Token::EXPIRATION.times do
+        FactoryGirl.create :round
+        assert_nothing_raised { Redemption.redeem_for team, token.to_token_string }
+        token.redemptions.destroy_all
+      end
+      
+      FactoryGirl.create :round
+      assert_raises(Redemption::OldTokenError) { Redemption.redeem_for team, token.to_token_string }
+    end
+
+    should 'refuse to redeem for the token-owning team'
   end
 end
