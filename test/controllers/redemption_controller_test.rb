@@ -5,12 +5,12 @@ class RedemptionControllerTest < ActionController::TestCase
     setup do
       @round = FactoryGirl.create :round
       @current_team = FactoryGirl.create :team
+      @request.headers['HTTP_X_SSL_SUBJECT_CN'] = @current_team.uuid
     end
 
     should 'return json on an empty token set' do
       @token = FactoryGirl.create :token
 
-      @request.headers['HTTP_X_SSL_SUBJECT_CN'] = @current_team.uuid
       post :create, tokens: []
 
       assert_response :success
@@ -21,7 +21,6 @@ class RedemptionControllerTest < ActionController::TestCase
       @token = FactoryGirl.create :token
       @ts = @token.to_token_string
 
-      @request.headers['HTTP_X_SSL_SUBJECT_CN'] = @current_team.uuid
       post :create, tokens: [@ts]
 
       assert_response :success
@@ -37,7 +36,6 @@ class RedemptionControllerTest < ActionController::TestCase
       @ts2 = @token2.to_token_string
       @existing_redemption = Redemption.redeem_for @current_team, @ts2
 
-      @request.headers['HTTP_X_SSL_SUBJECT_CN'] = @current_team.uuid
       post :create, tokens: [@ts, @ts2]
 
       assert_response :success
