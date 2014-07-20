@@ -26,7 +26,11 @@ class AvailabilityCheckTest < ActiveSupport::TestCase
     should 'check all the teams' do
       @lbs_instance.expects(:check_availability).once
 
-      @instances.each{|i| i.expects(:check_availability).once}
+      @instances.each do |i| 
+        av = stub 'availability'
+        i.expects(:check_availability).once.returns(av)
+        av.expects(:save).once
+      end
 
       @check = AvailabilityCheck.new @service
 
