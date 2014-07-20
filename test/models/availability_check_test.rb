@@ -6,7 +6,7 @@ class AvailabilityCheckTest < ActiveSupport::TestCase
     Team.stubs(:legitbs).returns(@legitbs)
     @general_teams = FactoryGirl.create_list :team, 20
 
-    @service = FactoryGirl.create :service, name: 'noop'
+    @service = FactoryGirl.create :service, name: 'noop', enabled: true
     @shell = stub 'shell', status: 0, output: 'okay'
     ShellProcess.stubs(:new).returns(@shell)
 
