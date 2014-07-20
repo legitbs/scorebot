@@ -5,7 +5,6 @@ class RoundTest < ActiveSupport::TestCase
   should have_many :tokens
   should have_many :redemptions
 
-  should 'happen periodically'
   should 'run availability checks once and only once' do
     @round = FactoryGirl.create :round
     @service = FactoryGirl.create :service
