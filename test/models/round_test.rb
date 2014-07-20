@@ -7,10 +7,11 @@ class RoundTest < ActiveSupport::TestCase
 
   should 'run availability checks once and only once' do
     @round = FactoryGirl.create :round
-    @service = FactoryGirl.create :service
+    @service = FactoryGirl.create :service, enabled: true
     @instance = FactoryGirl.create :instance, service: @service
-    FactoryGirl.create(:instance, team: FactoryGirl.create(:legitbs), service: @service)
-    @shell = stub 'shell process', status: 0, output: 'okay'
+    @lbs_instance = FactoryGirl.create :lbs_instance, service: @service
+
+    Availability.any_instance.stubs(:check)
     ShellProcess.stubs(:new).returns(@shell)
 
     refute @round.availability_checks_done?
