@@ -16,7 +16,8 @@ class Team < ActiveRecord::Base
   end
 
   def self.legitbs
-    @@legitbs ||= find_by uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86"
+    return @@legitbs if defined?(@@legitbs) && (@@legitbs.reload rescue false)
+    @@legitbs = find_by uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86"
   end
 
   def self.without_legitbs
