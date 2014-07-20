@@ -25,18 +25,5 @@ class AvailabilityTest < ActiveSupport::TestCase
     assert_equal "example memo", @availability.memo
   end
 
-  should 'distribute flags' do
-    @instance = FactoryGirl.create :instance
-    
-    @flags = FactoryGirl.create_list :flag, 19, team: @instance.team
-    Team.stubs(:legitbs).returns(stub('legitbs', id: 0))
-
-    @availability = FactoryGirl.create :availability, instance: @instance
-
-    @availability.distribute!
-
-    assert @flags.all?{|f| f.reload.team != @instance.team}
-  end
-
   should 'log flag distribution'
 end

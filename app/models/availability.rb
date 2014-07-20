@@ -31,32 +31,4 @@ class Availability < ActiveRecord::Base
     status == 0
   end
 
-  def distribute!
-    flags = instance.team.flags.limit(19)
-
-    return distribute_parking(flags) if flags.count < 19
-    return distribute_everywhere(flags)
-  end
-
-  private
-  def distribute_everywhere(flags)
-    teams = Team.where('id != ? and id != ?', 
-                       Team.legitbs.id, 
-                       instance.team.id)
-
-    Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams} teams"
-
-    flags.each do |f|
-      t = teams.pop
-      f.team = t
-      f.save
-    end
-  end
-
-  def distribute_parking(flags)
-    flags.each do |f|
-      f.team = Team.legitbs
-      f.save
-    end
-  end
 end
