@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :service do
-    name 'service'
+    name 'atmail'
   end
   
   factory :team do

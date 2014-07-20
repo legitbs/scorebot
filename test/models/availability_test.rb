@@ -18,7 +18,7 @@ class AvailabilityTest < ActiveSupport::TestCase
 
     @round = FactoryGirl.create :round
 
-    @availability = Availability.check @instance
+    @availability = Availability.check @instance, @round
 
     assert @availability
     assert_equal 0, @availability.status
