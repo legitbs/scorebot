@@ -22,6 +22,9 @@ FactoryGirl.define do
   factory :instance do
     service
     team
+    factory :lbs_instance do
+      association :team, factory: :legitbs
+    end
   end
 
   factory :token do
