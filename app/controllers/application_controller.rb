@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_team, :is_legitbs?
 
   def client_cn
-    request.env['HTTP_X_SSL_SUBJECT_CN']
+    request.env['HTTP_SSL_CLIENT_S_DN_CN']
   end
 
   def current_team

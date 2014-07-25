@@ -5,7 +5,7 @@ class RedemptionControllerTest < ActionController::TestCase
     setup do
       @round = FactoryGirl.create :round
       @current_team = FactoryGirl.create :team
-      @request.headers['HTTP_X_SSL_SUBJECT_CN'] = @current_team.uuid
+      @request.headers['HTTP_SSL_CLIENT_S_DN_CN'] = @current_team.uuid
     end
 
     should 'return json on an empty token set' do
