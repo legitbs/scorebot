@@ -18,7 +18,7 @@ class Token < ActiveRecord::Base
 
   def self.from_token_string(token_string)
     begin
-      key, secret = token_string.chars.each_slice(2).to_a.transpose.map(&:join)
+      key, secret = token_split token_string
       candidate = self.where(key: key).first
     rescue
       return nil
@@ -51,22 +51,26 @@ class Token < ActiveRecord::Base
   def deposit
     service_name = instance.service.name
     team_address = instance.team.address
+    given_tok = to_token_string
+    round_num = round.id
     begin
       shell = ShellProcess.
         new(
-            Rails.root.join('scripts', 'deposit'),
-            instance.team.joe_name,
-            service_name,
-            to_token_string
+            Rails.root.join('scripts', service_name, 'deposit'),
+            team_address,
+            given_tok,
+            round_num
             )
 
       self.status = shell.status
       self.memo = shell.output
 
+      check_token_replacement
+
     rescue => e
       Scorebot.log "serious deposit issue :( #{e.inspect}"
       self.status = -420
-      self.memo = e
+      self.memo = e.to_s
     end
 
     save
@@ -76,9 +80,20 @@ class Token < ActiveRecord::Base
   end
 
   private
+  def check_token_replacement
+    return unless has_replaced_token = /^!!legitbs-replace-token (.+)$/.match(memo)
+
+    self.key, @secret = token_split has_replaced_token[1]
+    set_digest
+  end
+
   def set_keys
-    self.key = random_dingus
-    @secret = random_dingus
+    self.key = random_dingus unless self.key
+    @secret = random_dingus unless @secret
+    set_digest
+  end
+
+  def set_digest
     self.digest = Password.create @secret, cost: 7
   end
 
@@ -89,5 +104,13 @@ class Token < ActiveRecord::Base
     range = (radix ** max_len) - extender
     random = SecureRandom.random_number(range)
     (extender + random).base62_encode
+  end
+
+  def token_split(token_string)
+    self.class.token_split token_string
+  end
+
+  def self.token_split(token_string)
+    token_string.chars.each_slice(2).to_a.transpose.map(&:join)
   end
 end

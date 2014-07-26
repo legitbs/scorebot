@@ -15,6 +15,7 @@ class TokenTest < ActiveSupport::TestCase
       token_str = token.to_token_string
 
       token2 = Token.from_token_string token_str
+
       assert_equal token, token2
 
       token.destroy
@@ -30,8 +31,37 @@ class TokenTest < ActiveSupport::TestCase
   end
 
   context 'token deposition' do
-    should 'run a per-service deposit script'
-    should 'allow deposit scripts to substitute tokens'
+    setup do
+      @instance = FactoryGirl.create :instance
+      @round = FactoryGirl.create :round
+    end
+    should 'run a per-service deposit script' do
+      @shell = mock('shell', output: 'example', status: 0)
+
+      ShellProcess.
+        expects(:new).
+        with{ |e| e == Rails.root.join('scripts', @instance.service.name, 'deposit') }.
+        returns(@shell)
+
+      @token = Token.create instance: @instance, round: @round
+      @token.deposit
+
+      assert_equal @token, Token.from_token_string(@token.to_token_string)
+    end
+    should 'allow deposit scripts to substitute tokens' do
+      replaced_token = "replaced-token-#{rand(36**4).to_s(36)}"
+      @shell = mock('shell', output: "!!legitbs-replace-token #{replaced_token}", status: 0)
+
+      ShellProcess.
+        expects(:new).
+        with{|e| e == Rails.root.join('scripts', @instance.service.name, 'deposit') }.
+        returns(@shell)
+
+      @token = Token.create instance: @instance, round: @round
+      @token.deposit
+
+      assert_equal @token, Token.from_token_string(replaced_token)
+    end
   end
 
   should "not be eligible after #{Token::EXPIRATION} rounds" do
@@ -60,6 +90,7 @@ class TokenTest < ActiveSupport::TestCase
       
       @flags = FactoryGirl.create_list(:flag, 19, team: @owned_team)
     end
+
     should 'process redemptions into captures' do
       @redemption = FactoryGirl.create :redemption, round: @round, token: @token
 
@@ -69,6 +100,7 @@ class TokenTest < ActiveSupport::TestCase
       @flags.each &:reload
       assert @flags.all?{|f| f.team == @redemption.team }
     end
+
     should 'split flags evenly between competing teams' do
       @redemptions = FactoryGirl.create_list(:redemption, 
                                              19,
