@@ -49,7 +49,7 @@ class TokenTest < ActiveSupport::TestCase
       assert_equal @token, Token.from_token_string(@token.to_token_string)
     end
     should 'allow deposit scripts to substitute tokens' do
-      replaced_token = "replaced-token-#{rand(36**4).to_s(36)}"
+      replaced_token = "replaced-token-#{rand(36**5).to_s(36)}"
       @shell = mock('shell', output: "!!legitbs-replace-token #{replaced_token}", status: 0)
 
       ShellProcess.
