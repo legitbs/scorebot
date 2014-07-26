@@ -43,8 +43,9 @@ namespace :deploy do
     on roles(:app), in: :sequence, wait: 5 do
       within current_path do
         %w{unicorn service}.each do |f|
-          next unless test("[ -f tmp/pids/#{f}.pid ]")
-          execute "kill `cat tmp/pids/#{f}.pid`"
+          pidfile = "#{current_path}/tmp/pids/#{f}.pid"
+          next unless test("[ -f #{pidfile} ]")
+          execute "kill `cat #{pidfile}`"
         end
       end
     end
