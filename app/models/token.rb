@@ -112,5 +112,7 @@ class Token < ActiveRecord::Base
 
   def self.token_split(token_string)
     token_string.chars.each_slice(2).to_a.transpose.map(&:join)
+  rescue IndexError
+    ['', '']
   end
 end
