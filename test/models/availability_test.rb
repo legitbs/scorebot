@@ -4,25 +4,39 @@ class AvailabilityTest < ActiveSupport::TestCase
   should belong_to :instance
   should belong_to :round
 
-  should 'create an availability from an instance' do
-    @instance = FactoryGirl.create :instance
+  context 'with a round, an instance, and a shell process' do
+    setup do
+      @instance = FactoryGirl.create :instance
 
-    @shell = mock('shell')
-    ShellProcess.
-      expects(:new).
-      with{|e| e == Rails.root.join('scripts', @instance.service.name, 'availability')}.
-      returns(@shell)
+      @shell = mock('shell')
+      ShellProcess.
+        expects(:new).
+        with{|e| e == Rails.root.join('scripts', @instance.service.name, 'availability')}.
+        returns(@shell)
 
-    @shell.expects(:status).returns(0)
-    @shell.expects(:output).returns("example memo")
+      @token = FactoryGirl.create :token, instance: @instance
+      @dingus = [rand(2**64).to_s(16)].pack('H*')
 
-    @round = FactoryGirl.create :round
+      @memo = <<-EOF
+example memo
+!!legitbs-validate-token #{@token.to_token_string}
+!!legitbs-validate-dev-ctf #{Base64.strict_encode64 @dingus}
+EOF
 
-    @availability = Availability.check @instance, @round
+      @shell.expects(:status).returns(0)
+      @shell.expects(:output).returns(@memo)
+    end
 
-    assert @availability
-    assert_equal 0, @availability.status
-    assert_equal "example memo", @availability.memo
+    should 'create an availability from an instance' do
+      @availability = Availability.check @instance, @round
+
+      assert @availability
+      assert_equal 0, @availability.status
+      assert_equal @memo, @availability.memo
+
+      assert_equal @dingus, @availability.dingus
+      assert_equal @token, @availability.token
+    end
   end
 
   should 'log flag distribution'
