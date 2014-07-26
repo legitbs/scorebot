@@ -28,6 +28,8 @@ set :repo_url, 'git@waitingf.org:scorebot.git'
 # Default value for linked_dirs is []
 # set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
+set :linked_dirs, fetch(:linked_dirs) + %w{tmp/pids}
+
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
@@ -39,8 +41,12 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
-      # Your restart mechanism here, for example:
-      # execute :touch, release_path.join('tmp/restart.txt')
+      within current_path do
+        %w{unicorn service}.each do |f|
+          next unless test("[ -f tmp/pids/#{f}.pid ]")
+          execute "kill `cat tmp/pids/#{f}.pid`"
+        end
+      end
     end
   end
 
