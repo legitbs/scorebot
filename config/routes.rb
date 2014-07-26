@@ -17,4 +17,10 @@ Scorebot::Application.routes.draw do
   get 'timers', to: 'timers#index', as: 'timers'
 
   root to: redirect('/dashboard')
+
+  namespace :admin do
+    root to: 'root#index'
+    resources :rounds
+  end
+
 end

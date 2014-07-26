@@ -1,0 +1,13 @@
+!!! 5
+%html
+  %head
+    %title ctf admin
+    = stylesheet_link_tag 'application'
+    = yield :head
+    = csrf_meta_tag
+  %body.admin{class: body_class}
+    = render partial: 'admin_nav'
+    .content
+      = yield
+
+    = javascript_include_tag 'application'

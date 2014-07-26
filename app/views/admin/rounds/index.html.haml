@@ -1,0 +1,17 @@
+%h1 Rounds
+%p all #{@rounds.count} rounds so far, newest to oldest
+
+%table
+  %thead
+    %th id
+    %th started at
+    %th ended at
+    %th activities
+  %tbody
+    - @rounds.each do |r|
+      %tr
+        %td= r.id
+        %td= r.created_at.to_formatted_s(:ctf)
+        %td= r.ended_at.try(:to_formatted_s, :ctf) or 'ongoing'
+        %td
+          = link_to 'show', admin_round_path(r)
