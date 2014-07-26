@@ -4,3 +4,12 @@
     %tr
       %th rails root
       %td= Rails.root
+    %tr
+      %th revision
+      %td= File.read Rails.root.join 'REVISION' rescue 'not there'
+    %tr
+      %th unicorn master pid
+      %td= File.read Rails.root.join 'tmp/unicorn.pid' rescue 'not there'
+    %tr
+      %th service pid
+      %td= File.read Rails.root.join 'tmp/service.pid' rescue 'not there'
