@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
 $stderr.puts "#{Time.now} Loading service script"
-File.open ::File.expand_path('../../tmp/service.pid', 'w') do |f|
+File.open ::File.expand_path('../../tmp/pids/service.pid', 'w') do |f|
   f.puts Process.pid.to_s
+end
+at_exit do
+  FileUtils.rm '../../tmp/pids/service.pid'
 end
 require ::File.expand_path('../../config/environment',  __FILE__)
 
