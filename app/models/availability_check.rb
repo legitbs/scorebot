@@ -1,8 +1,25 @@
 class AvailabilityCheck  
   WORKERS = 20
+  INITIAL_TIMING = 4 * 60
+
+  attr_accessor :timing_history
+
+  def self.for_service(service)
+    @@cache ||= Hash.new
+    @@cache[service] ||= new service
+  end
 
   def initialize(service)
     @service = service
+    self.timing_history = [INITIAL_TIMING]
+  end
+
+  def timing_average
+    timing_history.sum.to_f / timing_history.length
+  end
+
+  def gonna_run_long?
+    timing_average >= Round::ROUND_LENGTH
   end
 
   def instances

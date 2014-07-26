@@ -14,12 +14,45 @@ class AvailabilityCheckTest < ActiveSupport::TestCase
     @instances = @general_teams.map{|t| Instance.create team: t, service: @service }
   end
   
-  should 'be creatable for a service' do
 
-    @check = AvailabilityCheck.new @service
+  context 'initializing' do
+    should 'initialize for a service' do
+      assert @check = AvailabilityCheck.for_service(@service)
 
-    assert_equal @lbs_instance, @check.lbs_instance
-    assert_equal @instances, @check.non_lbs_instances
+      assert_equal @lbs_instance, @check.lbs_instance
+      assert_equal @instances, @check.non_lbs_instances
+    end
+
+    should 'cache instances' do
+      assert(checker = AvailabilityCheck.for_service(@service))
+      assert_equal checker.object_id, AvailabilityCheck.for_service(@service).object_id
+    end
+  end
+
+  context 'timing' do
+    setup do
+      @check = AvailabilityCheck.for_service @service
+    end
+
+    should 'store timing history' do
+      assert_respond_to @check, :timing_history
+      assert_kind_of Enumerable, @check.timing_history
+      assert_includes @check.timing_history, AvailabilityCheck::INITIAL_TIMING
+    end
+
+    should 'provide an average time' do
+      assert_respond_to @check, :timing_average
+      assert_kind_of Numeric, @check.timing_average
+      @check.timing_history = [1, 2, 3]
+      assert_equal 2.0, @check.timing_average
+    end
+
+    should 'warn if check will go longer than a round' do
+      @check.timing_history = [ 2 * Round::ROUND_LENGTH ]
+      assert @check.gonna_run_long?
+    end
+
+    should 'schedule checks for random times within the round'
   end
 
   context 'Availability checking' do
