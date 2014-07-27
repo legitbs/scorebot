@@ -6,4 +6,5 @@ class RoundFinalizerTest < ActiveSupport::TestCase
   should 'calculate number of flags each team is due'
   should 'prioritize flags for winning-est teams'
   should 'record distributions on the round'
+  should 'record captures and penalties'
 end
