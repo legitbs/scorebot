@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140726191136) do
+ActiveRecord::Schema.define(version: 20140727221954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,18 @@ ActiveRecord::Schema.define(version: 20140726191136) do
   add_index "instances", ["service_id"], name: "index_instances_on_service_id", using: :btree
   add_index "instances", ["team_id"], name: "index_instances_on_team_id", using: :btree
 
+  create_table "penalties", force: true do |t|
+    t.integer  "availability_id"
+    t.integer  "team_id"
+    t.integer  "flag_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "penalties", ["availability_id"], name: "index_penalties_on_availability_id", using: :btree
+  add_index "penalties", ["flag_id"], name: "index_penalties_on_flag_id", using: :btree
+  add_index "penalties", ["team_id"], name: "index_penalties_on_team_id", using: :btree
+
   create_table "redemptions", force: true do |t|
     t.integer  "team_id"
     t.integer  "token_id"
@@ -84,6 +96,7 @@ ActiveRecord::Schema.define(version: 20140726191136) do
     t.string   "nonce"
     t.json     "payload"
     t.string   "signature"
+    t.json     "distribution"
   end
 
   create_table "services", force: true do |t|

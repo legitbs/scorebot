@@ -4,5 +4,6 @@ FactoryGirl.define do
   factory :penalty do
     availability nil
     team nil
+    flag nil
   end
 end
