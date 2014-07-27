@@ -80,49 +80,4 @@ class TokenTest < ActiveSupport::TestCase
 
     assert_includes Token.expiring, token
   end
-
-  context 'Token redemption processing' do
-    setup do
-      @owned_team = FactoryGirl.create :team
-      @instance = FactoryGirl.create :instance, team: @owned_team
-      @round = FactoryGirl.create :round
-      @token = FactoryGirl.create :token, round: @round, instance: @instance
-      
-      @flags = FactoryGirl.create_list(:flag, 19, team: @owned_team)
-    end
-
-    should 'process redemptions into captures' do
-      @redemption = FactoryGirl.create :redemption, round: @round, token: @token
-
-      @token.process_redemptions @round
-
-      assert_not_empty @redemption.captures
-      @flags.each &:reload
-      assert @flags.all?{|f| f.team == @redemption.team }
-    end
-
-    should 'split flags evenly between competing teams' do
-      @redemptions = FactoryGirl.create_list(:redemption, 
-                                             19,
-                                             round: @round, 
-                                             token: @token)
-
-      @capturing_teams = @redemptions.map(&:team)
-
-      Capture.all.delete_all
-
-      @token.process_redemptions @round
-
-      assert_not_empty Capture.all
-
-      @flags.each &:reload
-
-      unchecked_flags = Set.new @flags
-
-      Capture.all.each do |c|
-        assert_includes unchecked_flags, c.flag
-        unchecked_flags.delete c.flag
-      end
-    end
-  end
 end
