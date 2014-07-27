@@ -40,6 +40,27 @@ class Team < ActiveRecord::Base
     connection.select_all(q).map(&:symbolize_keys)
   end
 
+  def self.as_standings_json
+    data = for_scoreboard
+    
+    place = 0
+    prev_score = Flag.count + 1
+    place_buf = 1
+    { 
+      standings: data.map do |r|
+        score = r[:score].to_i
+        if score < prev_score
+          place += place_buf
+          place_buf = 1
+          prev_score = score
+        else
+          place_buf += 1
+        end
+        { pos: place, team: r[:name], score: score }
+      end
+    }
+  end
+
   private
   def set_uuid
     self.uuid ||= SecureRandom.uuid
