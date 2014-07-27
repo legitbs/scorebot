@@ -2,7 +2,7 @@ class CreatePenalties < ActiveRecord::Migration
   def change
     create_table :penalties do |t|
       t.belongs_to :availability, index: true
-      t.belogns_to :team
+      t.belongs_to :team, index: true
 
       t.timestamps
     end
