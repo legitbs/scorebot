@@ -88,8 +88,9 @@ class Token < ActiveRecord::Base
         redemptions: redemptions.as_json(only: %i{ id uuid }),
         captures: captures.as_json
     } }
+  end
 
-  def process_redemptions(round)
+  def process_movements(round)
     capture_count = redemptions.length
     return if capture_count == 0
 

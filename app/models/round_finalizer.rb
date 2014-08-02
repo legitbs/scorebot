@@ -27,7 +27,7 @@ class RoundFinalizer
     return @movements if defined? @movements
 
     @movements = candidates.map do |c|
-      c.process_movements
+      c.process_movements(round)
 
       c.as_movement_json
     end
