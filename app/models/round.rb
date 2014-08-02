@@ -47,12 +47,11 @@ class Round < ActiveRecord::Base
   end
 
   def finalize!
-    # process redemptions
-    Token.expiring.each do |t|
-      t.process_redemptions self
-    end
+    self.distribution = Service.enabled.map do |service|
+      f = RoundFinalizer.new self, service
+      f.movements
+    end.to_json
 
-    Flag.reallocate self
     store_signature
   end
 
