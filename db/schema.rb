@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140727221954) do
+ActiveRecord::Schema.define(version: 20140802013457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(version: 20140727221954) do
     t.integer  "round_id"
     t.text     "memo"
     t.integer  "status"
+    t.integer  "redemptions_count"
   end
 
   add_index "tokens", ["instance_id", "round_id"], name: "index_tokens_on_instance_id_and_round_id", unique: true, using: :btree
