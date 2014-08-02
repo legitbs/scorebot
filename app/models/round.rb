@@ -77,4 +77,9 @@ class Round < ActiveRecord::Base
   def qr
     Pngqr.encode qr_signature, scale: 9
   end
+
+  def expiring_tokens
+    expiring_round = self.class.limit(Token::EXPIRATION + 1).order(id: :asc).first
+    expiring_round.tokens
+  end
 end
