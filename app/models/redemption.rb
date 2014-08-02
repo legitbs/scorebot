@@ -66,6 +66,20 @@ class Redemption < ActiveRecord::Base
     end
   end
 
+  def as_event_json
+    { 
+      redeeming_team: team.as_json,
+      owned_team: token.instance.team.as_json,
+      service: token.instance.service.as_json,
+      redemption_stats: { 
+        service: token.instance.service.total_redemptions,
+        instance: token.instance.total_redemptions,
+        redeeming_team: team.redemptions.count,
+        all: Redemption.count,
+      },
+    }
+  end
+
   private
   def set_uuid
     self.uuid = SecureRandom.uuid

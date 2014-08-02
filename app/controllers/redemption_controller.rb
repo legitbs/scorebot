@@ -15,6 +15,10 @@ class RedemptionController < ApplicationController
       m
     end
 
+    redemptions.each do |r|
+      Event.new('redemption', r.as_event_json ).publish! rescue nil
+    end
+
     render json: redemptions.to_json
   end
 end

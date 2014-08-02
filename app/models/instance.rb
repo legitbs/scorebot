@@ -23,6 +23,10 @@ class Instance < ActiveRecord::Base
     end
   end
 
+  def total_redemptions
+    tokens.sum(:redemptions_count)
+  end
+
   private
   def health_check_rounds
     @health_check_rounds ||= Round.limit(3).offset(1).order('created_at desc').reverse
