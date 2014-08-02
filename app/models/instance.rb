@@ -27,6 +27,10 @@ class Instance < ActiveRecord::Base
     tokens.sum(:redemptions_count)
   end
 
+  def flags
+    Flag.where(team_id: team.id, service_id: service.id)
+  end
+
   private
   def health_check_rounds
     @health_check_rounds ||= Round.limit(3).offset(1).order('created_at desc').reverse
