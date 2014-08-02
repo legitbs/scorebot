@@ -23,6 +23,16 @@ class RoundFinalizer
     @candidates = initial.sort_by{ generator.rand }
   end
 
+  def movements
+    return @movements if defined? @movements
+
+    @movements = candidates.map do |c|
+      c.process_movements
+
+      c.as_movement_json
+    end
+  end
+
   def as_metadata_json
     { 
       seed: seed,

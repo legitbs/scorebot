@@ -40,7 +40,21 @@ class RoundFinalizerTest < ActiveSupport::TestCase
       assert_includes @finalizer.as_metadata_json, :sequence
     end
 
-    should 'score events in sequence'
+    should 'score events in sequence' do
+      seq = sequence 'scoring'
+      @finalizer.candidates.each do |c|
+        c.expects(:process_movements).once.in_sequence(seq)
+        c.expects(:as_movement_json).once.in_sequence(seq).returns(:ok)
+      end
 
+      @finalizer.movements
+    end
+
+    should 'have sensible movement data' do
+      assert_kind_of Array, @finalizer.movements
+      @finalizer.movements.each do |m|
+        assert_kind_of Hash, m
+      end
+    end
   end
 end
