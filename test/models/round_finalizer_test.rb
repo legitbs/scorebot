@@ -35,7 +35,10 @@ class RoundFinalizerTest < ActiveSupport::TestCase
       assert_equal @finalizer.candidates, RoundFinalizer.new(@round, @service).candidates
     end
 
-    should 'include the seed and sequence in the metadata'
+    should 'include the seed and sequence in the metadata' do
+      assert_includes @finalizer.as_metadata_json, :seed
+      assert_includes @finalizer.as_metadata_json, :sequence
+    end
 
     should 'score events in sequence'
 
