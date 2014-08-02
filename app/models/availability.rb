@@ -3,6 +3,7 @@ class Availability < ActiveRecord::Base
   belongs_to :round
   belongs_to :token
   scope :failed, -> { where.not(status: 0) }
+  has_many :penalties
 
   def self.check(instance, round)
     candidate = new instance: instance, round: round
@@ -34,6 +35,11 @@ class Availability < ActiveRecord::Base
     status == 0
   end
 
+  def as_movement_json
+    return { availability: { id: id, healthy: true } } if healthy?
+
+    return as_json include_root: true, only: %i{ id penalties }
+  end
 
   def load_dinguses
     if has_token = /^!!legitbs-validate-token (.+)$/.match(memo)

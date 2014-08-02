@@ -3,6 +3,7 @@ class Token < ActiveRecord::Base
   belongs_to :instance
   belongs_to :round
   has_many :redemptions
+  has_many :captures, through: :redemptions
 
   validates :instance, presence: true
   validates :round, presence: true
@@ -77,6 +78,16 @@ class Token < ActiveRecord::Base
 
     Scorebot.log "deposit status #{status}"
     Scorebot.log memo
+  end
+
+  def as_movement_json
+    return { token: { id: id, secure: true } } if redemptions.empty?
+
+    return { token: { 
+        id: id,
+        redemptions: redemptions.as_json(only: %i{ id uuid }),
+        captures: captures.as_json
+    } }
   end
 
   private
