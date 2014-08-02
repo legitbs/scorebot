@@ -44,10 +44,11 @@ EOF
     
     @flags = FactoryGirl.create_list :flag, 19, team: @instance.team
     Team.stubs(:legitbs).returns(stub('legitbs', id: 0))
+    @teams = FactoryGirl.create_list :team, 19
 
     @availability = FactoryGirl.create :availability, instance: @instance
 
-    @availability.distribute!
+    @availability.process_movements(@availability.round)
 
     assert @flags.all?{|f| f.reload.team != @instance.team}
   end

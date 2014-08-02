@@ -52,7 +52,7 @@ class Availability < ActiveRecord::Base
     end
   end
 
-  def distribute!
+  def process_movements(_round)
     flags = instance.team.flags.limit(19)
 
     return distribute_parking(flags) if flags.count < 19
@@ -63,21 +63,23 @@ class Availability < ActiveRecord::Base
   def distribute_everywhere(flags)
     teams = Team.where('id != ? and id != ?', 
                        Team.legitbs.id, 
-                       instance.team.id)
+                       instance.team.id).to_a
 
     Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams} teams"
 
-    flags.each do |f|
-      t = teams.pop
+    flags.zip(teams) do |f, t|
+      break if t.nil?
       f.team = t
-      f.save
+      f.save!
+      penalties.create team_id: t.id, flag_id: f.id
     end
   end
 
   def distribute_parking(flags)
     flags.each do |f|
       f.team = Team.legitbs
-      f.save
+      f.save!
+      penalties.create team_id: Team.legitbs.id, flag_id: f.id
     end
   end
 end
