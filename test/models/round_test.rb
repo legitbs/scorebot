@@ -23,6 +23,21 @@ class RoundTest < ActiveSupport::TestCase
     @round.check_availability
   end
 
+  should 'find expiring tokens' do
+    @old_rounds = (Token::EXPIRATION + 2).times.map{ FactoryGirl.create :round }
+    @round = FactoryGirl.create :round
+
+    @ancient_token = FactoryGirl.create :token, round: @old_rounds.first
+    @expiring_token = FactoryGirl.create :token, round: @old_rounds.second
+    @new_token = FactoryGirl.create :token, round: @round
+
+    refute_includes @round.expiring_tokens, @ancient_token
+    assert_includes @round.expiring_tokens, @expiring_token
+    refute_includes @round.expiring_tokens, @new_token
+    
+    assert_equal Set.new(@round.expiring_tokens), Set.new(Token.expiring)
+  end
+
   context 'class methods' do
     should 'get the current round' do
       r1 = FactoryGirl.create :round

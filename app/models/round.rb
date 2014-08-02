@@ -79,7 +79,12 @@ class Round < ActiveRecord::Base
   end
 
   def expiring_tokens
-    expiring_round = self.class.limit(Token::EXPIRATION + 1).order(id: :asc).first
+    expiring_round = self.class.
+      where('id < ?', id).
+      limit(Token::EXPIRATION + 1).
+      order(id: :desc).
+      last
+
     expiring_round.tokens
   end
 end
