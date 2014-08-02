@@ -1,6 +1,6 @@
 class Redemption < ActiveRecord::Base
   belongs_to :team
-  belongs_to :token
+  belongs_to :token, counter_cache: true
   belongs_to :round
   has_many :captures
   has_many :flags, through: :captures
