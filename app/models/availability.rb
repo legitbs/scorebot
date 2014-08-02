@@ -2,6 +2,7 @@ class Availability < ActiveRecord::Base
   belongs_to :instance
   belongs_to :round
   belongs_to :token
+  scope :failed, -> { where.not(status: 0) }
 
   def self.check(instance, round)
     candidate = new instance: instance, round: round
