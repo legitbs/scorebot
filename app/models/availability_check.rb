@@ -3,6 +3,7 @@ class AvailabilityCheck
   INITIAL_TIMING = 4 * 60
 
   attr_accessor :timing_history
+  attr_accessor :deadline
 
   def self.for_service(service)
     @@cache ||= Hash.new
@@ -12,6 +13,7 @@ class AvailabilityCheck
   def initialize(service)
     @service = service
     self.timing_history = [INITIAL_TIMING]
+    @history_lock = Mutex.new
   end
 
   def timing_average
@@ -19,7 +21,32 @@ class AvailabilityCheck
   end
 
   def gonna_run_long?
-    timing_average >= Round::ROUND_LENGTH
+    Time.now.to_f + timing_average >= deadline.to_f
+  end
+
+  def schedule
+    remaining = deadline.to_f - Time.now.to_f
+
+    # skew earlier
+    start_before = remaining - (30 + timing_average)
+
+    wait = rand(start_before)
+
+    @thread = Thread.new do
+      chill wait
+      clock = Time.now.to_f
+      check_all_instances
+      duration = Time.now.to_f - clock
+
+      @history_lock.synchronize do
+        timing_history << duration
+      end
+    end
+  end
+
+  def join
+    return unless defined? @thread
+    @thread.join
   end
 
   def instances
@@ -83,5 +110,13 @@ class AvailabilityCheck
     return unless @lbs_check.healthy?
 
     @non_lbs_checks.reject(&:healthy?).each(&:distribute!)
+  end
+
+  private
+  def chill(duration)
+    schedule = Time.now.to_f + duration
+    while Time.now.to_f < duration
+      sleep 0.1
+    end
   end
 end

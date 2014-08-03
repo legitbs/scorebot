@@ -68,34 +68,20 @@ loop do
     ending_sec = round_timer.ending.to_i
 
     unless current_round.availability_checks_done?
-      l "Scheduling availability checks"
-      envelope = ending_sec - now_sec
-      longest_wait = envelope - average_check
-
-      l "#{envelope} remaining, #{longest_wait} is the longest i should wait"
-
-      if longest_wait < 0
-        l "I THINK I'VE RUN OUT OF TIME FOR AVAILABILITY CHECKS :("
-        l "GONNA DO THEM NOW AND JUST DWI IF THE ROUND IS DELAYED"
-        longest_wait = 0
-      end
-
-      if longest_wait > 1
-        wait = rand(longest_wait)
-        l "Waiting #{wait} for availability check"
-        alarm = now_sec + wait
-
-        chillax alarm
-      end
       
-      l "Running checks"
-      check_start = now_sec
-      current_round.check_availability
-      check_end = now_sec
 
-      @availability_history.push check_end - check_start
+      checks = Service.enabled.map do |service|
+        check = AvailabilityCheck.for_service service
+        check.deadline = round_timer.ending
 
-      l "Checks ran in #{@availability_history.last} seconds"
+        if check.gonna_run_long?
+          l "Looks like #{service.name} checks will run long :("
+        end
+
+        l check.schedule!
+      end
+
+      checks.each(&:join)
     end
 
     l "Waiting for round end"

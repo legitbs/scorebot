@@ -19,17 +19,6 @@ class Round < ActiveRecord::Base
     !availabilities.reload.empty?
   end
 
-  def check_availability
-    return if availability_checks_done?
-    Service.where(enabled: true).find_each do |s|
-      s.transaction do
-        check = AvailabilityCheck.new s
-        check.check_all_instances
-        check.distribute_flags
-      end
-    end
-  end
-
   def commence!
     round_timer = Timer.round
     round_timer.ending = Time.now + ROUND_LENGTH
