@@ -5,24 +5,6 @@ class RoundTest < ActiveSupport::TestCase
   should have_many :tokens
   should have_many :redemptions
 
-  should 'run availability checks once and only once' do
-    @round = FactoryGirl.create :round
-    @service = FactoryGirl.create :service, enabled: true
-    @instance = FactoryGirl.create :instance, service: @service
-    @lbs_instance = FactoryGirl.create :lbs_instance, service: @service
-
-    Availability.any_instance.stubs(:check)
-    ShellProcess.stubs(:new).returns(@shell)
-
-    refute @round.availability_checks_done?
-
-    @round.check_availability
-
-    assert @round.availability_checks_done?
-
-    @round.check_availability
-  end
-
   should 'find expiring tokens' do
     @old_rounds = (Token::EXPIRATION + 2).times.map{ FactoryGirl.create :round }
     @round = FactoryGirl.create :round
