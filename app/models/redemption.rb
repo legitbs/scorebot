@@ -13,15 +13,26 @@ class Redemption < ActiveRecord::Base
       round = Round.current
 
       token = Token.from_token_string token_str
-      raise NoTokenError.new if token.blank?
-      raise OldTokenError.new unless token.eligible?
-      raise SelfScoringError.new if team == token.instance.team
+      if token.blank?
+        team.increment! :notfound_ctr
+        raise NoTokenError.new 
+      end
+      unless token.eligible?
+        team.increment! :old_ctr
+        raise OldTokenError.new 
+      end
+      if team == token.instance.team
+        team.increment! :self_ctr
+        raise SelfScoringError.new 
+      end
 
       begin
         candidate = create team: team, token: token, round: round
       rescue ActiveRecord::RecordNotUnique => e
+        team.increment! :dupe_ctr
         raise DuplicateTokenError.new
       rescue => e
+        team.increment! :other_ctr
         raise OtherTokenError.new e
       end
 
