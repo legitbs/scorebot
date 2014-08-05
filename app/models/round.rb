@@ -42,6 +42,8 @@ class Round < ActiveRecord::Base
     end.to_json
 
     store_signature
+
+    save!
   end
 
   def add_nonce
@@ -49,13 +51,12 @@ class Round < ActiveRecord::Base
   end
 
   def store_signature
-    payload = Team.for_scoreboard.to_json
-    signature = OpenSSL::HMAC.hexdigest(
+    self.payload = Team.for_scoreboard.to_json
+    self.signature = OpenSSL::HMAC.hexdigest(
                                         OpenSSL::Digest::SHA1.new,
                                         self.nonce,
                                         payload
                                         )
-    update_attributes payload: payload, signature: signature
   end
 
   def qr_signature
