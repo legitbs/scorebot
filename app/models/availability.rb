@@ -29,7 +29,7 @@ class Availability < ActiveRecord::Base
     load_dinguses
 
     if self.token_string and !self.token
-      self.status = 1
+      self.status = 420
     end
 
     self
