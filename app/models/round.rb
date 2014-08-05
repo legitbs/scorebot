@@ -44,6 +44,8 @@ class Round < ActiveRecord::Base
     store_signature
 
     save!
+
+    Event.new('round_finish', event_payload).publish!
   end
 
   def add_nonce
@@ -55,7 +57,7 @@ class Round < ActiveRecord::Base
     self.signature = OpenSSL::HMAC.hexdigest(
                                         OpenSSL::Digest::SHA1.new,
                                         self.nonce,
-                                        payload
+                                        payload.to_json
                                         )
   end
 
@@ -75,5 +77,19 @@ class Round < ActiveRecord::Base
       last
 
     expiring_round.tokens
+  end
+
+  def event_payload
+    prev = Round.where('id < ?', id).order(id: :desc).take
+    prev_places = prev.payload.map{ |e| e['name'] } rescue []
+    now_places = payload.map{ |e| e['name'] }
+
+    places_changed = prev_places != now_places
+
+    { 
+      payload: payload,
+      previous_payload: prev.payload,
+      places_changed: places_changed
+    }
   end
 end
