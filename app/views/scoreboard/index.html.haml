@@ -1,5 +1,3 @@
-- content_for :head do
-  %meta{'http-equiv' => 'refresh', content: '122'}
 .scoreboard.scene
   = render partial: 'shared/timers'
   .scoreboard-holder
@@ -8,7 +6,7 @@
         %tr
           %th team
           %th flags
-      %tbody
+      %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 15_000} }
         - @teams.each do |t|
           %tr
             %th= t[:name]
@@ -16,4 +14,10 @@
               .points.left= t[:score]
               .bar.left{style: "width: #{t[:score].to_i * 0.003}em"} &nbsp;
               %br.clear
-            
+%script#team_row_template{type: 'text/html'}
+  %tr
+    %th {{team}}
+    %td.flags
+      .points.left {{score}}
+      .bar.left{style: "width: {{width}}em"} &nbsp;
+      %br.clear
