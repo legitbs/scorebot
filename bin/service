@@ -8,7 +8,7 @@ at_exit do
 end
 require ::File.expand_path('../../config/environment',  __FILE__)
 
-ROUND_LENGTH = 5 * 60
+ROUND_LENGTH = Round::ROUND_LENGTH
 
 def l(str)
   Scorebot.log str
@@ -34,15 +34,6 @@ def chillax(ending)
     end
     sleep 0.1
   end
-end
-
-# availability check lengths, in seconds
-# defaults to four minutes so we tend to schedule
-# earlier
-@availability_history = [ 4 * 60 ]
-
-def average_check
-  @availability_history.sum.to_f / @availability_history.length
 end
 
 if Round.current.nil?
@@ -104,6 +95,11 @@ loop do
  
     current_round.finalize!
   end
+
+  pid = Process.fork do
+    exec 'rake scoreboard:upload'
+  end
+  Process.detach pid
 
   break if @ending
 end
