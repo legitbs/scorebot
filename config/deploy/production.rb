@@ -6,9 +6,9 @@ set :deploy_to, '/home/scorebot/production'
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-role :app, %w{scorebot@scorebot.ctf}
-role :web, %w{scorebot@scorebot.ctf}
-role :db,  %w{scorebot@scorebot.ctf}
+role :app, %w{scorebot@scorebot.defcon.legitbs.net}
+role :web, %w{scorebot@scorebot.defcon.legitbs.net}
+role :db,  %w{scorebot@scorebot.defcon.legitbs.net}
 
 
 # Extended Server Syntax
