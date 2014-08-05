@@ -28,6 +28,10 @@ class Availability < ActiveRecord::Base
     self.memo = shell.output
     load_dinguses
 
+    if self.token_string and !self.token
+      self.status = 1
+    end
+
     self
   end
 
@@ -44,7 +48,12 @@ class Availability < ActiveRecord::Base
   def load_dinguses
     if has_token = /^!!legitbs-validate-token (.+)$/.match(memo)
       self.token_string = has_token[1]
-      self.token = Token.from_token_string self.token_string
+      candidate_token = Token.from_token_string self.token_string
+
+      return false if candidate_token.instance != self.instance
+      return false if candidate_token.expired?
+
+      self.token = candidate_token
     end
     
     if has_dingus = /^!!legitbs-validate-dev-ctf (.+)$/.match(memo)
