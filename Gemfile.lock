@@ -30,6 +30,11 @@ GEM
     arel (5.0.1.20140414130214)
     base62 (1.0.0)
     bcrypt-ruby (3.0.1)
+    better_errors (1.1.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     bourbon (3.2.3)
       sass (~> 3.2)
       thor
@@ -57,6 +62,7 @@ GEM
       execjs
     coffee-script-source (1.7.0)
     colorize (0.7.3)
+    debug_inspector (0.0.2)
     erubis (2.7.0)
     excon (0.32.1)
     execjs (2.0.2)
@@ -227,6 +233,8 @@ PLATFORMS
 DEPENDENCIES
   base62
   bcrypt-ruby (~> 3.0.0)
+  better_errors
+  binding_of_caller
   bourbon
   capistrano-rails
   celluloid
