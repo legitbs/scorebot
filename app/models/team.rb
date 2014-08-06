@@ -37,7 +37,7 @@ class Team < ActiveRecord::Base
 			t.name asc
     SQL
     
-    connection.select_all(q).map(&:symbolize_keys)
+    Stats.time('scoreboard_query'){ connection.select_all(q).map(&:symbolize_keys) }
   end
 
   def self.as_standings_json
