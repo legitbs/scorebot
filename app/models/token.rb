@@ -63,7 +63,9 @@ class Token < ActiveRecord::Base
             round_num
             )
 
-      self.status = shell.status
+      Stat.time "deposit.#{instance.team.certname}.#{instance.service.name}" do
+        self.status = shell.status
+      end
       self.memo = shell.output
 
       check_token_replacement

@@ -24,7 +24,9 @@ class Availability < ActiveRecord::Base
           team_address
           )
     
-    self.status = shell.status
+    Stat.time "availability.#{instance.team.certname}.#{instance.service.name}" do
+      self.status = shell.status
+    end
     self.memo = shell.output
     load_dinguses
 
