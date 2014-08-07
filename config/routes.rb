@@ -20,7 +20,7 @@ Scorebot::Application.routes.draw do
 
   namespace :admin do
     root to: 'root#index'
-    resources :rounds
+    resources :rounds, :tokens, :redemptions, :instances, :teams, :availabilities
   end
 
 end

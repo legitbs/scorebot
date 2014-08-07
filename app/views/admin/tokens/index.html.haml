@@ -1,0 +1,24 @@
+%h1 Tokens
+
+= form_tag admin_tokens_path, method: 'get' do
+  %p
+    search by token string
+    = search_field_tag :token_string, params[:token_string]
+    = submit_tag 'search', class: 'tiny_search'
+
+%table
+  %thead
+    %tr
+      %th id
+      %th instance
+      %th round
+      %th key
+      %th activities
+  %tbody
+    - @tokens.each do |t|
+      %tr
+        %td= t.id
+        %td= describe_instance t.instance
+        %td= t.round.id
+        %td= t.key
+        %td butt

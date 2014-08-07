@@ -81,14 +81,15 @@ class Round < ActiveRecord::Base
 
   def event_payload
     prev = Round.where('id < ?', id).order(id: :desc).take
-    prev_places = prev.payload.map{ |e| e['name'] } rescue []
+    prev_payload = prev.try(:payload) || []
+    prev_places = prev_payload.map{ |e| e['name'] }
     now_places = payload.map{ |e| e['name'] }
 
     places_changed = prev_places != now_places
 
     { 
       payload: payload,
-      previous_payload: prev.payload,
+      previous_payload: prev_payload,
       places_changed: places_changed
     }
   end

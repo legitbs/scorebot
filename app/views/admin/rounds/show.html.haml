@@ -1,0 +1,56 @@
+%h1 Round #{@round.id}
+
+%h2 Deposits
+
+%table
+  %thead
+    %tr
+      %th instance
+      %th redemptions
+      %th activities
+  %tbody
+    - @round.tokens.order(instance_id: :asc).each do |t|
+      %tr
+        %td= describe_instance t.instance
+        %td= t.redemptions.count
+        %td
+          = link_to 'show', admin_token_path(t)
+
+%h2 Redemptions
+
+%table
+  %thead
+    %tr
+      %th team
+      %th instance
+      %th when
+      %th activities
+  %tbody
+    - @round.redemptions.order(created_at: :asc).each do |r|
+      %tr
+        %td= link_to r.team.certname, admin_team_path(r.team)
+        %td= describe_instance r.token.instance
+        %td{title: r.created_at}
+          = time_ago r.created_at
+        %td 
+          = link_to 'show', admin_redemption_path(r)
+
+%h2 Availability Checks
+
+%table
+  %thead
+    %tr
+      %th instance
+      %th when
+      %th healthy?
+      %th activities
+  %tbody
+    - @round.availabilities.order(created_at: :asc).each do |a|
+      %tr
+        %td= describe_instance a.instance
+        %td{title: a.created_at}
+          = time_ago_in_words a.created_at, include_seconds: true
+          ago
+        %td= a.healthy?
+        %td
+          = link_to 'show', admin_availability_path(a)

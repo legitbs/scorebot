@@ -13,6 +13,12 @@ class Token < ActiveRecord::Base
   # how many rounds do tokens last after deposit?
   EXPIRATION = 2
 
+  def self.token_split(token_string)
+    token_string.chars.each_slice(2).to_a.transpose.map(&:join)
+  rescue IndexError
+    ['', '']
+  end
+
   def to_token_string
     key.chars.zip(@secret.chars).join
   end
@@ -151,11 +157,5 @@ class Token < ActiveRecord::Base
 
   def token_split(token_string)
     self.class.token_split token_string
-  end
-
-  def self.token_split(token_string)
-    token_string.chars.each_slice(2).to_a.transpose.map(&:join)
-  rescue IndexError
-    ['', '']
   end
 end
