@@ -29,10 +29,12 @@ class Redemption < ActiveRecord::Base
       begin
         candidate = create team: team, token: token, round: round
       rescue ActiveRecord::RecordNotUnique => e
-        team.increment! :dupe_ctr
+        team.dupe_ctr_defer ||= 0
+        team.dupe_ctr_defer += 1
         raise DuplicateTokenError.new
       rescue => e
-        team.increment! :other_ctr
+        team.other_ctr_defer ||= 0
+        team.other_ctr_defer += 1
         raise OtherTokenError.new e
       end
 

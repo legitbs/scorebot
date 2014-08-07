@@ -54,9 +54,11 @@ FactoryGirl.define do
   factory :capture do
     redemption
     flag
+    round
   end
 
   factory :flag do
     team
+    service
   end
 end

@@ -6,6 +6,10 @@ class Team < ActiveRecord::Base
   has_many :tickets
   before_create :set_uuid
 
+  after_rollback :flush_counters
+  attr_accessor :dupe_ctr_defer
+  attr_accessor :other_ctr_defer
+
   def as_ca_json
     {
       teamname: name,
@@ -65,5 +69,10 @@ class Team < ActiveRecord::Base
   private
   def set_uuid
     self.uuid ||= SecureRandom.uuid
+  end
+
+  def flush_counters
+    increment! :dupe_ctr, dupe_ctr_defer if dupe_ctr_defer
+    increment! :other_ctr, other_ctr_defer if other_ctr_defer
   end
 end

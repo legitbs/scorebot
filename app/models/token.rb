@@ -72,6 +72,10 @@ class Token < ActiveRecord::Base
     Round.since(round) <= EXPIRATION
   end
 
+  def expired?
+    !eligible?
+  end
+
   def secret
     Password.new self.digest
   end
@@ -90,7 +94,7 @@ class Token < ActiveRecord::Base
             round_num
             )
 
-      Stat.time "deposit.#{instance.team.certname}.#{instance.service.name}" do
+      Stats.time "deposit.#{instance.team.certname}.#{instance.service.name}" do
         self.status = shell.status
       end
       self.memo = shell.output
