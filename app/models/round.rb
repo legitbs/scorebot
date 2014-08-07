@@ -32,7 +32,9 @@ class Round < ActiveRecord::Base
                                  round: self
                                  )
     end
-    new_tokens.each(&:deposit)
+    Stats.time 'all_deposits' do
+      new_tokens.each(&:deposit)
+    end
   end
 
   def finalize!
