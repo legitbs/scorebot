@@ -1,0 +1,13 @@
+%h1 Instances
+
+%table.instances
+  %tr
+    %th team \ service
+    - @services.each do |s|
+      %th= s.name
+  - @instances.all.group_by(&:team).each do |t, is|
+    %tr
+      %th= t.certname
+      - is.each do |i|
+        %td
+          = link_to(t.certname.truncate(8) + ' ' + i.service.name, admin_instance_path(i))

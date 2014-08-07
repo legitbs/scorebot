@@ -3,6 +3,10 @@ module AdminHelper
     link_to [i.team.certname, i.service.name].join(' '), admin_instance_path(i)
   end
 
+  def describe_token(t)
+    link_to "#{t.id} #{t.to_fake_string.truncate(8)}"
+  end
+
   def time_ago(t)
     time_ago_in_words(t, include_seconds: true) + ' ago'
   end

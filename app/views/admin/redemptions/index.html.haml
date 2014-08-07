@@ -1,0 +1,23 @@
+%h1 Redemptions
+
+%table
+  %thead
+    %tr
+      %th id
+      %th team
+      %th instance
+      %th token
+      %th round
+      %th captured
+      %th actions
+  %tbody
+    - @redemptions.each do |r|
+      %tr
+        %td= link_to r.id, admin_redemption_path(r)
+        %td= link_to r.team.certname, admin_team_path(r.team)
+        %td= describe_instance r.token.instance
+        %td= describe_token r.token
+        %td= link_to r.round.id, admin_round_path(r.round)
+        %td= r.captures.count
+        %td
+          = link_to 'show', admin_redemption_path(r)
