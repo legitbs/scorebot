@@ -3,7 +3,7 @@ class Flag < ActiveRecord::Base
   belongs_to :service
   has_many :captures
 
-  TOTAL_FLAGS = 50_120
+  TOTAL_FLAGS = 50_040
 
   def self.reallocate(ending_round)
     transaction do

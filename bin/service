@@ -71,7 +71,7 @@ loop do
           l "Looks like #{service.name} checks will run long :("
         end
 
-        l check.schedule!
+        check.schedule!
       end
 
       checks.each(&:join)

@@ -24,7 +24,7 @@ class AvailabilityCheck
     Time.now.to_f + timing_average >= deadline.to_f
   end
 
-  def schedule
+  def schedule!
     remaining = deadline.to_f - Time.now.to_f
 
     # skew earlier
@@ -42,8 +42,6 @@ class AvailabilityCheck
         timing_history << duration
       end
     end
-
-    "Checking #{@service.name} in #{wait} seconds"
   end
 
   def join
