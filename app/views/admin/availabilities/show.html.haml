@@ -1,0 +1,37 @@
+%h1 Availability
+
+%table
+  %tbody
+    %tr
+      %th id
+      %td= @availability.id
+    %tr
+      %th instance
+      %td= describe_instance @availability.instance
+    %tr
+      %th when
+      %td
+        = @availability.created_at
+        = time_ago @availability.created_at
+    %tr
+      %th healthy? (status)
+      %td
+        = @availability.healthy?
+        (#{@availability.status})
+    %tr
+      %th /dev/ctf dingus
+      %td= none_able @availability.dingus
+    %tr
+      %th token string
+      %td
+        = none_able @availability.token_string
+    %tr
+      %th token?
+      %td
+        - if @availability.token
+          = link_to @availability.token.id, admin_token_path(@availability.token) 
+        - else
+          = none_able nil
+
+%h2 Memo
+%pre= @availability.memo

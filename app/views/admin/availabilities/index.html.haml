@@ -1,0 +1,21 @@
+%h1 Availabilities
+
+%table
+  %thead
+    %tr
+      %th id
+      %th instance
+      %th when
+      %th healthy?
+      %th activities
+  %tbody
+    - @availabilities.each do |a|
+      %tr
+        %td= link_to a.id, admin_availability_path(a)
+        %td= describe_instance a.instance
+        %td{title: a.created_at}
+          = time_ago_in_words a.created_at, include_seconds: true
+          ago
+        %td= a.healthy?
+        %td
+          = link_to 'show', admin_availability_path(a)
