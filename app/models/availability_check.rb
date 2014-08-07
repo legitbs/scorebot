@@ -42,6 +42,8 @@ class AvailabilityCheck
         timing_history << duration
       end
     end
+
+    wait
   end
 
   def join

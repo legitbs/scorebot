@@ -61,6 +61,7 @@ loop do
       l "Scheduling service checks"
 
       checks = Service.enabled.map do |service|
+        l "Scheduling #{service.name}"
         check = AvailabilityCheck.for_service service
         check.deadline = round_timer.ending
 
@@ -68,7 +69,11 @@ loop do
           l "Looks like #{service.name} checks will run long :("
         end
 
-        check.schedule!
+        time = check.schedule!
+
+        l "Checking #{service.name} in #{time} seconds"
+
+        check
       end
       l "Waiting for service checks"
       checks.each(&:join)
