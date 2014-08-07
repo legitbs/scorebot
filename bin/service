@@ -50,8 +50,6 @@ end
 loop do
   loop_start = Time.now
 
-  l "Started service check"
-
   current_round = Round.current
 
   unless Timer.round.ended?
@@ -60,7 +58,7 @@ loop do
     ending_sec = round_timer.ending.to_i
 
     unless current_round.availability_checks_done?
-      
+      l "Scheduling service checks"
 
       checks = Service.enabled.map do |service|
         check = AvailabilityCheck.for_service service
@@ -72,8 +70,9 @@ loop do
 
         check.schedule!
       end
-
+      l "Waiting for service checks"
       checks.each(&:join)
+      l "Service checks done"
     end
 
     l "Waiting for round end"
