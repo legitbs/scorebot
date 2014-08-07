@@ -26,18 +26,25 @@
         - else
           %em not yet  
 
-%h2 Deposits
+%h2 Tokens / Deposits
 
 %table
   %thead
     %tr
       %th instance
+      %th status
       %th redemptions
       %th activities
   %tbody
     - @round.tokens.order(instance_id: :asc).each do |t|
       %tr
         %td= describe_instance t.instance
+        %td
+          - if t.status == 0
+            ok
+          - else
+            failed
+            = t.status
         %td= t.redemptions.count
         %td
           = link_to 'show', admin_token_path(t)
