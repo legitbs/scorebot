@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140805223411) do
+ActiveRecord::Schema.define(version: 20140807162135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "availabilities", force: true do |t|
-    t.integer  "instance_id"
-    t.integer  "round_id"
+    t.integer  "instance_id",  null: false
+    t.integer  "round_id",     null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "memo"
@@ -34,29 +34,29 @@ ActiveRecord::Schema.define(version: 20140805223411) do
   add_index "availabilities", ["token_id"], name: "index_availabilities_on_token_id", using: :btree
 
   create_table "captures", force: true do |t|
-    t.integer  "redemption_id"
-    t.integer  "flag_id"
+    t.integer  "redemption_id", null: false
+    t.integer  "flag_id",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "round_id"
+    t.integer  "round_id",      null: false
   end
 
   add_index "captures", ["flag_id"], name: "index_captures_on_flag_id", using: :btree
   add_index "captures", ["redemption_id"], name: "index_captures_on_redemption_id", using: :btree
 
   create_table "flags", force: true do |t|
-    t.integer  "team_id"
+    t.integer  "team_id",    null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "service_id"
+    t.integer  "service_id", null: false
   end
 
   add_index "flags", ["service_id"], name: "index_flags_on_service_id", using: :btree
   add_index "flags", ["team_id"], name: "index_flags_on_team_id", using: :btree
 
   create_table "instances", force: true do |t|
-    t.integer  "team_id"
-    t.integer  "service_id"
+    t.integer  "team_id",    null: false
+    t.integer  "service_id", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -65,9 +65,9 @@ ActiveRecord::Schema.define(version: 20140805223411) do
   add_index "instances", ["team_id"], name: "index_instances_on_team_id", using: :btree
 
   create_table "penalties", force: true do |t|
-    t.integer  "availability_id"
-    t.integer  "team_id"
-    t.integer  "flag_id"
+    t.integer  "availability_id", null: false
+    t.integer  "team_id",         null: false
+    t.integer  "flag_id",         null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -77,12 +77,12 @@ ActiveRecord::Schema.define(version: 20140805223411) do
   add_index "penalties", ["team_id"], name: "index_penalties_on_team_id", using: :btree
 
   create_table "redemptions", force: true do |t|
-    t.integer  "team_id"
-    t.integer  "token_id"
+    t.integer  "team_id",    null: false
+    t.integer  "token_id",   null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "round_id"
-    t.uuid     "uuid"
+    t.integer  "round_id",   null: false
+    t.uuid     "uuid",       null: false
   end
 
   add_index "redemptions", ["team_id", "token_id"], name: "index_redemptions_on_team_id_and_token_id", unique: true, using: :btree
@@ -124,7 +124,7 @@ ActiveRecord::Schema.define(version: 20140805223411) do
   add_index "teams", ["uuid"], name: "index_teams_on_uuid", unique: true, using: :btree
 
   create_table "tickets", force: true do |t|
-    t.integer  "team_id"
+    t.integer  "team_id",     null: false
     t.text     "body"
     t.datetime "resolved_at"
     t.datetime "created_at"
@@ -141,12 +141,12 @@ ActiveRecord::Schema.define(version: 20140805223411) do
   end
 
   create_table "tokens", force: true do |t|
-    t.string   "key"
+    t.string   "key",               null: false
     t.string   "digest"
-    t.integer  "instance_id"
+    t.integer  "instance_id",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "round_id"
+    t.integer  "round_id",          null: false
     t.text     "memo"
     t.integer  "status"
     t.integer  "redemptions_count"
