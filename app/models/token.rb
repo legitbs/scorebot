@@ -88,7 +88,7 @@ class Token < ActiveRecord::Base
     begin
       shell = ShellProcess.
         new(
-            "/home/scorebot/scripts/#{service_name}"
+            "/home/scorebot/scripts/#{service_name}",
             'deposit',
             team_address,
             given_tok,

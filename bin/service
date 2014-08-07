@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 $stderr.puts "#{Time.now} Loading service script"
-pid_path = File.expand_path('../tmp/pids/service.pid', __FILE__)
+pid_path = File.expand_path('../../tmp/pids/service.pid', __FILE__)
 File.open(pid_path, 'w') do |f|
   f.puts Process.pid.to_s
 end
 at_exit do
   FileUtils.rm pid_path
 end
-require ::File.expand_path('../config/environment',  __FILE__)
+require ::File.expand_path('../../config/environment',  __FILE__)
 
 ROUND_LENGTH = Round::ROUND_LENGTH
 
