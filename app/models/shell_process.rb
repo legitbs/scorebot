@@ -1,6 +1,7 @@
 require 'open3'
 class ShellProcess
-  def initialize(*args)
+  def initialize(directory, *args)
+    @directory = directory
     @args = args.map(&:to_s)
   end
 
@@ -35,7 +36,9 @@ class ShellProcess
 
     @output = ''
 
-    IO.popen @args, 'r', err: %i{child out} do |stdout|
+    cmd = "cd #{directory}; ./#{@args.join ' '}"
+
+    IO.popen cmd, 'r', err: %i{child out} do |stdout|
       @output << stdout.read
     end
 
