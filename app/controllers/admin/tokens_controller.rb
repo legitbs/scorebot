@@ -9,5 +9,6 @@ class Admin::TokensController < Admin::BaseController
   end
 
   def show
+    @token = Token.find params[:id]
   end
 end

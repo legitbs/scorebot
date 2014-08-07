@@ -1,0 +1,29 @@
+%h1 Token
+
+%table
+  %tr
+    %th instance
+    %td= describe_instance @token.instance
+  %tr
+    %th key
+    %td= @token.key
+  %tr
+    %th looks like
+    %td= @token.to_fake_string
+
+%h2 Redemptions
+%table
+  %thead
+    %th id
+    %th team
+    %th round
+    %th captured
+    %th actions
+  %tbody
+    - @token.redemptions.each do |r|
+      %tr
+        %td= link_to r.id, admin_redemption_path(r)
+        %td= link_to r.team.certname, admin_team_path(r.team)
+        %td= link_to r.round.id, admin_round_path(r.round)
+        %td= r.captures.count
+        %td= link_to 'show', admin_redemption_path(r)

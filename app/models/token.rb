@@ -23,6 +23,11 @@ class Token < ActiveRecord::Base
     key.chars.zip(@secret.chars).join
   end
 
+  def to_fake_string
+    padding = '-' * key.length
+    key.chars.zip(padding.chars).join
+  end
+
   def self.from_token_string(token_string)
     begin
       key, secret = token_split token_string

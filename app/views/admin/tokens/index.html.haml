@@ -17,8 +17,8 @@
   %tbody
     - @tokens.each do |t|
       %tr
-        %td= t.id
+        %td= link_to t.id, admin_token_path(t)
         %td= describe_instance t.instance
         %td= t.round.id
         %td= t.key
-        %td butt
+        %td= link_to 'show', admin_token_path(t)

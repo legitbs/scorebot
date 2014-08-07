@@ -1,0 +1,19 @@
+%h1 Teams
+
+%table
+  %thead
+    %tr
+      %th id
+      %td name
+      %th certname
+      %th flags
+      %th activities
+  %tbody
+    - @teams.each do |t|
+      %tr
+        %td= link_to t.id, admin_team_path(t)
+        %td= t.name
+        %td= t.certname
+        %td= t.flags.count
+        %td
+          = link_to 'show', admin_team_path(t)

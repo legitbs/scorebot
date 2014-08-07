@@ -10,7 +10,7 @@
   %tbody
     - @rounds.each do |r|
       %tr
-        %td= r.id
+        %td= link_to r.id, admin_round_path(r)
         %td= r.created_at.to_formatted_s(:ctf)
         %td= r.ended_at.try(:to_formatted_s, :ctf) or 'ongoing'
         %td
