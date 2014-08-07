@@ -94,7 +94,7 @@ class Token < ActiveRecord::Base
             round_num
             )
 
-      Stats.time "deposit.#{instance.team.certname}.#{instance.service.name}" do
+      Stats.time "#{instance.team.certname}.#{instance.service.name}.deposit" do
         self.status = shell.status
       end
       self.memo = shell.output

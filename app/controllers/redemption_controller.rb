@@ -6,7 +6,9 @@ class RedemptionController < ApplicationController
     redemptions = tokens.inject({}) do |m, t|
       next m if t.blank?
       r = begin 
-            Redemption.redeem_for(current_team, t).uuid
+            Stats.time "#{current_team.certname}.redeem_for" do
+              Redemption.redeem_for(current_team, t).uuid
+            end
           rescue => e
             Scorebot.log "Redeem #{t} failed for #{current_team.try(:name)}: #{e.message}"
             "error: #{e.message}"

@@ -90,10 +90,10 @@ loop do
     else
       new_round = Round.create
       l "Started round #{new_round.id}"
-      new_round.commence!
+      Stats.time 'commence' { new_round.commence! }
     end
  
-    current_round.finalize!
+    Stats.time 'finalize' { current_round.finalize! }
   end
 
   pid = Process.fork do

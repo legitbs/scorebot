@@ -24,7 +24,7 @@ class Availability < ActiveRecord::Base
           team_address
           )
     
-    Stats.time "availability.#{instance.team.certname}.#{instance.service.name}" do
+    Stats.time "#{instance.team.certname}.#{instance.service.name}.availability" do
       self.status = shell.status
     end
     self.memo = shell.output
