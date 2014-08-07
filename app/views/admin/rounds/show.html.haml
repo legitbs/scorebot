@@ -1,5 +1,31 @@
 %h1 Round #{@round.id}
 
+%table
+  %tbody
+    %tr
+      %th id
+      %td= @round.id
+    %tr
+      %th signature
+      %td= @round.signature
+    %tr
+      %th started
+      %td= time_ago @round.created_at
+    %tr
+      %th ended
+      %td 
+        - if @round.ended_at
+          = time_ago @round
+        - else
+          %em not yet
+    %tr
+      %th round length
+      %td
+        - if @round.ended_at
+          = @round.ended_at - @round.created_at
+        - else
+          %em not yet  
+
 %h2 Deposits
 
 %table
