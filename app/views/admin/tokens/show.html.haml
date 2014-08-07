@@ -27,3 +27,8 @@
         %td= link_to r.round.id, admin_round_path(r.round)
         %td= r.captures.count
         %td= link_to 'show', admin_redemption_path(r)
+
+%h2 Deposit
+%p Status: #{@token.status}
+
+%pre= @token.memo

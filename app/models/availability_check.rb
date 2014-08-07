@@ -42,6 +42,8 @@ class AvailabilityCheck
         timing_history << duration
       end
     end
+
+    "Checking #{@service.name} in #{wait} seconds"
   end
 
   def join
