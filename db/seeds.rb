@@ -35,10 +35,9 @@ Team.find_or_create_by(id: 21,
 
 Service.find_or_create_by(name: 'eliza')
 Service.find_or_create_by(name: 'wdub')
-Service.find_or_create_by(name: 'malvo')
 Service.find_or_create_by(name: 'badge')
 Service.find_or_create_by(name: 'justify')
-Service.find_or_create_by(name: 'imap')
+Service.find_or_create_by(name: 'imap', enabled: true)
 Service.find_or_create_by(name: 'hellnet')
 
 Team.find_each do |t|
