@@ -6,5 +6,6 @@ class Admin::InstancesController < Admin::BaseController
   end
 
   def show
+    @instance = Instance.find params[:id]
   end
 end

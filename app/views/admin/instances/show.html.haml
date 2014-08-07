@@ -1,0 +1,52 @@
+%h1 Instance
+
+%table
+  %tbody
+    %tr
+      %th team
+      %td= @instance.team.name
+    %tr
+      %th service
+      %td= @instance.service.name
+
+%h2 Recent Tokens
+
+%table
+  %thead
+    %tr
+      %th deposit status
+      %th redemptions
+      %th activities
+  %tbody
+    - @instance.tokens.order(instance_id: :asc).limit(24).each do |t|
+      %tr
+        %td
+          - if t.status == 0
+            ok
+          - else
+            failed
+            = t.status
+        %td= t.redemptions.count
+        %td
+          = link_to 'show', admin_token_path(t)
+
+%h2 Recent Availability Checks
+
+%table
+  %thead
+    %tr
+      %th round
+      %th when
+      %th healthy?
+      %th activities
+  %tbody
+    - @instance.availabilities.order(created_at: :desc).limit(24).each do |a|
+      %tr
+        %td= a.round_id
+        %td{title: a.created_at}
+          = time_ago_in_words a.created_at, include_seconds: true
+          ago
+        %td= a.healthy?
+        %td
+          = link_to 'show', admin_availability_path(a)
+
