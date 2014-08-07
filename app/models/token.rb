@@ -36,6 +36,22 @@ class Token < ActiveRecord::Base
     return candidate
   end
 
+  def self.where_prefixed_by(ts)
+    l = ts.length
+    
+    even_prefix = ts
+    
+    if l % 2 != 0
+      even_prefix = ts + '_'
+    end
+    
+    key_prefix, secret_prefix = Token.token_split(even_prefix)
+
+    tok_table = Token.arel_table
+    clause = tok_table[:key].matches("#{key_prefix}%")
+    where clause
+  end
+
   def self.expiring
     r = Round.order('created_at desc').offset(EXPIRATION + 1).first
     return [] if r.nil?
