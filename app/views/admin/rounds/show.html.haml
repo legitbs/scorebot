@@ -15,7 +15,7 @@
       %th ended
       %td 
         - if @round.ended_at
-          = time_ago @round
+          = time_ago @round.ended_at
         - else
           %em not yet
     %tr
