@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 $stderr.puts "#{Time.now} Loading service script"
-File.open ::File.expand_path('../../tmp/pids/service.pid', 'w') do |f|
+File.open ::File.expand_path('../tmp/pids/service.pid', __FILE__), 'w') do |f|
   f.puts Process.pid.to_s
 end
 at_exit do
@@ -12,6 +12,7 @@ ROUND_LENGTH = Round::ROUND_LENGTH
 
 def l(str)
   Scorebot.log str
+  $stderr.puts str
 end
 
 def now_sec

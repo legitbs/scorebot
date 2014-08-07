@@ -2,7 +2,7 @@
 lock '3.2.1'
 
 set :application, 'scorebot'
-set :repo_url, 'git@waitingf.org:scorebot.git'
+set :repo_url, 'file:///home/scorebot/scorebot-repo.git'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
