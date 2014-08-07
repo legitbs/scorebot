@@ -43,7 +43,5 @@ class ShellProcess
     end
 
     @status = $?
-
-    Scorebot.log @status, @output.inspect
   end
 end

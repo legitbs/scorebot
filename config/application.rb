@@ -26,5 +26,6 @@ module Scorebot
     body = args.map{|a| a.is_a?(String) ? a : a.inspect }.join(' ')
 
     Rails.logger.info "#{timestamp} [scorebot] #{body}"
+    $stderr.puts body
   end
 end

@@ -77,7 +77,7 @@ class Availability < ActiveRecord::Base
                        Team.legitbs.id, 
                        instance.team.id).to_a
 
-    Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams} teams"
+    Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams.map(&:certname)} teams"
 
     flags.zip(teams) do |f, t|
       break if t.nil?

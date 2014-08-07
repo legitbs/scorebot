@@ -77,6 +77,8 @@ class Round < ActiveRecord::Base
       limit(Token::EXPIRATION + 1).
       order(id: :desc).
       last
+ 
+    return Token.where(id: nil) if expiring_round.nil?
 
     expiring_round.tokens
   end

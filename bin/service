@@ -13,7 +13,6 @@ ROUND_LENGTH = Round::ROUND_LENGTH
 
 def l(str)
   Scorebot.log str
-  $stderr.puts str
 end
 
 def now_sec

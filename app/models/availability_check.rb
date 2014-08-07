@@ -87,8 +87,10 @@ class AvailabilityCheck
           
           break if instance.nil?
 
-          av = instance.check_availability round
+          l "#{ instance.service.name } #{instance.team.certname} checking"
 
+          av = instance.check_availability round
+          l "#{ instance.service.name } #{instance.team.certname} status #{av.status}"
           result_mutex.synchronize do
             results.push av
           end
@@ -118,5 +120,9 @@ class AvailabilityCheck
     while Time.now.to_f < duration
       sleep 0.1
     end
+  end
+
+  def l(str)
+    Scorebot.log str
   end
 end
