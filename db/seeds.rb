@@ -38,7 +38,7 @@ Service.find_or_create_by(name: 'wdub')
 Service.find_or_create_by(name: 'badge')
 Service.find_or_create_by(name: 'justify')
 Service.find_or_create_by(name: 'imap', enabled: true)
-Service.find_or_create_by(name: 'hellnet')
+Service.find_or_create_by(name: 'csniff')
 
 Team.find_each do |t|
   Service.find_each do |s|
