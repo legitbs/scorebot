@@ -7,6 +7,7 @@
       %th instance
       %th when
       %th healthy?
+      %th legit?
       %th activities
   %tbody
     - @availabilities.each do |a|
@@ -17,5 +18,6 @@
           = time_ago_in_words a.created_at, include_seconds: true
           ago
         %td= a.healthy?
+        %td= a.legit_dingus?
         %td
           = link_to 'show', admin_availability_path(a)
