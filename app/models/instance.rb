@@ -31,6 +31,10 @@ class Instance < ActiveRecord::Base
     Flag.where(team_id: team.id, service_id: service.id)
   end
 
+  def legitbs_instance
+    Instance.where(team: Team.legitbs, service_id: service.id)
+  end
+
   private
   def health_check_rounds
     @health_check_rounds ||= Round.limit(3).offset(1).order('created_at desc').reverse
