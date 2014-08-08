@@ -63,7 +63,7 @@ class Availability < ActiveRecord::Base
     end
     
     if has_dingus = /^!!legitbs-validate-dev-ctf (.+)$/.match(memo)
-      self.dingus = Base64.decode64 has_dingus[1]
+      self.dingus = Dingus.new(Base64.decode64 has_dingus[1]).plaintext
     end
   end
 
