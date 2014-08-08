@@ -18,7 +18,7 @@ class Availability < ActiveRecord::Base
   def legit_dingus?
     return false unless decoded_dingus.legit?
     return false unless decoded_dingus.team == instance.team
-    return false unless ((Time.now.to_i - 30)..(Time.now.to_i + 30)).cover? decoded_dingus.to_h[:clocktime]
+    return false unless ((created_at.to_i - 30)..(created_at.to_i + 30)).cover? decoded_dingus.to_h[:clocktime]
 
     return true
   end
