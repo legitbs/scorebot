@@ -12,8 +12,10 @@
     - @rounds.each do |r|
       %tr
         %td= link_to r.id, admin_round_path(r)
-        %td= r.created_at.to_formatted_s(:ctf)
-        %td= r.ended_at.try(:to_formatted_s, :ctf) or 'ongoing'
+        %td{title: r.created_at}
+          = r.created_at.to_formatted_s(:ctf)
+        %td{title: r.ended_at}
+          = r.ended_at.try(:to_formatted_s, :ctf) or 'ongoing'
         %td= r.ended_at.try(:-, r.created_at) or 'ongoing'
         %td
           = link_to 'show', admin_round_path(r)
