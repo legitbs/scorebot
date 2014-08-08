@@ -5,5 +5,5 @@ test:
   appname: scorebot_test
   port: 8125
 production:
-  appname: scorebot_production
+  appname: ''
   port: 8125
