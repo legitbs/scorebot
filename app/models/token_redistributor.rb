@@ -16,6 +16,8 @@ class TokenRedistributor
     instances = svc.instances
     recipients = instances.map(&:redemptions).flatten.map(&:team).uniq
 
+    return if recipients.count
+
     flags = Team.legitbs.flags.where(service: svc).to_a
     return if flags.count < recipients.count
 
