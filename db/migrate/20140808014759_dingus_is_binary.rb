@@ -1,5 +1,5 @@
 class DingusIsBinary < ActiveRecord::Migration
-  def change
+  def up
     remove_column :availabilities, :dingus
     add_column :availabilities, :dingus, :binary
   end
