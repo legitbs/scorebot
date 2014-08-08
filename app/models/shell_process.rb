@@ -12,7 +12,7 @@ class ShellProcess
 
   def output
     guard_run
-    ActiveRecord::Base.connection.escape_bytea(@output)
+    @output
   end
 
   def status
