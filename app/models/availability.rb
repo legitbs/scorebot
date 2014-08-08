@@ -32,7 +32,7 @@ class Availability < ActiveRecord::Base
     dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id.to_s)
     FileUtils.mkdir_p dir
     
-    File.open(dir + '/availability.log', 'w') { |f| f.puts shell.output }
+    File.open(File.join(dir, 'availability.log'), 'w') { |f| f.puts shell.output }
 
     load_dinguses shell.output
 
