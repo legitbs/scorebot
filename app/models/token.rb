@@ -146,9 +146,13 @@ class Token < ActiveRecord::Base
       each_team_gets.times do |g|
         capture = r.captures.build
         captured_flag = flags_to_distribute.pop
+
         capture.flag = captured_flag
         capture.round = round
         capture.save
+
+        captured_flag.team = r.team
+        captured_flag.save
       end
     end
 
