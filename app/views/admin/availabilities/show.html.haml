@@ -11,7 +11,7 @@
     %tr
       %th when
       %td
-        = @availability.created_at
+        = @availability.created_at.to_formatted_s(:ctf)
         = time_ago @availability.created_at
     %tr
       %th healthy? (status)
