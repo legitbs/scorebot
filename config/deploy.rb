@@ -28,7 +28,7 @@ set :repo_url, 'file:///home/scorebot/scorebot-repo.git'
 # Default value for linked_dirs is []
 # set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
 
-set :linked_dirs, fetch(:linked_dirs) + %w{tmp/pids}
+set :linked_dirs, fetch(:linked_dirs) + %w{tmp/pids tmp/logs logs}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
