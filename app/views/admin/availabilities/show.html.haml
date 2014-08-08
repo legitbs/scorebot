@@ -24,7 +24,8 @@
         - if @availability.dingus.nil?
           %em none
         - else 
-          = @availability.dingus.unpack('H*').first
+          %p= @availability.dingus.unpack('H*').first
+          %pre= Dingus.new(@availability.dingus, plaintext: true).to_h.pretty_inspect
     %tr
       %th token string
       %td
