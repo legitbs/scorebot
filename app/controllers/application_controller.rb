@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_team, :is_legitbs?
 
+  before_filter :require_team
+
   def client_cn
     request.env['HTTP_SSL_CLIENT_S_DN_CN']
   end
@@ -19,6 +21,10 @@ class ApplicationController < ActionController::Base
 
   def is_legitbs?
     current_team == Team.legitbs
+  end
+
+  def require_team
+    raise "Couldn't find cert for #{client_cn}" unless current_team
   end
 
   def require_legitbs
