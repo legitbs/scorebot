@@ -14,12 +14,17 @@
 %table
   %thead
     %tr
+      %th round
+      %th when
       %th deposit status
       %th redemptions
       %th activities
   %tbody
-    - @instance.tokens.order(instance_id: :asc).limit(24).each do |t|
+    - @instance.tokens.order(instance_id: :desc).limit(24).each do |t|
       %tr
+        %td= t.round
+        %td
+          = time_ago t.created_at
         %td
           - if t.status == 0
             ok
