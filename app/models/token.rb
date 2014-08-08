@@ -99,7 +99,7 @@ class Token < ActiveRecord::Base
         self.status = shell.status
       end
 
-      dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id)
+      dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id.to_i)
       FileUtils.mkdir_p dir
 
       File.open(dir + '/deposit.log', 'w') { |f| f.puts shell.output }
