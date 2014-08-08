@@ -1,7 +1,7 @@
 class Dingus
-  KEY = 'A' * 32
+  KEY = 'a' * 32
 
-  def initialize(dingus, opts)
+  def initialize(dingus, opts={  })
     if opts[:plaintext]
       @dingus_pt = dingus
     else
@@ -37,5 +37,7 @@ class Dingus
     cipher.decrypt
     cipher.padding = 0
     cipher.key = KEY
+
+    return cipher
   end
 end
