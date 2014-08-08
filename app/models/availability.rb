@@ -28,8 +28,13 @@ class Availability < ActiveRecord::Base
     Stats.time "#{instance.team.certname}.#{instance.service.name}.availability" do
       self.status = shell.status
     end
-    self.memo = shell.output
-    load_dinguses
+
+    dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id)
+    File.mkdir_p dir
+    
+    File.open(dir + 'availability.log', 'w') { |f| f.puts shell.output }
+
+    load_dinguses shell.output
 
     if self.token_string and !self.token
       self.status = 420
@@ -48,7 +53,7 @@ class Availability < ActiveRecord::Base
     return as_json include_root: true, only: %i{ id penalties }
   end
 
-  def load_dinguses
+  def load_dinguses(memo)
     if has_token = /^!!legitbs-validate-token (.+)$/.match(memo)
       self.token_string = has_token[1]
       candidate_token = Token.from_token_string self.token_string
@@ -65,6 +70,9 @@ class Availability < ActiveRecord::Base
   end
 
   def process_movements(_round)
+    return if instance.team = Team.legitbs
+    return unless instance.legitbs_instance.availabilities.find_by(round: round).healthy?
+
     flags = instance.team.flags.limit(19)
 
     return distribute_parking(flags) if flags.count < 19

@@ -98,7 +98,11 @@ class Token < ActiveRecord::Base
       Stats.time "#{instance.team.certname}.#{instance.service.name}.deposit" do
         self.status = shell.status
       end
-      self.memo = shell.output
+
+      dir = Rails.root.join('tmp', 'log', instance.team.certname, instance.service.name, round.id)
+      File.mkdir_p dir
+
+      File.open(dir + 'deposit.log', 'w') { |f| f.puts shell.output }
 
       check_token_replacement
 
