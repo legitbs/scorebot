@@ -60,6 +60,10 @@ loop do
     unless current_round.availability_checks_done?
       l "Scheduling service checks"
 
+      Service.all.each do |s|
+        l "#{s.name} #{s.enabled}"
+      end
+
       checks = Service.enabled.map do |service|
         l "Scheduling #{service.name}"
         check = AvailabilityCheck.for_service service
