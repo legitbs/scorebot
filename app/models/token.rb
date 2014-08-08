@@ -99,7 +99,7 @@ class Token < ActiveRecord::Base
         self.status = shell.status
       end
 
-      self.memo = shell.output
+      self.memo = shell.output.force_encoding('binary')
 
       check_token_replacement
 

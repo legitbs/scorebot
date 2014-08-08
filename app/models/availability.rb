@@ -29,7 +29,7 @@ class Availability < ActiveRecord::Base
       self.status = shell.status
     end
 
-    self.memo = shell.output
+    self.memo = shell.output.force_encoding('binary')
 
     load_dinguses shell.output
 
