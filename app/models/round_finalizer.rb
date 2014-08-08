@@ -21,6 +21,8 @@ class RoundFinalizer
     initial += round.expiring_tokens.order(id: :asc).to_a
     generator = prng
     @candidates = initial.sort_by{ generator.rand }
+
+    @candidates << TokenRedistributor.new
   end
 
   def movements
