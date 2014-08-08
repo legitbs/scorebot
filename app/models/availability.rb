@@ -61,7 +61,7 @@ class Availability < ActiveRecord::Base
   def as_movement_json
     return { availability: { id: id, healthy: true } } if healthy?
 
-    return as_json include_root: true, only: %i{ id penalties }
+    return { availability: as_json(only: :id, include: :penalties) }
   end
 
   def load_dinguses(memo)
