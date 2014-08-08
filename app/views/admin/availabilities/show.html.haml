@@ -24,9 +24,9 @@
         - if @availability.dingus.nil?
           %em none
         - else 
-          - dingus = Dingus.new(@availability.dingus, plaintext: true).to_h.pretty_inspect
+          - dingus = Dingus.new(@availability.dingus, plaintext: true)
           %p= @availability.dingus.unpack('H*').first
-          %pre= dingus.to_h
+          %pre= dingus.to_h.pretty_inspect
           %p
             legit? #{@availability.legit_dingus?}
     %tr
