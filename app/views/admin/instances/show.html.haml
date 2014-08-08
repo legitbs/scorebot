@@ -22,7 +22,7 @@
   %tbody
     - @instance.tokens.order(instance_id: :desc).limit(24).each do |t|
       %tr
-        %td= t.round
+        %td= t.round.id
         %td
           = time_ago t.created_at
         %td
