@@ -29,7 +29,7 @@ class TokenRedistributor
         candidate.update_attribute :team_id, r.id
 
         record[r.id] ||= []
-        record[r.id] << flag.id
+        record[r.id] << candidate.id
       end
     end
 
