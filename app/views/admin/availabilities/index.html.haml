@@ -18,6 +18,6 @@
           = time_ago_in_words a.created_at, include_seconds: true
           ago
         %td= a.healthy?
-        %td= a.legit_dingus?
+        %td= a.legit_dingus?.pretty_inspect
         %td
           = link_to 'show', admin_availability_path(a)

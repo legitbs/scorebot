@@ -12,10 +12,12 @@ class Availability < ActiveRecord::Base
   end
 
   def decoded_dingus
+    return nil if dingus.nil?
     @decoded_dingus ||= Dingus.new self.dingus, plaintext: true
   end
 
   def legit_dingus?
+    return nil if decoded_dingus.nil?
     return false unless decoded_dingus.legit?
     return false unless decoded_dingus.team == instance.team
     return false unless ((created_at.to_i - 30)..(created_at.to_i + 30)).cover? decoded_dingus.to_h[:clocktime]
