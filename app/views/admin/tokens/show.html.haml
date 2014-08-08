@@ -5,6 +5,9 @@
     %th instance
     %td= describe_instance @token.instance
   %tr
+    %th round
+    %td= link_to @token.round.id, admin_round_path(@token.round)
+  %tr
     %th key
     %td= @token.key
   %tr
