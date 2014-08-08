@@ -67,6 +67,7 @@ class AvailabilityCheck
     return unless @service.enabled
     
     @lbs_check = lbs_instance.check_availability Round.current
+    @lbs_check.save
 
     @non_lbs_checks = process_instance_queue
   end
