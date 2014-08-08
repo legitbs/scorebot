@@ -30,7 +30,7 @@ Team.find_or_create_by(id: 21,
                        name: 'Legitimate Business Syndicate', 
                        certname: 'legitbs', 
                        uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86",
-                       address: "10.5.22.2"
+                       address: "10.5.21.2"
                        )
 
 Service.find_or_create_by(name: 'eliza', enabled: true)
