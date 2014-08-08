@@ -12,7 +12,7 @@ class ShellProcess
 
   def output
     guard_run
-    @output.force_encoding('iso-8859-1').encode('utf-8')
+    ActiveRecord::Base.connection.escape_bytea(@output)
   end
 
   def status
