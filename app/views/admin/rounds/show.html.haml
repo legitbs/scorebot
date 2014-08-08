@@ -94,3 +94,8 @@
         %td
           = link_to 'show', admin_availability_path(a)
 
+%h2 Distribution
+
+- if round.distribution
+  %pre
+    = round.distribution.pretty_inspect
