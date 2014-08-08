@@ -99,10 +99,10 @@ class Token < ActiveRecord::Base
         self.status = shell.status
       end
 
-      dir = Rails.root.join('tmp', 'log', instance.team.certname, instance.service.name, round.id)
-      File.mkdir_p dir
+      dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id)
+      FileUtils.mkdir_p dir
 
-      File.open(dir + 'deposit.log', 'w') { |f| f.puts shell.output }
+      File.open(dir + '/deposit.log', 'w') { |f| f.puts shell.output }
 
       check_token_replacement
 

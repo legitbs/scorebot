@@ -30,7 +30,7 @@ class Availability < ActiveRecord::Base
     end
 
     dir = Rails.root.join('tmp', 'logs', instance.team.certname, instance.service.name, round.id)
-    File.mkdir_p dir
+    FileUtils.mkdir_p dir
     
     File.open(dir + 'availability.log', 'w') { |f| f.puts shell.output }
 
