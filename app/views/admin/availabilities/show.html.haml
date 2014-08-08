@@ -20,7 +20,11 @@
         (#{@availability.status})
     %tr
       %th /dev/ctf dingus
-      %td= none_able @availability.dingus
+      %td
+        - if @availability.dingus.nil?
+          %em none
+        - else 
+          = @availability.dingus.unpack('H*')
     %tr
       %th token string
       %td
