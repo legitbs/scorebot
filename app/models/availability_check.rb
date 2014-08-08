@@ -1,5 +1,5 @@
 class AvailabilityCheck  
-  WORKERS = 20
+  WORKERS = 10
   INITIAL_TIMING = 4 * 60
 
   attr_accessor :timing_history
