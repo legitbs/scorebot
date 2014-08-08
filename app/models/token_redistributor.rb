@@ -24,7 +24,6 @@ class TokenRedistributor
 
     @movement_json[svc.id] = record = {  }
 
-    record[:instances] = instances.as_json only: :id
     record[:recipients] = recipients.as_json only: %i{ id certname }
 
     return if recipients.count == 0
@@ -48,6 +47,6 @@ class TokenRedistributor
       end
     end
 
-    @movement_json[svc.id] = record
+    @movement_json[svc.name] = record
   end
 end
