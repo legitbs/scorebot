@@ -11,6 +11,18 @@ class Availability < ActiveRecord::Base
     return candidate
   end
 
+  def decoded_dingus
+    @decoded_dingus ||= Dingus.new self.dingus, plaintext: true
+  end
+
+  def legit_dingus?
+    return false unless decoded_dingus.legit?
+    return false unless decoded_dingus.team == instance.team
+    return false unless ((Time.now.to_i - 30)..(Time.now.to_i + 30)).cover? decoded_dingus[:clocktime]
+
+    return true
+  end
+
   def check
     service_name = instance.service.name
     team_address = instance.team.address

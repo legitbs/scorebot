@@ -18,6 +18,14 @@ class Dingus
     @dingus_pt = buf + c.final
   end
 
+  def legit?
+    to_h[:tag] == 0xdc22
+  end
+
+  def team
+    Team.find to_h[:team_num]
+  end
+
   def to_h
     return @to_h if defined? @to_h
 
