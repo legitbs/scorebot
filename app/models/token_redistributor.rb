@@ -11,6 +11,10 @@ class TokenRedistributor
     end
   end
 
+  def as_movement_json
+    return { redistribution: @movement_json }
+  end
+
   private
   def process_movements_for_service(svc)
     instances = svc.instances
@@ -36,9 +40,5 @@ class TokenRedistributor
     end
 
     @movement_json[svc.id] = record
-  end
-
-  def as_movement_json
-    return { redistribution: @movement_json }
   end
 end
