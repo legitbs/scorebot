@@ -27,6 +27,7 @@ class Round < ActiveRecord::Base
     # distribute tokens
     new_tokens = []
     Instance.find_each do |i|
+      next unless i.service.enabled
       new_tokens << Token.create(
                                  instance: i,
                                  round: self

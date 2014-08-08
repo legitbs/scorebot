@@ -33,7 +33,7 @@ Team.find_or_create_by(id: 21,
                        address: "10.5.22.2"
                        )
 
-Service.find_or_create_by(name: 'eliza')
+Service.find_or_create_by(name: 'eliza', enabled: true)
 Service.find_or_create_by(name: 'wdub')
 Service.find_or_create_by(name: 'badge')
 Service.find_or_create_by(name: 'justify')
