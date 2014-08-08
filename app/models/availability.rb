@@ -55,6 +55,7 @@ class Availability < ActiveRecord::Base
       self.token_string = has_token[1]
       candidate_token = Token.from_token_string self.token_string
 
+      return false if candidate_token.nil?
       return false if candidate_token.instance != self.instance
       return false if candidate_token.expired?
 
