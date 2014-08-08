@@ -51,4 +51,4 @@ production:
   adapter: postgresql
   encoding: unicode
   database: scorebot_production
-  pool: 100
+  pool: 500
