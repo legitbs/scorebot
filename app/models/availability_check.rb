@@ -28,7 +28,7 @@ class AvailabilityCheck
     remaining = deadline.to_f - Time.now.to_f
 
     # skew earlier
-    start_before = remaining - (30 + timing_average)
+    start_before = remaining - (90 + timing_average)
 
     wait = rand(start_before)
 
