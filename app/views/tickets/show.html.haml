@@ -12,6 +12,9 @@
     (#{time_ago_in_words @ticket.resolved_at} ago)
   - else
     %em unresolved
+%p
+  %b Created at:
+  = time_ago @ticket.created_at
 
 %nav
   %ul
