@@ -20,7 +20,7 @@
       %th redemptions
       %th activities
   %tbody
-    - @instance.tokens.order(instance_id: :desc).limit(24).each do |t|
+    - @instance.tokens.order(id: :desc).limit(24).each do |t|
       %tr
         %td= t.round.id
         %td
