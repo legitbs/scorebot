@@ -20,7 +20,9 @@ namespace :scoreboard do
                           content_type: 'text/json',
                           body: Team.as_standings_json.to_json
                           )
-                                                
+                              
+    rescue => e
+      puts e
     end
   end
 end
