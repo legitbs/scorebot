@@ -12,7 +12,7 @@ class ShellProcess
 
   def output
     guard_run
-    @output
+    @output.force_encoding('iso-8859-1').encode('utf-8')
   end
 
   def status
