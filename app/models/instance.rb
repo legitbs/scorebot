@@ -32,7 +32,7 @@ class Instance < ActiveRecord::Base
   end
 
   def legitbs_instance
-    Instance.where(team: Team.legitbs, service_id: service.id)
+    Instance.find_by(team: Team.legitbs, service_id: service.id)
   end
 
   private
