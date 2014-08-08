@@ -1,0 +1,28 @@
+%h1 Redemption
+
+%table
+  %tbody
+    %tr
+      %th team
+      %td= link_to @redemption.team.name, admin_team_path(@redemption.team)
+    %tr
+      %th token
+      %td= describe_token @redemption.token
+    %tr
+      %th instance
+      %td= describe_instance @redemption.token.instance
+    %tr
+      %th round
+      %td= link_to @redemption.round.id, admin_round_path(@redemption.round)
+
+%h2 Captures
+
+%table
+  %thead
+    %tr
+      %th id
+      %th activities
+  %tbody
+    - @redemption.captures.each do |c|
+      %tr
+        %th= c.id
