@@ -61,7 +61,7 @@ loop do
       l "Scheduling service checks"
 
       Service.all.each do |s|
-        l "#{s.name} #{s.enabled}"
+        l "#{s.name} #{s.enabled.pretty_inspect}"
       end
 
       checks = Service.enabled.map do |service|
