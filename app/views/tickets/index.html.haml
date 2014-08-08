@@ -16,6 +16,7 @@
         %th Team
       %th Body
       %th Resolved at
+      %th Created at
       %th fun activities
 
     - @tickets.each do |ticket|
@@ -23,6 +24,7 @@
         - if is_legitbs?
           %td= ticket.team.name
         %td= ticket.body.truncate 20
+        %td= time_ago ticket.created_at
         %td
           - if ticket.resolved_at
             = time_ago_in_words(ticket.resolved_at)
