@@ -82,7 +82,7 @@ class Availability < ActiveRecord::Base
   end
 
   def process_movements(_round)
-    return if instance.team = Team.legitbs
+    return if instance.team == Team.legitbs
     return unless instance.legitbs_instance.availabilities.find_by(round: round).healthy?
 
     flags = instance.flags.limit(19)
