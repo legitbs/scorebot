@@ -38,7 +38,7 @@ class Round < ActiveRecord::Base
     Stats.time 'all_deposits' do
       mtx = Mutex.new
       token_queue = new_tokens.dup
-      threads = 1.upto(WORKERS).map do
+      threads = 1.upto(WORKERS).map do |w|
         Thread.new do
           loop do
             tok = mtx.synchronize do
@@ -49,11 +49,14 @@ class Round < ActiveRecord::Base
             
             tok.deposit
           end
-          Scorebot.log "deposited #{tok.id}"
+          Scorebot.log "worker #{w} finished"
         end
       end
       Scorebot.log 'started deposits'
-      threads.each(&:join)
+      threads.each do |t|
+        t.join
+        Scorebot.log "thread #{t} joined"
+      end
       Scorebot.log 'finished deposits'
       new_tokens.each{ |t| t.save }
 
