@@ -43,6 +43,8 @@ class Round < ActiveRecord::Base
     self.distribution = enabled_services.map do |service|
       f = RoundFinalizer.new self, service
       f.movements
+
+      f.as_metadata_json
     end.to_json
 
     store_signature
