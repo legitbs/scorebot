@@ -17,6 +17,7 @@
 %table
   %thead
     %tr
+      %th id
       %th round
       %th when
       %th deposit status
@@ -25,6 +26,7 @@
   %tbody
     - @instance.tokens.order(id: :desc).limit(50).each do |t|
       %tr
+        %td= t.id
         %td= t.round.id
         %td
           = time_ago t.created_at
@@ -43,6 +45,7 @@
 %table
   %thead
     %tr
+      %th id
       %th round
       %th when
       %th healthy?
@@ -51,6 +54,7 @@
   %tbody
     - @instance.availabilities.order(created_at: :desc).limit(50).each do |a|
       %tr
+        %td= a.id
         %td= a.round_id
         %td{title: a.created_at}
           = time_ago_in_words a.created_at, include_seconds: true
