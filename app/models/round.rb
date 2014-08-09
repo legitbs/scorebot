@@ -4,6 +4,7 @@ class Round < ActiveRecord::Base
   has_many :redemptions
 
   ROUND_LENGTH = 5.minutes
+  WORKERS = 10
 
   before_create :add_nonce
 
@@ -32,9 +33,28 @@ class Round < ActiveRecord::Base
                                  instance: i,
                                  round: self
                                  )
+
     end
     Stats.time 'all_deposits' do
-      new_tokens.each(&:deposit)
+      mtx = Mutex.new
+      token_queue = new_tokens.dup
+      threads = WORKERS.map do
+        Thread.new do
+          loop do
+            tok = mtx.synchronize do
+              token_queue.shift
+            end
+            
+            break if tok.nil?
+            
+            tok.deposit
+          end
+        end
+      end
+
+      threads.each(&:join)
+
+      new_tokens
     end
   end
 
