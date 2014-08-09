@@ -109,8 +109,6 @@ class Token < ActiveRecord::Base
       self.memo = e.to_s
     end
 
-    save
-
     Scorebot.log "deposit status #{status}"
     Scorebot.log memo
   end
