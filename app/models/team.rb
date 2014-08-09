@@ -60,7 +60,7 @@ class Team < ActiveRecord::Base
         else
           place_buf += 1
         end
-        { pos: place, team: r[:name], score: score }
+        { pos: place, team: r[:name], score: 21 - place }
       end,
       generated_at: Time.now
     }

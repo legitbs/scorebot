@@ -7,12 +7,22 @@
           %th team
           %th flags
       %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 15_000} }
+        - place = 0
+        - prev_score = Flag.count + 1
+        - place_buf = 1
         - @teams.each do |t|
+          - score = t[:score].to_i
+          - if score < prev_score
+            - place += place_buf
+            - place_buf = 1
+            - prev_score = score
+          - else 
+            - place_buf = 1
           %tr
             %th= t[:name]
             %td.flags
-              .points.left= t[:score]
-              .bar.left{style: "width: #{t[:score].to_i * 0.003}em"} &nbsp;
+              .points.left= 22 - place
+              .bar.left{style: "width: #{22 - place}em"} &nbsp;
               %br.clear
 %script#team_row_template{type: 'text/html'}
   %tr
