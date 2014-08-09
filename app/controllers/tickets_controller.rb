@@ -34,6 +34,7 @@ class TicketsController < ApplicationController
     @ticket = current_team.tickets.new(ticket_params)
 
     if @ticket.save
+      Event.new('ticket', r.as_json).publish! rescue nil
       redirect_to @ticket, notice: 'Ticket was successfully created.'
     else
       render :new
