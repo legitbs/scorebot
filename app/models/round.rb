@@ -54,6 +54,8 @@ class Round < ActiveRecord::Base
 
       threads.each(&:join)
 
+      new_tokens.each{ |t| t.save }
+
       new_tokens
     end
   end
