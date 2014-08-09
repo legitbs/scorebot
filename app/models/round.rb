@@ -38,7 +38,7 @@ class Round < ActiveRecord::Base
     Stats.time 'all_deposits' do
       mtx = Mutex.new
       token_queue = new_tokens.dup
-      threads = WORKERS.map do
+      threads = 1.upto(WORKERS).map do
         Thread.new do
           loop do
             tok = mtx.synchronize do
