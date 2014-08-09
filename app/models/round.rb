@@ -39,7 +39,8 @@ class Round < ActiveRecord::Base
   end
 
   def finalize!
-    self.distribution = Service.enabled.map do |service|
+    enabled_services = Service.enabled.all
+    self.distribution = enabled_services.map do |service|
       f = RoundFinalizer.new self, service
       f.movements
     end.to_json
