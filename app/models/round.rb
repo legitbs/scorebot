@@ -49,11 +49,12 @@ class Round < ActiveRecord::Base
             
             tok.deposit
           end
+          Scorebot.log "deposited #{tok.id}"
         end
       end
-
+      Scorebot.log 'started deposits'
       threads.each(&:join)
-
+      Scorebot.log 'finished deposits'
       new_tokens.each{ |t| t.save }
 
       new_tokens
