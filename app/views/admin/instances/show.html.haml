@@ -20,7 +20,7 @@
       %th redemptions
       %th activities
   %tbody
-    - @instance.tokens.order(id: :desc).limit(24).each do |t|
+    - @instance.tokens.order(id: :desc).limit(50).each do |t|
       %tr
         %td= t.round.id
         %td
@@ -43,15 +43,17 @@
       %th round
       %th when
       %th healthy?
+      %th penalties
       %th activities
   %tbody
-    - @instance.availabilities.order(created_at: :desc).limit(24).each do |a|
+    - @instance.availabilities.order(created_at: :desc).limit(50).each do |a|
       %tr
         %td= a.round_id
         %td{title: a.created_at}
           = time_ago_in_words a.created_at, include_seconds: true
           ago
         %td= a.healthy?
+        %td= a.penalties.count
         %td
           = link_to 'show', admin_availability_path(a)
 
