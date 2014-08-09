@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2014 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+Flag.delete_all
+Flag.initial_distribution
+Capture.delete_all
+Penalty.delete_all
+Round.update_all distribution: nil, signature: nil, payload: nil
+
+rounds = Round.order(id: :asc).all
+services = Service.all
+
+puts "preparing to reprocess #{rounds.count} rounds"
+
+rounds.each do |r|
+  print "\r#{r.id}"
+  r.finalize!
+end
+puts
