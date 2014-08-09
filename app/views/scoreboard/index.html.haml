@@ -6,7 +6,7 @@
         %tr
           %th team
           %th flags
-      %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 1_000} }
+      %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 15_000} }
         - @teams.each do |t|
           %tr
             %th= t[:name]
