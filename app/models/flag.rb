@@ -5,27 +5,36 @@ class Flag < ActiveRecord::Base
 
   TOTAL_FLAGS = 50_040
 
-  def self.reallocate(ending_round)
+  def self.initial_distribution
+    raise "Refusing to distribute with existing flags" unless Flag.count == 0
+
     transaction do
-      scoring_teams = Team.
-        joins(:redemptions).
-        where(redemptions: {round: ending_round}).
-        distinct.to_a
+      teams = Team.without_legitbs.to_a
+      services = Service.all
 
-      divisor = scoring_teams.length
-      available = Team.legitbs.flags.length
-
-      return if (divisor == 0) || (available == 0)
+      tranche_count = teams.count * services.count
+      tranche_size = Flag::TOTAL_FLAGS / (tranche_count)
+      tranche_remainder = Flag::TOTAL_FLAGS % (tranche_count)
       
-      bundle_size = (available / divisor).floor
-      remainder = available % divisor
-
-      until scoring_teams.empty?
-        team = scoring_teams.pop
-        Team.legitbs.flags.limit(bundle_size).each do |f|
-          f.team = team
-          f.save
+      unless tranche_remainder == 0
+        puts "#{teams.count} teams * #{services.count} services = #{tranche_count} tranches"
+        puts "#{Flag::TOTAL_FLAGS} / #{tranche_count} = #{Flag::TOTAL_FLAGS.to_f / tranche_count.to_f}"
+        puts "add #{tranche_size - tranche_remainder} or remove #{tranche_remainder}"
+        raise "had flags left over when planning allocation"
+      end
+      
+      puts "#{services.count} services, #{teams.count} teams, #{tranche_size} flags per"
+      
+      teams.each do |t|
+        print "flags for #{t.name}: "
+        services.each do |s|
+          tranche_size.times do
+            Flag.create team: t, service: s
+          end
+          print '.'
         end
+        
+        puts
       end
     end
   end
