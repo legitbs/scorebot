@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2014 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+t = Team.find_by name: 'w3stormz'
+s = Service.find_by name: 'badge'
+
+i = t.instances.find_by(service: s)
+
+avs = i.availabilities.where('round_id < 87')
+
+puts "making #{avs.count} availabilities before round 87 ok"
+
+avs.each do |av|
+  av.status = 0
+  av.memo = "administratively fixed by legitbs <3 vito@legitbs.net"
+  av.save
+end
