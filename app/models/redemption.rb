@@ -90,6 +90,7 @@ class Redemption < ActiveRecord::Base
         redeeming_team: team.redemptions.count,
         all: Redemption.count,
       },
+      redeemed_at_local: created_at.to_formatted_s(:ctf)
     }
   end
 

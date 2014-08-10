@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading lazertanz script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+RR = Redemption.order(id: :asc)
+
+given_duration = 4.hours.to_f
+
+per_redemption = given_duration / RR.count
+
+puts "going to show a redemption every #{per_redemption} seconds"
+
+puts "press enter to start sending #{RR.count} redemption events"
+gets
+
+def now_sec
+  Time.now.to_f
+end
+
+def chillax(ending)
+  if (ending - now_sec) > 5
+    midpoint = now_sec + ((ending - now_sec) / 2)
+  else
+    # never reached
+    midpoint = ending + 1
+  end
+
+  while now_sec < ending
+    if (now_sec > midpoint) && (ending - now_sec > 0.1)
+      midpoint = now_sec + ((ending - now_sec) / 2)
+    end
+    sleep 0.01
+  end
+end
+
+RR.find_each.with_index do |r, i|
+  next_one = Time.now.to_f + per_redemption
+  if i % 10 == 0
+    puts
+    print "#{i}/#{RR.count}: " 
+  end
+
+  print Event.new('redemption', r.as_event_json).publish!
+  print ' '
+
+  chillax(next_one)
+end
