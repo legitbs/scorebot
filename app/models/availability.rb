@@ -11,6 +11,12 @@ class Availability < ActiveRecord::Base
     return candidate
   end
 
+  def fix_availability
+    self.status = 0
+    self.memo = "administratively fixed by legitbs <3 vito@legitbs.net"
+    save
+  end
+
   def decoded_dingus
     return nil if dingus.nil?
     @decoded_dingus ||= Dingus.new self.dingus, plaintext: true

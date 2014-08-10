@@ -1,0 +1,60 @@
+%h1 Team
+
+%table
+  %tr
+    %th name
+    %td= @team.name
+  %tr
+    %th certname
+    %td= @team.certname
+  %tr
+    %th address
+    %td= @team.address
+  %tr
+    %th uuid
+    %td= @team.uuid
+
+%h2 failed redemptions
+
+%table
+  %thead
+    %tr
+      %th dupe
+      %th old
+      %th notfound
+      %th self
+      %th other
+  %tbody
+    %tr
+      %td= @team.dupe_ctr
+      %td= @team.old_ctr
+      %td= @team.notfound_ctr
+      %td= @team.self_ctr
+      %td= @team.other_ctr
+
+%h2 service availability
+
+%p
+  Showing #{@round_limit} rounds.
+  = link_to "Show all?", limit: 1_000
+
+%table#availabilities
+  %thead
+    %tr
+      %th round id
+      - @services.each do |s|
+        %th= s.name
+  %tbody
+    - @rounds.each do |r|
+      %tr
+        %th
+          = r.id
+          = r.created_at.to_formatted_s(:ctf)
+        - @services.each do |s|
+          - i = @team.instances.find_by(service: s)
+          - av = i.availabilities.find_by(round: r)
+          - if av.nil?
+            %td
+          - else
+            %td{class: av.healthy?.inspect}
+              = av.healthy?

@@ -1,5 +1,11 @@
 %h1 Teams
 
+%nav
+  %ul
+    %li= link_to 'numeric order', order: 'num'
+    %li= link_to 'alphabetic order', order: 'alpha'
+    %li= link_to 'score order (or "scorder" for short)', order: 'winning'
+
 %table
   %thead
     %tr
