@@ -5,7 +5,7 @@ jQuery ($)->
   return unless $('#team_row_template').length == 1
 
   calculateWidth = (score) ->
-    score
+    0.003 * score
 
   class Scoreboard
     constructor: ->
