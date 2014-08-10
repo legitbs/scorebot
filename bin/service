@@ -105,10 +105,10 @@ loop do
     Stats.time('finalize'){ current_round.finalize! }
   end
 
-  pid = Process.fork do
-    exec 'rake scoreboard:upload'
-  end
-  Process.detach pid
+  # pid = Process.fork do
+  #   exec 'rake scoreboard:upload'
+  # end
+  # Process.detach pid
 
   break if @ending
 end
