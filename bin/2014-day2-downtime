@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2014 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+rt = Team.find_by name: 'Routards'
+rt_rounds = Round.where id: [118, 197]
+
+rt_avs = Availability.where(instance: rt.instances, round: rt_rounds)
+
+rt_avs.each(&:fix_availability)
+binding.pry
+bl = Team.find_by name: 'BalalaikaCr3w'
+bl_rounds = Round.where id: [217, 216, 159, 127, 123, 63, 62, 61, 60]
+
+bl_avs = Availability.where(instance: bl.instances, round: bl_rounds)
+
+bl_avs.each(&:fix_availability)
+
+sp = Team.find_by name: 'shellphish'
+sp_rounds = Round.where id: [192, 191, 165, 74, 72]
+
+sp_avs = Availability.where(instance: sp.instances, round: sp_rounds)
+
+sp_avs.each(&:fix_availability)
