@@ -6,9 +6,7 @@ puts "if you aren't running this on a copy of the db..."
 puts "you already fucked up, hit ctrl-c now"
 gets
 
-rt = Team.find_by name: 'Routards'
-rt_rounds = Round.where id: [228, 229, 230, 231, 232, 233, 234]
-
-rt_avs = Availability.where(instance: rt.instances, round: rt_rounds)
-
-rt_avs.each(&:fix_availability)
+3.times do
+  r = Round.create
+  r.finalize!
+end
