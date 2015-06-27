@@ -1,0 +1,7 @@
+%h1 #{team.name}
+= form_for team, url: admin_team_path(team) do |f|
+  %p
+    = f.label :display, "Display Name"
+    = f.text_field :display
+  %p
+    = f.submit

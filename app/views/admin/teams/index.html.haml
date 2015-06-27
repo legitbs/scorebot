@@ -11,6 +11,7 @@
     %tr
       %th id
       %td name
+      %td display
       %th certname
       %th flags
       %th activities
@@ -19,7 +20,9 @@
       %tr
         %td= link_to t.id, admin_team_path(t)
         %td= t.name
+        %td= t.display
         %td= t.certname
         %td= t.flags.count
         %td
           = link_to 'show', admin_team_path(t)
+          = link_to 'edit', edit_admin_team_path(t)
