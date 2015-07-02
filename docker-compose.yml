@@ -1,0 +1,16 @@
+db:
+  image: postgres:9.4.4
+  ports:
+    - "5432:5432"
+redis:
+  image: redis
+web:
+  build: .
+  command: bin/rails server --port 3000 --binding 0.0.0.0
+  ports:
+    - "3000:3000"
+  links:
+    - db
+    - redis 
+  volumes:
+    - .:/scorebot

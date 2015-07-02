@@ -1,1 +1,4 @@
-$redis = Redis.new
+$redis = Redis.new(
+  host: ENV['SCOREBOT_REDIS_1_PORT_6379_TCP_ADDR'],
+  port: ENV['SCOREBOT_REDIS_1_PORT_6379_TCP_PORT'],
+)

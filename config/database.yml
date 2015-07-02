@@ -19,6 +19,9 @@ development:
   encoding: unicode
   database: scorebot_development
   pool: 5
+  host: <%= ENV['SCOREBOT_DB_1_PORT_5432_TCP_ADDR'] %>
+  port: <%= ENV['SCOREBOT_DB_1_PORT_5432_TCP_PORT'] %>
+  username: postgres
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
