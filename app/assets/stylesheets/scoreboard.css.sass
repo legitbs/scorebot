@@ -8,14 +8,14 @@ body.scoreboard
       $alpha_adjustment: -.15
       float: left
       margin-top: 1em
-      background-color: adjust-color($dark_purple, $alpha: $alpha_adjustment)
+      background-color: adjust-color($dark_amber, $alpha: $alpha_adjustment)
       tbody tr:nth-child(odd)
         background-color: adjust-color(black, $alpha: $alpha_adjustment)
       td, th
         text-align: right
       th
         text-align: left
-        color: $light_purple
+        color: $light_amber
       tbody th
         text-align: right
         width: 16em
@@ -27,7 +27,7 @@ body.scoreboard
           .points
             z-index: 1
             position: relative
-            background-color: $light_purple
+            background-color: $light_amber
             width: 4em
             color: black
             padding: 2px
@@ -37,7 +37,7 @@ body.scoreboard
           .bar
             z-index: 0
             position: relative
-            background-color: $light_purple
+            background-color: $light_amber
             padding: 2px
             &.left
               float: left
@@ -47,19 +47,19 @@ body.scoreboard
     top: 2em
     right: 2em
     z-index: 10
-    background-color: $dark_purple
+    background-color: $dark_amber
     text-align: center
-    border: 5px solid $light_purple
+    border: 5px solid $light_amber
     border-radius: 5px
-    box-shadow: 0px 4px 16px 2px black 
+    box-shadow: 0px 4px 16px 2px black
     h1
       display: none
     .desc
-      background-color: $light_purple
+      background-color: $light_amber
       color: black
     .timer
       padding: 2px
-      background-color: $dark_purple
+      background-color: $dark_amber
       color: $light_purple
       @include mono
 
