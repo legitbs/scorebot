@@ -10,6 +10,8 @@ class Team < ActiveRecord::Base
   attr_accessor :dupe_ctr_defer
   attr_accessor :other_ctr_defer
 
+  PARTICIPANT_COUNT = 15
+
   def as_ca_json
     {
       teamname: name,
