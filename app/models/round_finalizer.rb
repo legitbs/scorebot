@@ -7,7 +7,7 @@ class RoundFinalizer
   end
 
   def seed
-    "legitbs-2014-#{round.id}"
+    "legitbs-2015-#{round.id}"
   end
 
   def prng
@@ -40,7 +40,7 @@ class RoundFinalizer
   end
 
   def as_metadata_json
-    { 
+    {
       service: service.name,
       seed: seed,
       sequence: candidates.map{ |c| c.as_json include_root: true, only: :id },
