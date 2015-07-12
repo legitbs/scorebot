@@ -21,8 +21,15 @@ class RoundFinalizer
   def candidates
     return @candidates if defined? @candidates
 
-    initial =  round.availabilities.where(instance_id: service_instances.map(&:id)).failed.order(id: :asc).to_a
-    initial += round.expiring_tokens.where(instance_id: service_instances.map(&:id)).order(id: :asc).to_a
+    initial =  round.availabilities.
+              where(instance_id: service_instances.map(&:id)).
+              failed.
+              order(id: :asc).
+              to_a
+    initial += round.expiring_tokens.
+              where(instance_id: service_instances.map(&:id)).
+              order(id: :asc).
+              to_a
     generator = prng
     @candidates = initial.sort_by{ generator.rand }.uniq
 
