@@ -6,9 +6,9 @@ set :deploy_to, '/home/scorebot/production'
 # is considered to be the first unless any hosts have the primary
 # property set.  Don't declare `role :all`, it's a meta role.
 
-role :app, %w{scorebot@scorebot.defcon.legitbs.net}
-role :web, %w{scorebot@scorebot.defcon.legitbs.net}
-role :db,  %w{scorebot@scorebot.defcon.legitbs.net}
+role :app, %w{scorebot@10.3.1.7 scorebot@10.3.1.8}
+role :web, %w{scorebot@10.3.1.7}
+role :db,  %w{scorebot@10.3.1.8}
 
 
 # Extended Server Syntax
@@ -19,7 +19,6 @@ role :db,  %w{scorebot@scorebot.defcon.legitbs.net}
 
 #server 'example.com', user: 'deploy', roles: %w{web app}, my_property: :my_value
 
-
 # Custom SSH Options
 # ==================
 # You may pass any option but keep in mind that net/ssh understands a
@@ -28,7 +27,7 @@ role :db,  %w{scorebot@scorebot.defcon.legitbs.net}
 # Global options
 # --------------
  set :ssh_options, {
-   keys: %w(/Volumes/ctf2014/deploy_rsa),
+   keys: %w(/Volumes/ctf2015/.deploy_rsa),
    forward_agent: false,
 #   auth_methods: %w(password)
  }
