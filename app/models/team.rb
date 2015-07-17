@@ -10,6 +10,8 @@ class Team < ActiveRecord::Base
   attr_accessor :dupe_ctr_defer
   attr_accessor :other_ctr_defer
 
+  PARTICIPANT_COUNT = 15
+
   def as_ca_json
     {
       teamname: name,
@@ -21,7 +23,7 @@ class Team < ActiveRecord::Base
 
   def self.legitbs
     return @@legitbs if defined?(@@legitbs) && (@@legitbs.reload rescue false)
-    @@legitbs = find_by uuid: "deadbeef-84c4-4b55-8cef-d9471caf1f86"
+    @@legitbs = find_by id: 16
   end
 
   def self.without_legitbs
@@ -32,25 +34,25 @@ class Team < ActiveRecord::Base
     q = <<-SQL
       SELECT t.name, count(f.id) as score
       FROM teams as t
-      left JOIN flags AS f 
-		ON f.team_id = t.id	
+      left JOIN flags AS f
+                ON f.team_id = t.id
       WHERE t.certname != 'legitbs'
-		GROUP BY t.name
-		ORDER BY 
-			score desc,
-			t.name asc
+                GROUP BY t.name
+                ORDER BY
+                        score desc,
+                        t.name asc
     SQL
-    
+
     Stats.time('scoreboard_query'){ connection.select_all(q).map(&:symbolize_keys) }
   end
 
   def self.as_standings_json
     data = for_scoreboard
-    
+
     place = 0
     prev_score = Flag.count + 1
     place_buf = 1
-    { 
+    {
       standings: data.map do |r|
         score = r[:score].to_i
         if score < prev_score

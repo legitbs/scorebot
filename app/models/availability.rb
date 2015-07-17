@@ -44,7 +44,7 @@ class Availability < ActiveRecord::Base
           script,
           team_address
           )
-    
+
     Stats.time "#{instance.team.certname}.#{instance.service.name}.availability" do
       self.status = shell.status
     end
@@ -81,7 +81,7 @@ class Availability < ActiveRecord::Base
 
       self.token = candidate_token
     end
-    
+
     if has_dingus = /^!!legitbs-validate-dev-ctf (.+)$/.match(memo)
       self.dingus = Dingus.new(Base64.decode64 has_dingus[1]).plaintext
     end
@@ -91,16 +91,16 @@ class Availability < ActiveRecord::Base
     return if instance.team == Team.legitbs
     return unless instance.legitbs_instance.availabilities.find_by(round: round).healthy?
 
-    flags = instance.flags.limit(19)
+    flags = instance.flags.limit(Team.PARTICIPANT_COUNT)
 
-    return distribute_parking(flags) if flags.count < 19
+    return distribute_parking(flags) if flags.count < Team.PARTICIPANT_COUNT
     return distribute_everywhere(flags)
   end
 
   private
   def distribute_everywhere(flags)
-    teams = Team.where('id != ? and id != ?', 
-                       Team.legitbs.id, 
+    teams = Team.where('id != ? and id != ?',
+                       Team.legitbs.id,
                        instance.team.id).to_a
 
     Scorebot.log "reallocating #{flags.length} from #{instance.team.name} #{instance.service.name} flags to #{teams.map(&:certname)} teams"

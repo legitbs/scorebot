@@ -3,7 +3,7 @@ class Flag < ActiveRecord::Base
   belongs_to :service
   has_many :captures
 
-  TOTAL_FLAGS = 50_040
+  TOTAL_FLAGS = 60
 
   def self.initial_distribution
     raise "Refusing to distribute with existing flags" unless Flag.count == 0
@@ -15,16 +15,16 @@ class Flag < ActiveRecord::Base
       tranche_count = teams.count * services.count
       tranche_size = Flag::TOTAL_FLAGS / (tranche_count)
       tranche_remainder = Flag::TOTAL_FLAGS % (tranche_count)
-      
+
       unless tranche_remainder == 0
         puts "#{teams.count} teams * #{services.count} services = #{tranche_count} tranches"
         puts "#{Flag::TOTAL_FLAGS} / #{tranche_count} = #{Flag::TOTAL_FLAGS.to_f / tranche_count.to_f}"
         puts "add #{tranche_size - tranche_remainder} or remove #{tranche_remainder}"
         raise "had flags left over when planning allocation"
       end
-      
+
       puts "#{services.count} services, #{teams.count} teams, #{tranche_size} flags per"
-      
+
       teams.each do |t|
         print "flags for #{t.name}: "
         services.each do |s|
@@ -33,7 +33,7 @@ class Flag < ActiveRecord::Base
           end
           print '.'
         end
-        
+
         puts
       end
     end

@@ -37,19 +37,19 @@ class Token < ActiveRecord::Base
     end
 
     return nil unless candidate && (candidate.secret == secret)
-    
+
     return candidate
   end
 
   def self.where_prefixed_by(ts)
     l = ts.length
-    
+
     even_prefix = ts
-    
+
     if l % 2 != 0
       even_prefix = ts + '_'
     end
-    
+
     key_prefix, secret_prefix = Token.token_split(even_prefix)
 
     tok_table = Token.arel_table
@@ -116,7 +116,7 @@ class Token < ActiveRecord::Base
   def as_movement_json
     return { token: { id: id, secure: true } } if redemptions.empty?
 
-    return { token: { 
+    return { token: {
         id: id,
         redemptions: redemptions.as_json(only: %i{ id uuid }),
         captures: captures.as_json
@@ -127,13 +127,13 @@ class Token < ActiveRecord::Base
     capture_count = redemptions.length
     return if capture_count == 0
 
-    flags_to_distribute = instance.flags.limit(19).to_a
+    flags_to_distribute = instance.flags.limit(Team.PARTICIPANT_COUNT).to_a
 
     each_team_gets = flags_to_distribute.length / capture_count
     floor_flags = flags_to_distribute.length % capture_count
 
 
-    floor_flags.times do 
+    floor_flags.times do
       flag = flags_to_distribute.pop
       flag.team = Team.legitbs
       flag.save

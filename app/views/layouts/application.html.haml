@@ -1,16 +1,11 @@
 !!! 5
 %html
   %head
-    %title DEF CON CTF 2014
+    %title DEF CON CTF 2015
     = stylesheet_link_tag 'application'
     = yield :head
     = csrf_meta_tag
   %body{class: body_class}
-    .scene
-      .layer#sun
-      .layer.cloud#cloudbase
-      .layer.cloud#cloudhighlight
-      .layer#casinos
     = render partial: 'shared/banner'
     .content
       = yield
