@@ -2,7 +2,7 @@
   :markdown
     # How to Play
 
-    Hack services, retrieve tokens. Redeem tokens, get flags. Don't fail 
+    Hack services, retrieve tokens. Redeem tokens, get flags. Don't fail
     availability checks.
 
     Have fun!
@@ -21,6 +21,9 @@
           --key #{current_team.certname}.key \
           #{redemption_url}
 
+    *Mac users:* please see the bottom of the page if the above command
+    doesn't work.
+
     The response body is a JSON hash of how each token was processed. The key
     is the token you submitted, and the value is how it was processed:
 
@@ -30,8 +33,8 @@
           "55Lw0715kKspPThe0TameKPYel": "error: Already redeemed that token",
           "goIbfzcFaUN0gr4luo2C7DcLhQ": "error: Token too old",
           "RJohZ3XESG3oOhRUGGQjgUIeN1": "error: Can't redeem your own tokens",
-          "6ABiZBfN4vURgUGakmjnsnpT9r": 
-            "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147" 
+          "6ABiZBfN4vURgUGakmjnsnpT9r":
+            "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147"
         }
 
     Here's what the messages mean:
@@ -47,7 +50,7 @@
 
         "55Lw0715kKspPThe0TameKPYel": "error: Already redeemed that token"
 
-    Your team has already redeemed that token. You don't need to submit it 
+    Your team has already redeemed that token. You don't need to submit it
     again.
 
          "goIbfzcFaUN0gr4luo2C7DcLhQ": "error: Token too old"
@@ -58,8 +61,30 @@
 
     You can't score on yourself.
 
-         "6ABiZBfN4vURgUGakmjnsnpT9r": 
+         "6ABiZBfN4vURgUGakmjnsnpT9r":
             "error: some other error 79f21e3d-fcef-4327-8d50-dbe78ca8f147"
 
-    Please write down the uuid and the token, and bring it to us! This is our 
+    Please write down the uuid and the token, and bring it to us! This is our
     fault, not yours.
+
+    ## Mac Issues
+
+    El Capitan has changed the way `curl` works. It prefers to use keys and
+    certificates from the built-in Keychain system, instead of files.
+    Additionally, it will only work with PKCS#12 key & cert bundles, and not
+    PEM-encoded files.
+
+    To force it to use files, make them obviously file paths and not simply a
+    filename. To use the .P12 file, pass in a path to the `-E` certificate
+    argument, and postfix the password after a `:` colon as below. The bundles
+    we distribute have the password "`asdfasdf`" (without quotes,) again as
+    shown below.
+
+        curl \
+          -F "tokens[]=TOKEN_GOES_HERE" \
+          -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
+          -F "tokens[]=RocyGt0kXt8z0dVM2nKqQUc4qb" \
+          -F "tokens[]=gYAMrepyqzITctw5sVOxAqXWfH" \
+          --cacert ./ca.crt \
+          -E ./#{current_team.certname}.P12:asdfasdf \
+          #{redemption_url}
