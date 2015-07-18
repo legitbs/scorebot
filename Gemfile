@@ -58,7 +58,7 @@ end
 
 group :production do
   gem 'therubyracer'
-  gem 'unicorn'
+  gem 'puma'
 end
 
 group :development, :test do
