@@ -16,8 +16,7 @@ class Team < ActiveRecord::Base
     {
       teamname: name,
       uuid: uuid,
-      certname: certname,
-      joe_name: joe_name
+      certname: certname
     }
   end
 
