@@ -99,17 +99,17 @@ Team.find_each do |t|
 end
 
 Timer.find_or_create_by(name: 'game').
-  update_attributes(ending: (Time.zone.parse('7-aug-2014 8pm pdt') + 14.hours))
+  update_attributes(ending: (Time.zone.parse('7-aug-2015 8pm pdt') + 14.hours))
 Timer.find_or_create_by name: 'round'
 Timer.
   find_or_create_by(name: 'friday').
-  update_attributes(ending: Time.zone.parse('7-aug-2014 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('7-aug-2015 8pm pdt'))
 Timer.
   find_or_create_by(name: 'saturday').
-  update_attributes(ending: Time.zone.parse('8-aug-2014 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('8-aug-2015 8pm pdt'))
 Timer.
   find_or_create_by(name: 'sunday').
-  update_attributes(ending: Time.zone.parse('9-aug-2014 2pm pdt'))
+  update_attributes(ending: Time.zone.parse('9-aug-2015 2pm pdt'))
 
 Flag.delete_all
 
