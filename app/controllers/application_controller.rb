@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_team, :is_legitbs?
 
-  before_filter :require_team
+  before_filter :require_team, :check_rmp
 
   def client_cn
     request.env['HTTP_SSL_CLIENT_S_DN_CN']
@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     if Rails.env.development?
       return Team.legitbs
     end
-    
+
     @current_team ||= Team.find_by uuid: client_cn
   end
 
@@ -25,6 +25,10 @@ class ApplicationController < ActionController::Base
 
   def require_team
     raise "Couldn't find cert for #{client_cn}" unless current_team
+  end
+
+  def check_rmp
+    Rack::MiniProfiler.authorize_request if is_legitbs?
   end
 
   def require_legitbs

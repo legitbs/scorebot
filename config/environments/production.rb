@@ -78,3 +78,10 @@ Scorebot::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 end
+
+Rack::MiniProfiler.config.storage = Rack::MiniProfiler::RedisStore
+Rack::MiniProfiler.config.storage_options = {
+  host: 'bowmore',
+  port: 6379,
+  password: 'vueshosBevounWiedMontowmuzDoHondafDeyWor'
+}
