@@ -45,6 +45,13 @@ gem 'high_voltage'
 
 gem 'celluloid', require: false
 
+
+gem 'rack-mini-profiler'
+gem 'flamegraph'
+gem 'stackprof' # ruby 2.1+ only
+gem 'memory_profiler'
+gem 'statsd-instrument'
+
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
