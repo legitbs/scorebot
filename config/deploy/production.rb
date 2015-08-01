@@ -7,7 +7,7 @@ set :deploy_to, '/home/scorebot/production'
 # property set.  Don't declare `role :all`, it's a meta role.
 
 role :app, %w{scorebot@10.3.1.7 scorebot@10.3.1.8}
-role :web, %w{scorebot@10.3.1.7 scorebot@10.3.1.8}
+role :web, %w{scorebot@10.3.1.7}
 role :db,  %w{scorebot@10.3.1.8}
 
 
