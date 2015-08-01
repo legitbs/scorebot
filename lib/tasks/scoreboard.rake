@@ -1,7 +1,7 @@
 namespace :scoreboard do
-  desc 'Export the current scoreboard to a ctftime compatible json' 
+  desc 'Export the current scoreboard to a ctftime compatible json'
   task :export => :environment do
-    File.open(Rails.root.join('tmp', '2014_finals.json'), 'w') do |f|
+    File.open(Rails.root.join('tmp', '2015_finals.json'), 'w') do |f|
       f.write Team.as_standings_json.to_json
     end
   end
@@ -16,11 +16,11 @@ namespace :scoreboard do
                             )
 
       bucket = s3.directories.get 'live.legitbs.net'
-      bucket.files.create(key: '2014_finals.json',
+      bucket.files.create(key: '2015_finals.json',
                           content_type: 'text/json',
                           body: Team.as_standings_json.to_json
                           )
-                              
+
     rescue => e
       puts e
     end
