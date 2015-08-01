@@ -6,8 +6,8 @@ class RedemptionController < ApplicationController
     successful = []
     redemptions = tokens.inject({}) do |m, t|
       next m if t.blank?
-      r = begin 
-            Stats.time "#{current_team.certname}.redeem_for" do
+      r = begin
+            StatsD.measure "#{current_team.certname}.redeem_for" do
               rr = Redemption.redeem_for(current_team, t)
               successful << rr
               rr.uuid
