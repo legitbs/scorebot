@@ -31,12 +31,12 @@ class Team < ActiveRecord::Base
 
   def self.for_scoreboard
     q = <<-SQL
-      SELECT t.name, count(f.id) as score
+      SELECT t.name, t.id, count(f.id) as score
       FROM teams as t
       left JOIN flags AS f
                 ON f.team_id = t.id
       WHERE t.certname != 'legitbs'
-                GROUP BY t.name
+                GROUP BY t.name, t.id
                 ORDER BY
                         score desc,
                         t.name asc
@@ -61,7 +61,7 @@ class Team < ActiveRecord::Base
         else
           place_buf += 1
         end
-        { pos: place, team: r[:name], score: score }
+        { pos: place, team: r[:name], score: score, id: r[:id] }
       end,
       generated_at: Time.now
     }
