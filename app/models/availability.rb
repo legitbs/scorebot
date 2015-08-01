@@ -45,7 +45,7 @@ class Availability < ActiveRecord::Base
           team_address
           )
 
-    Stats.time "#{instance.team.certname}.#{instance.service.name}.availability" do
+    StatsD.measure "#{instance.team.certname}.#{instance.service.name}.availability" do
       self.status = shell.status
     end
 

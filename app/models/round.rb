@@ -35,7 +35,7 @@ class Round < ActiveRecord::Base
                                  )
 
     end
-    Stats.time 'all_deposits' do
+    StatsD.measure 'all_deposits' do
       queue_mtx = Mutex.new
       results = []
       result_mtx = Mutex.new
@@ -46,9 +46,9 @@ class Round < ActiveRecord::Base
             tok = queue_mtx.synchronize do
               new_tokens.shift
             end
-            
+
             break if tok.nil?
-            
+
             tok.deposit
 
             result_mtx.synchronize do
@@ -113,7 +113,7 @@ class Round < ActiveRecord::Base
       limit(Token::EXPIRATION + 1).
       order(id: :desc).
       last
- 
+
     return Token.where(id: nil) if expiring_round.nil?
 
     expiring_round.tokens
@@ -127,7 +127,7 @@ class Round < ActiveRecord::Base
 
     places_changed = prev_places != now_places
 
-    { 
+    {
       payload: payload,
       previous_payload: prev_payload,
       places_changed: places_changed

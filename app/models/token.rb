@@ -95,7 +95,7 @@ class Token < ActiveRecord::Base
             round_num
             )
 
-      Stats.time "#{instance.team.certname}.#{instance.service.name}.deposit" do
+      StatsD.measure "#{instance.team.certname}.#{instance.service.name}.deposit" do
         self.status = shell.status
       end
 
