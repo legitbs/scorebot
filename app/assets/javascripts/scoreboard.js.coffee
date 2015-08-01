@@ -4,8 +4,13 @@
 jQuery ($)->
   return unless $('#team_row_template').length == 1
 
+
   calculateWidth = (score) ->
     0.003 * score
+
+  logoHtml = $($('#team_logos').html())
+  extractLogo = (id) ->
+    logoHtml.filter("#logo_#{id}").html()
 
   class Scoreboard
     constructor: ->
@@ -28,6 +33,7 @@ jQuery ($)->
       return (data, textStatus, jqx) =>
         rows = for row in data.standings
           row['width'] = calculateWidth row['score']
+          row['logo'] = extractLogo row['id']
           Mustache.render @template, row
         @body.html rows.join()
         @body.attr 'data-response-id', jqx.getResponseHeader('X-Request-Id')
