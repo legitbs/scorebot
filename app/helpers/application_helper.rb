@@ -10,4 +10,12 @@ module ApplicationHelper
       basic_body_class
     end
   end
+
+  def team_logo(team)
+    team_id = team if team.is_a? Integer
+    team_id = team if team.is_a? String
+    team_id = team.id if team.is_a? Team
+
+    image_tag "teams/#{team_id}.png", class: 'team_logo'
+  end
 end

@@ -13,7 +13,7 @@ body.scoreboard
       background-color: adjust-color($dark_amber, $alpha: $alpha_adjustment)
       tbody tr:nth-child(odd)
         background-color: adjust-color(black, $alpha: $alpha_adjustment)
-      td, th
+      td, th.team_name
         text-align: right
       th
         text-align: left
@@ -21,7 +21,7 @@ body.scoreboard
       tbody th
         text-align: right
         width: 16em
-        font-size: 0.8em
+        font-size: 0.9em
       td
         text-align: right
         &.flags
@@ -43,6 +43,9 @@ body.scoreboard
             padding: 2px
             &.left
               float: left
+        img.team_logo
+          width: 24px
+          height: 24px
 
   #timers
     position: fixed
@@ -69,22 +72,11 @@ body.scoreboard
   .scoreboard.scene
     font-size: 1.45em
     width: 1200px
-    table.names
-      @include transform(rotateY(7deg) translateZ(-20px))
-    table.scores
+    img.team_logo
+      width: 32px
+      height: 32px
 
 @media screen and (max-width: 840px)
   .scoreboard.scene
-    margin-top: 4em
     width: 600px
     font-size: 0.82em
-    #timers
-      top: 340px
-      right: -80px
-    .scoreboard-holder
-      table.names
-        @include transform(rotateY(10deg) translateZ(-20px))
-        width: 220px
-      table.scores
-        @include transform(rotateY(-10deg))
-        width: 340px

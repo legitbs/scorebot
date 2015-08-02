@@ -4,7 +4,7 @@
     %table.names
       %thead
         %tr
-          %th team
+          %th.team_name team
           %th
           %th flags
       %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 15_000} }
@@ -22,7 +22,7 @@
           %tr
             %th= t[:name]
             %td.logo
-              =image_tag "teams/#{t[:id]}.png", width: '16px', height: '16px'
+              =team_logo t[:id]
             %td.flags
               .points.left= score
               .bar.left{style: "width: #{0.003 * score}em"} &nbsp;
@@ -38,4 +38,4 @@
 %script#team_logos{type: 'text/html'}
   - @teams.each do |t|
     %div{id: "logo_#{t[:id]}"}
-      =image_tag "teams/#{t[:id]}.png", width: '16px', height: '16px'
+      =team_logo t[:id]
