@@ -8,8 +8,8 @@
       %th revision
       %td= File.read Rails.root.join 'REVISION' rescue 'not there'
     %tr
-      %th unicorn master pid
-      %td= File.read Rails.root.join 'tmp/pids/unicorn.pid' rescue 'not there'
+      %th puma master pid
+      %td= File.read Rails.root.join 'tmp/pids/puma.pid' rescue 'not there'
     %tr
       %th service pid
       %td= File.read Rails.root.join 'tmp/pids/service.pid' rescue 'not there'
