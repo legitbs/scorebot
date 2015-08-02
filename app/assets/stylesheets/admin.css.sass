@@ -3,8 +3,12 @@ body.admin
   nav
     width: 960px
     margin: 0 auto
-    li
+    font-face: rambla
+    ul li
       color: white
+      @include michroma
+      a:link
+        font-family: Rambla
   .content
     background-color: $dark_amber
     border: 1px solid $light_amber
