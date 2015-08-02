@@ -5,6 +5,9 @@
       %th rails root
       %td= Rails.root
     %tr
+      %th current machine
+      %td= `hostname`
+    %tr
       %th revision
       %td= File.read Rails.root.join 'REVISION' rescue 'not there'
     %tr
