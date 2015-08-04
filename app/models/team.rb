@@ -31,12 +31,16 @@ class Team < ActiveRecord::Base
 
   def self.for_scoreboard
     q = <<-SQL
-      SELECT t.name, t.id, count(f.id) as score
+      SELECT
+        t.name,
+        t.id,
+        count(f.id) as score,
+        coalesce(t.display, t.name) as display_name
       FROM teams as t
       left JOIN flags AS f
                 ON f.team_id = t.id
       WHERE t.certname != 'legitbs'
-                GROUP BY t.name, t.id
+                GROUP BY t.name, t.id, display_name
                 ORDER BY
                         score desc,
                         t.name asc
@@ -63,6 +67,9 @@ class Team < ActiveRecord::Base
         end
         { pos: place, team: r[:name], score: score, id: r[:id] }
       end,
+      display_names: Hash[data.map do |r|
+                                [r[:id], r[:display_name]]
+                              end],
       generated_at: Time.now
     }
   end

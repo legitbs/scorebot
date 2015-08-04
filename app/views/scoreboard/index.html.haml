@@ -20,7 +20,7 @@
           - else
             - place_buf = 1
           %tr
-            %th= t[:name]
+            %th= t[:display_name]
             %td.logo
               =team_logo t[:id]
             %td.flags
@@ -29,7 +29,7 @@
               %br.clear
 %script#team_row_template{type: 'text/html'}
   %tr
-    %th {{team}}
+    %th {{display_name}}
     %td.logo {{{logo}}}
     %td.flags
       .points.left {{score}}

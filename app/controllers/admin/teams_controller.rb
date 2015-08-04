@@ -33,6 +33,8 @@ class Admin::TeamsController < Admin::BaseController
   end
 
   def team_params
-    params.require(:team).permit(:display)
+    params.require(:team).permit(:display).tap do |tp|
+      tp[:display] = nil if tp[:display].blank?
+    end
   end
 end

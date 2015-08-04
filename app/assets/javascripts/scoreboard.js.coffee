@@ -31,9 +31,11 @@ jQuery ($)->
           success: @receive()
     receive: ->
       return (data, textStatus, jqx) =>
+
         rows = for row in data.standings
           row['width'] = calculateWidth row['score']
           row['logo'] = extractLogo row['id']
+          row['display_name'] = data.display_names[row['id']]
           Mustache.render @template, row
         @body.html rows.join()
         @body.attr 'data-response-id', jqx.getResponseHeader('X-Request-Id')
