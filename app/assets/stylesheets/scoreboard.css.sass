@@ -15,13 +15,15 @@ body.scoreboard
         background-color: adjust-color(black, $alpha: $alpha_adjustment)
       td, th.team_name
         text-align: right
+        padding-right: .5em
       th
         text-align: left
         color: $light_amber
       tbody th
         text-align: right
-        width: 16em
-        font-size: 0.9em
+        width: 14em
+        font-size: 1em
+        padding-right: .5em
       td
         text-align: right
         &.flags
@@ -41,9 +43,11 @@ body.scoreboard
             position: relative
             background-color: $light_amber
             padding: 2px
+            margin-left: -1px
             &.left
               float: left
         img.team_logo
+          margin-top: 4px
           width: 24px
           height: 24px
 
