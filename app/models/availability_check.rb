@@ -120,7 +120,7 @@ class AvailabilityCheck
   private
   def chill(duration)
     schedule = Time.now.to_f + duration
-    while Time.now.to_f < duration
+    while Time.now.to_f < schedule
       sleep 0.1
     end
   end
