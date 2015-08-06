@@ -40,4 +40,13 @@ class Flag < ActiveRecord::Base
       end
     end
   end
+
+  def self.collect_livectf_flags(livectf_services)
+    livectf_services.each do |serv|
+      instances = Instance.where service: serv
+      legitbs_inst = instances.find_by team: Team.legitbs
+
+      Flag.where(service: serv).update_all(team_id: Team.legitbs.id)
+    end
+  end
 end

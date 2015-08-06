@@ -89,18 +89,24 @@ Team.find_or_create_by(id: 16,
                        address: "10.5.16.2"
                        )
 
-%w{
+regular_services = %w{
 cr00semissile rxc irk irkd tachikoma ombdsu hackermud shittyvm badlog
+}.map do |service_name|
+  Service.find_or_create_by(name: service_name)
+end
+
+livectf_services = %w{
 livectf_quals livectf_finals
-}.each do |service_name|
+}.map do |service_name|
   Service.find_or_create_by(name: service_name)
 end
 
 Team.find_each do |t|
-  Service.find_each do |s|
+  (livectf_services + regular_services).each do |s|
     Instance.find_or_create_by team_id: t.id, service_id: s.id
   end
 end
+
 
 Timer.find_or_create_by(name: 'game').
   update_attributes(ending: (Time.zone.parse('7-aug-2015 8pm pdt') + 14.hours))
@@ -118,3 +124,5 @@ Timer.
 Flag.delete_all
 
 Flag.initial_distribution
+
+Flag.collect_livectf_flags livectf_services
