@@ -74,6 +74,22 @@ class Team < ActiveRecord::Base
     }
   end
 
+  def scores_by_service
+    q = <<-SQL
+      SELECT
+        service_id, count(service_id)
+      FROM flags
+      WHERE team_id=#{id}
+      GROUP BY service_id
+      ORDER BY service_id ASC
+    SQL
+
+    result = self.class.connection.select_all(q)
+    Hash[result.map do |row|
+      [row['service_id'].to_i, row['count'].to_i]
+    end]
+  end
+
   private
   def set_uuid
     self.uuid ||= SecureRandom.uuid

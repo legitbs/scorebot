@@ -4,12 +4,17 @@
   %tr
     %th team \ service
     - @services.each do |s|
-      %th= s.name
-  - @instances.all.group_by(&:team).each do |t, is|
+      %th
+        = s.id
+        = s.name
+  - @teams.each do |t|
+    - scores = t.scores_by_service
     %tr
-      %th= t.certname
-      - is.each do |i|
+      %th
+        = t.id
+        = t.certname
+      - @services.each do |s|
         %td
-          = link_to(t.certname.truncate(8) + ' ' + i.service.name, admin_instance_path(i))
+          = link_to(t.certname.truncate(8) + ' ' + s.name, admin_instance_path(0, team: t.id, service: s.id))
           %br
-          = Flag.where(team: t, service: i.service).count
+          = scores[s.id] || 0
