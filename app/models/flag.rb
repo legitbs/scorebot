@@ -3,7 +3,9 @@ class Flag < ActiveRecord::Base
   belongs_to :service
   has_many :captures
 
-  TOTAL_FLAGS = 60
+  TOTAL_FLAGS = 11 * # service count
+                15 * # team count
+                1337
 
   def self.initial_distribution
     raise "Refusing to distribute with existing flags" unless Flag.count == 0
