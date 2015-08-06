@@ -6,7 +6,7 @@ jQuery ($)->
 
 
   calculateWidth = (score) ->
-    0.003 * score
+    0.0004 * score
 
   logoHtml = $($('#team_logos').html())
   extractLogo = (id) ->
