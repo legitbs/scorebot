@@ -90,7 +90,7 @@ class Token < ActiveRecord::Base
         new(
             "/home/scorebot/scripts/#{service_name}",
             'deposit',
-            team_address,
+            instance.team.id,
             given_tok,
             round_num
             )

@@ -42,7 +42,7 @@ class Availability < ActiveRecord::Base
       new(
           dir,
           script,
-          team_address
+          instance.team.id
           )
 
     StatsD.measure "#{instance.team.certname}.#{instance.service.name}.availability" do
