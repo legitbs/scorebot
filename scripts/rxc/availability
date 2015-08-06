@@ -8,10 +8,13 @@ import struct
 import shlex
 import hashlib
 import random
+import signal
 from DiffieHellman import DiffieHellman
 
 PORT = 799
 SIZE = 4000
+
+ALARM_TIMEOUT_SECS = 25
 
 dh_prime = 1552518092300708935130918131258481755631334049434514313202351194902966239949102107258669453876591642442910007680288864229150803718918046342632727613031282983744380820890196288509170691316593175367469551763119843371637221007210577919
 
@@ -917,6 +920,10 @@ class RXCConnection:
 
 		''' 
 
+def sig_alarm_handler( signum, frame ):
+	print "Alarm timeout!\n"
+	sys.exit(-2)
+
 try:
     host = "10.5." + sys.argv[1] + ".4"
     print "Polling team %s\n" % host
@@ -925,6 +932,9 @@ except:     # Add localhost as the server if no host provided
     host = "127.0.0.1"
 
 try:
+    signal.signal( signal.SIGALRM, sig_alarm_handler )
+    signal.alarm( ALARM_TIMEOUT_SECS )
+
     sockfd = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
 
 except socket.error, e:
