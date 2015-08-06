@@ -159,7 +159,8 @@ class Token < ActiveRecord::Base
 
   private
   def check_token_replacement
-    return unless has_replaced_token = /^!!legitbs-replace-token (.+)$/.match(memo)
+    return unless has_replaced_token =
+                  /^!!legitbs-replace-token-hyekgiak (.+)$/.match(memo)
 
     self.key, @secret = token_split has_replaced_token[1]
     set_digest

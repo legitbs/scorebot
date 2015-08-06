@@ -71,7 +71,7 @@ class Availability < ActiveRecord::Base
   end
 
   def load_dinguses(memo)
-    if has_token = /^!!legitbs-validate-token (.+)$/.match(memo)
+    if has_token = /^!!legitbs-validate-token-hyekgiak (.+)$/.match(memo)
       self.token_string = has_token[1]
       candidate_token = Token.from_token_string self.token_string
 
@@ -80,10 +80,6 @@ class Availability < ActiveRecord::Base
       return false if candidate_token.expired?
 
       self.token = candidate_token
-    end
-
-    if has_dingus = /^!!legitbs-validate-dev-ctf (.+)$/.match(memo)
-      self.dingus = Dingus.new(Base64.decode64 has_dingus[1]).plaintext
     end
   end
 
