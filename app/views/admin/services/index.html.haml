@@ -1,0 +1,18 @@
+%h1 Services
+
+%table
+  %thead
+    %tr
+      %th id
+      %th name
+      %th enabled
+      %th activities
+  %tbody
+    - services.each do |s|
+      %tr
+        %td= link_to s.id, admin_service_path(s)
+        %td= s.name
+        %td= !!s.enabled
+        %td
+          = link_to 'show', admin_service_path(s)
+          = link_to 'edit', edit_admin_service_path(s)

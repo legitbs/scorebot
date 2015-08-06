@@ -1,0 +1,22 @@
+%h1 service
+
+%nav
+  %ul
+    %li= link_to 'edit', edit_admin_service_path(service)
+
+%table
+  %tr
+    %th name
+    %td= service.name
+  %tr
+    %th id
+    %td= service.id
+  %tr
+    %th enabled
+    %td= !!service.enabled
+
+%h2 Instances
+%ul
+  - service.instances.joins(:team).sort_by{|i|i.team.name}.each do |i|
+    %li
+      = link_to i.team.name, admin_instance_path(i)

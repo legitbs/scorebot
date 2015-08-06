@@ -1,0 +1,12 @@
+%h1= service.name
+
+= form_for service, url: admin_service_path(service) do |f|
+  %p
+    = f.label :enabled
+    = f.check_box :enabled
+  %p
+    %em Why can't I change the service name?
+    %br
+    Because it will break file paths and such, sorry!
+  %p
+    = f.submit
