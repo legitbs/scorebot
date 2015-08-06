@@ -89,8 +89,12 @@ Team.find_or_create_by(id: 16,
                        address: "10.5.16.2"
                        )
 
-Service.find_or_create_by(name: 'eliza', enabled: true)
-Service.find_or_create_by(name: 'wdub')
+%w{
+cr00semissile rxc irk irkd tachikoma ombdsu hackermud shittyvm badlog
+livectf_quals livectf_finals
+}.each do |service_name|
+  Service.find_or_create_by(name: service_name)
+end
 
 Team.find_each do |t|
   Service.find_each do |s|
