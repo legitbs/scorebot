@@ -1,5 +1,5 @@
-class AvailabilityCheck  
-  WORKERS = 10
+class AvailabilityCheck
+  WORKERS = 16
   INITIAL_TIMING = 4 * 60
 
   attr_accessor :timing_history
@@ -54,7 +54,7 @@ class AvailabilityCheck
   def instances
     @service.instances
   end
-  
+
   def lbs_instance
     @lbs_instance ||= instances.where(team_id: Team.legitbs.id).first
   end
@@ -65,7 +65,7 @@ class AvailabilityCheck
 
   def check_all_instances
     return unless @service.enabled
-    
+
     @lbs_check = lbs_instance.check_availability Round.current
     @lbs_check.save
 
@@ -87,7 +87,7 @@ class AvailabilityCheck
           instance = queue_mutex.synchronize do
             queue.shift
           end
-          
+
           break if instance.nil?
 
           l "#{ instance.service.name } #{instance.team.certname} checking"
@@ -102,7 +102,7 @@ class AvailabilityCheck
     end
 
     threads.each {|t| t.join }
-    
+
     Availability.transaction do
       results.each(&:save)
     end
