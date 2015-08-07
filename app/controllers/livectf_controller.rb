@@ -10,5 +10,7 @@ class LivectfController < ApplicationController
               }.to_json
 
     $redis.append 'livectf_submissions', payload
+
+    render json: payload
   end
 end
