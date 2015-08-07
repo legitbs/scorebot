@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 $stderr.puts "#{Time.now} Loading service script"
+
+require 'syslog/logger'
+$logger = Syslog::Logger.new 'scorebot-service'
+
 pid_path = File.expand_path('../../tmp/pids/service.pid', __FILE__)
 File.open(pid_path, 'w') do |f|
   f.puts Process.pid.to_s
