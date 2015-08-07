@@ -1,4 +1,4 @@
-%h1 Instance
+%h1 Instance: #{@instance.team.name} #{@instance.service.name}
 
 %table
   %tbody
@@ -63,4 +63,3 @@
         %td= a.penalties.count
         %td
           = link_to 'show', admin_availability_path(a)
-
