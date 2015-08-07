@@ -76,6 +76,8 @@ class StateMonitor
         $blink.set_rgb(255, 0, 255)
       elsif name == 'scheduling' && delta > 150
         $blink.set_rgb(255, 0, 0)
+      elsif name == 'waiting_to_end' && delta > 300
+        $blink.set_rgb(255, 0, 0)
       end
     end
     puts "checked state"
