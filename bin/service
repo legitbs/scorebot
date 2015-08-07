@@ -108,10 +108,10 @@ loop do
       l "Started round #{new_round.id}"
 
       ServiceState.new('commencing').publish! rescue nil
-      Stats.time('commence'){ new_round.commence! }
+      StatsD.measure('commence'){ new_round.commence! }
     end
 
-    Stats.time('finalize'){ current_round.finalize! }
+    StatsD.measure('finalize'){ current_round.finalize! }
   end
 
   # pid = Process.fork do
