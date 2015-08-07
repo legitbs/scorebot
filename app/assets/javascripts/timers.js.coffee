@@ -4,7 +4,7 @@ jQuery ($) ->
   pad = (n) ->
     return "0#{n}" if n < 10 & n >= 0
     n
-  
+
   class Countdown
     constructor: ->
       @timers = $('#timers')
@@ -22,7 +22,7 @@ jQuery ($) ->
     poll: ->
       return =>
         @start = new XDate()
-        if !@recentTimers? || (@start > @recentTimers.next)
+        if !@recentTimers? || (@start > @recentTimers.round)
           $.ajax
             url: @timerPath
             dataType: 'json'
@@ -46,7 +46,7 @@ jQuery ($) ->
         today: today
         round: round
       @timers.html h
-        
+
       @requeue()
     toRemnant: (now, ending) ->
       diff =
