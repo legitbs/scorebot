@@ -17,22 +17,32 @@
     %th uuid
     %td= @team.uuid
 
+%h2 flags
+
+%table
+  - @team.instances.joins(:service).sort_by{|i|i.service.name.downcase}.each do |inst|
+    %tr
+      %th= inst.service.name
+      %td= inst.flags.count
+
 %h2 failed redemptions
 
 %table
-  %thead
-    %tr
-      %th dupe
-      %th old
-      %th notfound
-      %th self
-      %th other
   %tbody
     %tr
+      %th dupe
       %td= @team.dupe_ctr
+    %tr
+      %th old
       %td= @team.old_ctr
+    %tr
+      %th notfound
       %td= @team.notfound_ctr
+    %tr
+      %th self
       %td= @team.self_ctr
+    %tr
+      %th other
       %td= @team.other_ctr
 
 %h2 service availability
