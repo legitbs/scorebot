@@ -1,0 +1,12 @@
+#!/bin/env ruby
+
+require ::File.expand_path('../../config/environment',  __FILE__)
+require 'fileutils'
+
+Dir.
+  glob(Rails.root.join('scripts/**/*')).
+  select{ |n| File.file?(n) }.
+  each do |f|
+  dest = f.gsub('production/current', 'scripts')
+  FileUtils.cp(f, dest)
+end
