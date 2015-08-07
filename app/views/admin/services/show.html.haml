@@ -16,7 +16,21 @@
     %td= !!service.enabled
 
 %h2 Instances
-%ul
-  - service.instances.joins(:team).sort_by{|i|i.team.name}.each do |i|
-    %li
-      = link_to i.team.name, admin_instance_path(i)
+%table
+  %thead
+    %tr
+      %th instance id
+      %th team (id)
+      %th flags
+      %th activities
+  %tbody
+    - service.instances.joins(:team).sort_by{|i|i.team.name.downcase}.each do |i|
+      %tr
+        %td= i.id
+        %td
+          = link_to i.team.name, admin_instance_path(i)
+          (#{i.team.id})
+        %td= i.flags.count
+        %td
+          = link_to 'instance', admin_instance_path(i)
+          = link_to 'team', admin_team_path(i.team)
