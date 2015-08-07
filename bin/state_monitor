@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+
+require 'redis'
+require 'json'
+require 'blink1'
+require 'celluloid/autostart'
+
+$redis = Redis.new(host: '10.3.1.8',
+                   port: 6379,
+                   password: 'vueshosBevounWiedMontowmuzDoHondafDeyWor'
+                  )
+
+$blink = Blink1.new
+$blink.open
+$blink.off
+
+class StateSubscriber
+  include Celluloid
+  def initialize(monitor)
+    @monitor = monitor
+  end
+
+  def subscribe
+    msg = $redis.get 'scorebot_service_current_state_production'
+    puts "loading initial state #{msg.length} bytes"
+    @monitor.update_state msg
+
+    $redis.subscribe('scorebot_service_state_production') do |on|
+      on.message do |channel, msg|
+        puts "received new state #{msg.length} bytes"
+        @monitor.async.update_state(msg)
+      end
+    end
+  end
+end
+
+class StateMonitor
+  include Celluloid
+
+  attr_accessor :name, :body, :published_at
+
+  def initialize
+    @lock = Mutex.new
+  end
+
+  def reschedule
+    puts "rescheduling"
+    @state_checker = every(2){ check_state }
+  end
+
+  def update_state(message)
+    puts "updating state"
+    data = JSON.parse message
+
+    @lock.synchronize do
+      self.name = data['state_name']
+      self.body = data['state_body']
+      self.published_at = Time.at data['published_at']
+    end
+    puts "updated state"
+  end
+
+  def check_state
+    puts "checking state"
+    @lock.synchronize do
+      delta = Time.now - self.published_at
+      puts "name: #{name}"
+      puts "since last publish: #{delta}"
+
+      if delta < 15
+        $blink.off
+        return
+      end
+
+      if name == 'commencing'
+        $blink.set_rgb(255, 0, 255)
+      elsif name == 'scheduling' && delta > 150
+        $blink.set_rgb(255, 0, 0)
+      end
+    end
+    puts "checked state"
+  end
+end
+
+@monitor = StateMonitor.new
+@subscriber = StateSubscriber.new @monitor
+
+@monitor.reschedule
+puts "subscribing"
+@subscriber.async.subscribe
+
+sleep
