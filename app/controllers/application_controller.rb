@@ -13,14 +13,14 @@ class ApplicationController < ActionController::Base
 
   def current_team
     if Rails.env.development?
-      return Team.legitbs
+      return @current_team ||= Team.legitbs
     end
 
     @current_team ||= Team.find_by uuid: client_cn
   end
 
   def is_legitbs?
-    current_team == Team.legitbs
+    @is_legitbs ||= (current_team == Team.legitbs)
   end
 
   def require_team
