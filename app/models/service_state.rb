@@ -1,5 +1,5 @@
 class ServiceState
-  attr_accessor :redis, :state_name, :event_body
+  attr_accessor :redis, :state_name, :state_body
 
   def initialize(state_name, state_body={})
     self.redis = $redis
