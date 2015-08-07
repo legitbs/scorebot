@@ -16,6 +16,8 @@ Scorebot::Application.routes.draw do
 
   get 'timers', to: 'timers#index', as: 'timers'
 
+  get 'livectf/:flag', to: 'livectf#capture', as: 'livectf'
+
   root to: redirect('/dashboard')
 
   namespace :admin do
