@@ -119,7 +119,9 @@ loop do
   end
 
   pid = Process.fork do
-    exec 'rake scoreboard:upload'
+    Dir.chdir Rails.root do
+      exec 'rake scoreboard:upload'
+    end
   end
   Process.detach pid
 
