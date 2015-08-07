@@ -22,7 +22,7 @@ jQuery ($) ->
     poll: ->
       return =>
         @start = new XDate()
-        if !@recentTimers? || (@start > @recentTimers.round)
+        if !@recentTimers? || (@start > @recentTimers.next)
           $.ajax
             url: @timerPath
             dataType: 'json'
@@ -35,6 +35,7 @@ jQuery ($) ->
         server = new XDate data['time']
         @adjustment = @start.diffMilliseconds(server)
         @recentTimers = data.timers
+        @recentTimers.next = @start.addSeconds(15)
         @lazyUpdate()
     lazyUpdate: ->
       server = @start.addMilliseconds(@adjustment)
