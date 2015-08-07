@@ -6,6 +6,14 @@ class Admin::InstancesController < Admin::BaseController
   end
 
   def show
+    return redirect_instance_find if params[:id] == '0'
     @instance = Instance.find params[:id]
+  end
+
+  private
+  def redirect_instance_find
+    @instance = Instance.find_by(service_id: params[:service],
+                                 team_id: params[:team])
+    redirect_to id: @instance.id, status: :found
   end
 end
