@@ -8,5 +8,6 @@ Dir.
   select{ |n| File.file?(n) }.
   each do |f|
   dest = f.gsub(%r{production/releases/\d+/}, '')
+  FileUtils.mkdir_p File.dirname(dest)
   FileUtils.cp(f, dest)
 end
