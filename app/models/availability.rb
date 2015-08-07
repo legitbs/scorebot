@@ -87,9 +87,9 @@ class Availability < ActiveRecord::Base
     return if instance.team == Team.legitbs
     return unless instance.legitbs_instance.availabilities.find_by(round: round).healthy?
 
-    flags = instance.flags.limit(Team.PARTICIPANT_COUNT)
+    flags = instance.flags.limit(15)
 
-    return distribute_parking(flags) if flags.count < Team.PARTICIPANT_COUNT
+    return distribute_parking(flags) if flags.count < 15
     return distribute_everywhere(flags)
   end
 
