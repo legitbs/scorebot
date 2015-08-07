@@ -36,10 +36,12 @@ class ShellProcess
 
     @output = ''
 
-    cmd = "cd #{@directory}; ./#{@args.join ' '}"
+    cmd = "./#{@args.join ' '}"
 
-    IO.popen cmd, 'r', err: %i{child out} do |stdout|
-      @output << stdout.read
+    Dir.chdir @directory do
+      IO.popen cmd, 'r', err: %i{child out} do |stdout|
+        @output << stdout.read
+      end
     end
 
     @status = $?
