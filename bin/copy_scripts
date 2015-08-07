@@ -7,6 +7,6 @@ Dir.
   glob(Rails.root.join('scripts/**/*')).
   select{ |n| File.file?(n) }.
   each do |f|
-  dest = f.gsub('production/current', 'scripts')
+  dest = f.gsub(%r{production/releases/\d+}, 'scripts')
   FileUtils.cp(f, dest)
 end
