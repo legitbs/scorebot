@@ -18,14 +18,14 @@
             - place_buf = 1
             - prev_score = score
           - else
-            - place_buf = 1
+            - place_buf += 1
           %tr
             %th= t[:display_name]
             %td.logo
               =team_logo t[:id]
             %td.flags
-              .points.left= score
-              .bar.left{style: "width: #{0.0004 * score}em"} &nbsp;
+              .points.left= 16 - place
+              .bar.left{style: "width: #{16 - place}em"} &nbsp;
               %br.clear
 %script#team_row_template{type: 'text/html'}
   %tr
