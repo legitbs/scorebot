@@ -22,6 +22,7 @@
       %th instance id
       %th team (id)
       %th flags
+      %th redemptions against
       %th activities
   %tbody
     - service.instances.joins(:team).sort_by{|i|i.team.name.downcase}.each do |i|
@@ -31,6 +32,7 @@
           = link_to i.team.name, admin_instance_path(i)
           (#{i.team.id})
         %td= i.flags.count
+        %td= i.redemptions.count
         %td
           = link_to 'instance', admin_instance_path(i)
           = link_to 'team', admin_team_path(i.team)
