@@ -145,12 +145,12 @@ loop do
     StatsD.measure('finalize'){ current_round.finalize! }
   end
 
-  pid = Process.fork do
-    Dir.chdir Rails.root do
-      exec 'rake scoreboard:upload'
-    end
-  end
-  Process.detach pid
+  # pid = Process.fork do
+  #   Dir.chdir Rails.root do
+  #     exec 'rake scoreboard:upload'
+  #   end
+  # end
+  # Process.detach pid
 
   break if @ending
 end
