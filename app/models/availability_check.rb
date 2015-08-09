@@ -1,6 +1,6 @@
 class AvailabilityCheck
   WORKERS = 16
-  INITIAL_TIMING = 4 * 60
+  INITIAL_TIMING = 2 * 60
 
   attr_accessor :timing_history
   attr_accessor :deadline
@@ -28,7 +28,7 @@ class AvailabilityCheck
     remaining = deadline.to_f - Time.now.to_f
 
     # skew earlier
-    start_before = remaining - (110 + timing_average)
+    start_before = remaining - (70 + timing_average)
 
     wait = rand(start_before)
 
