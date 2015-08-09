@@ -3,7 +3,7 @@ class Round < ActiveRecord::Base
   has_many :tokens
   has_many :redemptions
 
-  ROUND_LENGTH = 5.minutes
+  ROUND_LENGTH = (2.5).minutes
   WORKERS = 10
 
   before_create :add_nonce
