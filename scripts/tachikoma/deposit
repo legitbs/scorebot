@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+my $SERVICE = 'tachikoma';
+
+if ($#ARGV+1 != 3) {
+	print "Usage: deposit-script <team#> <token> <round number>\n";
+	exit(-1);
+}
+
+$SIG{ALRM} = sub { print "timeout\n"; exit(-1); };
+alarm(10);
+
+my $TEAM = $ARGV[0];
+my $IP = "10.5.$TEAM.4";
+my $TOKEN = $ARGV[1];
+
+`logger -t "$SERVICE-Deposit" "Attempting token deposit on $IP"`;
+
+`ssh -o ConnectTimeout=2 root\@$IP "echo '$TOKEN' > /home/flags/$SERVICE; chown root /home/flags/$SERVICE; chgrp $SERVICE /home/flags/$SERVICE; chmod 640 /home/flags/$SERVICE"`;
+
+if ($? == 0) {
+	`logger -t "$SERVICE-Deposit" "Success"`;
+} else {
+	`logger -t "$SERVICE-Deposit" "Fail"`;
+}

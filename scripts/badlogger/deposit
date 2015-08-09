@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+
+$SIG{ALRM} = sub { print "timeout\n"; exit(-1); };
+alarm(10);
+
+my $TEAM = $ARGV[0];
+my $IP = "10.5.$TEAM.4";
+my $PORT = 4501;
+my $TOKEN = $ARGV[1];
+
+print `echo -n $TOKEN | nc $IP $PORT`;
+

@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+import socket,sys
+
+import sys
+import os
+import base64
+
+team=sys.argv[1]
+s=socket.socket()
+s.connect(("10.5.%s.3"%team,4800))
+
+ALARM_TIMEOUT_SECS = 25
+
+from signal import alarm
+
+alarm( ALARM_TIMEOUT_SECS )
+
+import time
+def send(msg):
+    prefix="LOGSTARTA1B2"
+    data=msg+"A1B2"
+    s.sendall(prefix)
+    time.sleep(.3)
+    if "Logging " not in readUntil():
+        exit(-1)
+    s.sendall(data)
+    time.sleep(.3)
+    print "SENDING %s%s"%(prefix,data)
+def readUntil():
+    msg=""
+    while "\n" not in msg:
+        msg+= s.recv(1024)
+        #print msg
+    return msg
+import sys
+print readUntil()
+print "ABCD"
+#send("\xff"*4+"DEBUG")
+send("double")
+print readUntil()
+chal=base64.b64encode(os.urandom(100))
+send(chal)
+if chal not in readUntil():
+    exit(-1)
