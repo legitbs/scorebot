@@ -67,16 +67,16 @@ class StateMonitor
       puts "name: #{name}"
       puts "since last publish: #{delta}"
 
-      if delta < 15
+      if delta < 10
         $blink.off
         return
       end
 
       if name == 'commencing' && delta > 30
         $blink.set_rgb(255, 0, 255)
-      elsif name == 'scheduling' && delta > 200
+      elsif name == 'scheduling' && delta > 100
         $blink.set_rgb(255, 0, 0)
-      elsif name == 'waiting_to_end' && delta > 300
+      elsif name == 'waiting_to_end' && delta > 100
         $blink.set_rgb(255, 0, 0)
       end
     end
