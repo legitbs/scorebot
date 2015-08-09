@@ -4,7 +4,7 @@ require ::File.expand_path('../../config/environment',  __FILE__)
 
 RR = Redemption.order(id: :asc)
 
-given_duration = 4.hours.to_f
+given_duration = (1.5).hours.to_f
 
 per_redemption = given_duration / RR.count
 
@@ -37,7 +37,7 @@ RR.find_each.with_index do |r, i|
   next_one = Time.now.to_f + per_redemption
   if i % 10 == 0
     puts
-    print "#{i}/#{RR.count}: " 
+    print "#{i}/#{RR.count}: "
   end
 
   print Event.new('redemption', r.as_event_json).publish!
