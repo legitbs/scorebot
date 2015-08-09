@@ -1,6 +1,6 @@
 class ScoreboardController < ApplicationController
   def index
-    #    redirect_to dashboard_path unless is_legitbs?
+    redirect_to dashboard_path unless is_legitbs?
     respond_to do |f|
       f.html do
         @teams = Team.for_scoreboard
