@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2015 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+samurai = Team.find_by certname: 'samurai'
+samurai_rounds = Round.where id: (253..291)
+
+samurai_avs = Availability.
+              where(instance: samurai.instances, round: samurai_rounds)
+
+samurai_avs.each(&:fix_availability)
+binding.pry
