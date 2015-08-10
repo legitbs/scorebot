@@ -12,6 +12,7 @@ class Availability < ActiveRecord::Base
   end
 
   def fix_availability
+    return if status == 0
     self.status = 0
     self.memo = "administratively fixed by legitbs <3 vito@legitbs.net"
     save
