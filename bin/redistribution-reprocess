@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$stderr.puts "#{Time.now} Loading 2014 reprocess script"
+$stderr.puts "#{Time.now} Loading reprocess script"
 require ::File.expand_path('../../config/environment',  __FILE__)
 
 puts "if you aren't running this on a copy of the db..."
