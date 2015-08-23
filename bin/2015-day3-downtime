@@ -10,10 +10,10 @@ ci20_services = Service.where(name: %w{irkd ombdsu})
 
 samurai = Team.find_by certname: 'samurai'
 samurai_rounds = Round.where id: (253..291)
-samurai_instances = samurai.instances.wher(service: ci20_services)
+samurai_instances = samurai.instances.where(service: ci20_services)
 
 samurai_avs = Availability.
-              where(instance: samurai.instances, round: samurai_rounds)
+              where(instance: samurai_instances, round: samurai_rounds)
 
 samurai_avs.each(&:fix_availability)
 binding.pry
