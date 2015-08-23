@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2015 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+puts "RUN ME AFTER REPROCESSING YO"
+gets
+
+
+Flag.where(team_id: 16, service_id: 10).limit(600).update_all(team_id: 5) # defkor
+Flag.where(team_id: 16, service_id: 10).limit(300).update_all(team_id: 15) # lcbc
+Flag.where(team_id: 16, service_id: 10).limit(200).update_all(team_id: 1) # ppp
+Flag.where(team_id: 16, service_id: 10).limit(100).update_all(team_id: 12) # 0day
+Flag.where(team_id: 16, service_id: 10).limit(100).update_all(team_id: 3) # samurai
+Flag.where(team_id: 16, service_id: 10).limit(100).update_all(team_id: 14) # shellphish
+Flag.where(team_id: 16, service_id: 10).limit(100).update_all(team_id: 4) # hitcon
+Flag.where(team_id: 16, service_id: 10).limit(100).update_all(team_id: 6) # team-9447
+Flag.where(team_id: 16, service_id: 11).limit(1000).update_all(team_id: 1) # ppp
