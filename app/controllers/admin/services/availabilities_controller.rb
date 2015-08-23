@@ -11,7 +11,7 @@ class Admin::Services::AvailabilitiesController < Admin::BaseController
 
     @instances = service.instances
     availability_arr = Availability.
-                       where(round_id: @rounds.map(&:id)).
+                       where(round_id: @rounds.map(&:id), instance_id: @instances).
                        order(round_id: :desc).
                        joins(:instance)
 
