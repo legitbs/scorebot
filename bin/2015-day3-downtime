@@ -16,4 +16,13 @@ samurai_avs = Availability.
               where(instance: samurai_instances, round: samurai_rounds)
 
 samurai_avs.each(&:fix_availability)
+
+badlogger = Service.where name: 'badlogger'
+badlogger_rounds = Round.where 'id < 245'
+
+badlogger_avs = Availability.
+                where(instance: badlogger.instances, round: badlogger_rounds)
+
+badlogger_avs.each(&:fix_availability)
+
 binding.pry
