@@ -1,0 +1,22 @@
+%h1 #{service.name} Availabilities
+
+%nav
+  %ul
+    %li= link_to 'All', rounds: 'all'
+    %li= link_to 'Most recent', rounds: 'recent'
+
+%table#availabilities
+  %thead
+    %tr
+      %th
+        %em round
+      - @teams.each do |t|
+        %th= t.certname
+  %tbody
+    - @availabilities_rounds.each do |round_id, av_hash|
+      %tr
+        %th= round_id
+        - @teams.each do |t|
+          - av = av_hash[t.id]
+          %td{class: av.healthy?.inspect}
+            = av.healthy?

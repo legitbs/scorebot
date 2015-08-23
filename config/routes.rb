@@ -27,8 +27,11 @@ Scorebot::Application.routes.draw do
               :redemptions,
               :instances,
               :teams,
-              :availabilities,
-              :services
+              :availabilities
+
+    resources :services do
+      resources :availabilities, controller: 'services/availabilities'
+    end
   end
 
 end
