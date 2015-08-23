@@ -6,8 +6,16 @@ puts "if you aren't running this on a copy of the db..."
 puts "you already fucked up, hit ctrl-c now"
 gets
 
+livectf_services = %w{
+livectf_quals livectf_finals
+}.map do |service_name|
+  Service.find_by(name: service_name)
+end
+
 Flag.delete_all
 Flag.initial_distribution
+Flag.collect_livectf_flags livectf_services
+
 Capture.delete_all
 Penalty.delete_all
 Round.update_all distribution: nil, signature: nil, payload: nil
