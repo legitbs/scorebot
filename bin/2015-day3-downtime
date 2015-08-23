@@ -6,8 +6,11 @@ puts "if you aren't running this on a copy of the db..."
 puts "you already fucked up, hit ctrl-c now"
 gets
 
+ci20_services = Service.where(name: %w{irkd ombdsu})
+
 samurai = Team.find_by certname: 'samurai'
 samurai_rounds = Round.where id: (253..291)
+samurai_instances = samurai.instances.wher(service: ci20_services)
 
 samurai_avs = Availability.
               where(instance: samurai.instances, round: samurai_rounds)
