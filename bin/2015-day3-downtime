@@ -17,7 +17,7 @@ samurai_avs = Availability.
 
 samurai_avs.each(&:fix_availability)
 
-badlogger = Service.where name: 'badlogger'
+badlogger = Service.find_by name: 'badlogger'
 badlogger_rounds = Round.where 'id < 245'
 
 badlogger_avs = Availability.
