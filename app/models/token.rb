@@ -88,7 +88,7 @@ class Token < ActiveRecord::Base
     begin
       shell = ShellProcess.
         new(
-            "/home/scorebot/scripts/#{service_name}",
+            Rails.root.join('scripts', service_name),
             'deposit',
             instance.team.id,
             given_tok,
@@ -160,7 +160,7 @@ class Token < ActiveRecord::Base
   private
   def check_token_replacement
     return unless has_replaced_token =
-                  /^!!legitbs-replace-token-hyekgiak (.+)$/.match(memo)
+                  /^!!legitbs-replace-token-3ELrtvi (.+)$/.match(memo)
 
     self.key, @secret = token_split has_replaced_token[1]
     set_digest

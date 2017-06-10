@@ -25,7 +25,7 @@ class TokenTest < ActiveSupport::TestCase
       token = FactoryGirl.create :token
 
       assert_uniqueness_constraint do
-        token2 = Token.create token.attributes  
+        token2 = Token.create token.attributes
       end
     end
   end
@@ -40,7 +40,11 @@ class TokenTest < ActiveSupport::TestCase
 
       ShellProcess.
         expects(:new).
-        with{ |e| e == Rails.root.join('scripts', @instance.service.name, 'deposit') }.
+        with(Rails.root.join('scripts', @instance.service.name),
+             'deposit',
+             @instance.team_id,
+             is_a(String),
+             @round.id).
         returns(@shell)
 
       @token = Token.create instance: @instance, round: @round
@@ -50,15 +54,20 @@ class TokenTest < ActiveSupport::TestCase
     end
     should 'allow deposit scripts to substitute tokens' do
       replaced_token = "replaced-token-#{rand(36**5).to_s(36)}"
-      @shell = mock('shell', output: "!!legitbs-replace-token #{replaced_token}", status: 0)
+      @shell = mock('shell', output: "!!legitbs-replace-token-3ELrtvi #{replaced_token}", status: 0)
 
       ShellProcess.
         expects(:new).
-        with{|e| e == Rails.root.join('scripts', @instance.service.name, 'deposit') }.
+        with(Rails.root.join('scripts', @instance.service.name),
+             'deposit',
+             @instance.team_id,
+             is_a(String),
+             @round.id).
         returns(@shell)
 
       @token = Token.create instance: @instance, round: @round
       @token.deposit
+      @token.save
 
       assert_equal @token, Token.from_token_string(replaced_token)
     end
@@ -67,14 +76,14 @@ class TokenTest < ActiveSupport::TestCase
   should "not be eligible after #{Token::EXPIRATION} rounds" do
     token = FactoryGirl.create :token
     assert token.eligible?
-    
+
     Token::EXPIRATION.times do
       FactoryGirl.create :round
       assert token.eligible?
     end
 
     refute_includes Token.expiring, token
-    
+
     FactoryGirl.create :round
     refute token.eligible?
 

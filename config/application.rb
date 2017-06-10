@@ -14,13 +14,14 @@ module Scorebot
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+  end
 
-    def self.log(*args)
-      timestamp = Time.now.to_s
-      body = args.map{|a| a.is_a?(String) ? a : a.inspect }.join(' ')
 
-      Rails.logger.info "#{timestamp} [scorebot] #{body}"
-      $stderr.puts body
-    end
+  def self.log(*args)
+    timestamp = Time.now.to_s
+    body = args.map{|a| a.is_a?(String) ? a : a.inspect }.join(' ')
+
+    Rails.logger.info "#{timestamp} [scorebot] #{body}"
+    $stderr.puts body
   end
 end
