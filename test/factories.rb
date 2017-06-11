@@ -11,7 +11,7 @@ FactoryGirl.define do
 
     factory :legitbs do
       name 'legitbs'
-      uuid 'deadbeef-84c4-4b55-8cef-d9471caf1f86'
+      uuid 'deadbeef-7872-499a-a060-3143de953e28'
     end
   end
 
@@ -38,6 +38,7 @@ FactoryGirl.define do
   factory :availability do
     instance
     round
+    token
 
     status 0
     memo 'okay!'

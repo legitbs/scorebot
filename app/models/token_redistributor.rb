@@ -1,4 +1,5 @@
 class TokenRedistributor
+  attr_reader :movement_json, :round
   def initialize
     @movement_json = {  }
   end
@@ -13,6 +14,14 @@ class TokenRedistributor
 
   def as_movement_json
     return { redistribution: @movement_json }
+  end
+
+  def ==(other)
+    return false unless other.is_a? self.class
+    return false unless other.movement_json == self.movement_json
+    return false unless other.round == self.round
+
+    true
   end
 
   private
