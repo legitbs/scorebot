@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_team, :is_legitbs?
 
-  before_filter :require_team, :check_rmp
+  before_action :require_team, :check_rmp
 
   def client_cn
     request.env['HTTP_SSL_CLIENT_S_DN_CN']

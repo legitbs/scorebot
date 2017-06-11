@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :service do
     name 'atmail'
   end
-  
+
   factory :team do
     sequence :name
     sequence :certname
@@ -16,7 +16,10 @@ FactoryGirl.define do
   end
 
   factory :round do
-    
+    factory :current_round do
+      created_at(Time.now - 2.minutes)
+      ended_at nil
+    end
   end
 
   factory :instance do

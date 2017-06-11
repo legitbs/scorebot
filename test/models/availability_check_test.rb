@@ -2,6 +2,8 @@ require 'test_helper'
 
 class AvailabilityCheckTest < ActiveSupport::TestCase
   setup do
+    @round = FactoryGirl.create :current_round
+
     @legitbs = FactoryGirl.create :legitbs
     Team.stubs(:legitbs).returns(@legitbs)
     @general_teams = FactoryGirl.create_list :team, 20
@@ -13,7 +15,7 @@ class AvailabilityCheckTest < ActiveSupport::TestCase
     @lbs_instance = FactoryGirl.create :instance, team: @legitbs, service: @service
     @instances = @general_teams.map{|t| Instance.create team: t, service: @service }
   end
-  
+
 
   context 'initializing' do
     should 'initialize for a service' do
@@ -57,10 +59,11 @@ class AvailabilityCheckTest < ActiveSupport::TestCase
 
   context 'Availability checking' do
     should 'check all the teams' do
-      @lbs_instance.expects(:check_availability).once
+      lbs_av = stub 'legitbs availability', save: true
+      @lbs_instance.expects(:check_availability).once.returns(lbs_av)
 
-      @instances.each do |i| 
-        av = stub 'availability'
+      @instances.each do |i|
+        av = stub 'availability', status: 0
         i.expects(:check_availability).once.returns(av)
         av.expects(:save).once
       end

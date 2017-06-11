@@ -11,7 +11,7 @@ class RedemptionControllerTest < ActionController::TestCase
     should 'return json on an empty token set' do
       @token = FactoryGirl.create :token
 
-      post :create, tokens: []
+      post :create, params: { tokens: [] }
 
       assert_response :success
       assert_equal Hash.new, JSON.parse(response.body)
@@ -21,7 +21,7 @@ class RedemptionControllerTest < ActionController::TestCase
       @token = FactoryGirl.create :token
       @ts = @token.to_token_string
 
-      post :create, tokens: [@ts]
+      post :create, params: { tokens: [@ts] }
 
       assert_response :success
       assert_equal({@ts => @token.redemptions.first.uuid}, JSON.parse(response.body))
@@ -36,7 +36,7 @@ class RedemptionControllerTest < ActionController::TestCase
       @ts2 = @token2.to_token_string
       @existing_redemption = Redemption.redeem_for @current_team, @ts2
 
-      post :create, tokens: [@ts, @ts2]
+      post :create, params: { tokens: [@ts, @ts2] }
 
       assert_response :success
       assert_equal({
