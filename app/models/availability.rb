@@ -72,7 +72,7 @@ class Availability < ActiveRecord::Base
   end
 
   def load_dinguses(memo)
-    if has_token = /^!!legitbs-validate-token-hyekgiak (.+)$/.match(memo)
+    if has_token = /^!!legitbs-validate-token-7OPuwAj (.+)$/.match(memo)
       self.token_string = has_token[1]
       candidate_token = Token.from_token_string self.token_string
 

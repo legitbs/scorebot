@@ -13,7 +13,7 @@ class AvailabilityTest < ActiveSupport::TestCase
         expects(:new).
         with(Rails.root.join('scripts', @instance.service.name),
              'availability',
-             @round.id).
+             is_a(Integer)).
         returns(@shell)
 
       @token = FactoryGirl.create :token, instance: @instance
@@ -21,12 +21,11 @@ class AvailabilityTest < ActiveSupport::TestCase
 
       @memo = <<-EOF
 example memo
-!!legitbs-validate-token #{@token.to_token_string}
-!!legitbs-validate-dev-ctf #{Base64.strict_encode64 @dingus}
+!!legitbs-validate-token-7OPuwAj #{@token.to_token_string}
 EOF
 
       @shell.expects(:status).returns(0)
-      @shell.expects(:output).returns(@memo)
+      @shell.expects(:output).at_least(1).returns(@memo)
     end
 
     should 'create an availability from an instance' do
@@ -36,23 +35,25 @@ EOF
       assert_equal 0, @availability.status
       assert_equal @memo, @availability.memo
 
-      assert_equal @dingus, @availability.dingus
       assert_equal @token, @availability.token
     end
   end
 
   should 'distribute flags' do
     @instance = FactoryGirl.create :instance
+    @lbs_instance = FactoryGirl.create :lbs_instance, service: @instance.service
 
-    @flags = FactoryGirl.create_list :flag, 19, team: @instance.team
-    Team.stubs(:legitbs).returns(stub('legitbs', id: 0))
+    @flags = FactoryGirl.create_list :flag, 19, team: @instance.team, service: @instance.service
     @teams = FactoryGirl.create_list :team, 19
 
-    @availability = FactoryGirl.create :availability, instance: @instance
+    @availability = FactoryGirl.create :down_availability, instance: @instance
+    @lbs_availability = FactoryGirl.create(:availability,
+                                           instance: @lbs_instance,
+                                           round: @availability.round)
 
     @availability.process_movements(@availability.round)
 
-    assert @flags.all?{|f| f.reload.team != @instance.team}
+    assert @flags.any?{|f| f.reload.team != @instance.team}
   end
 
   should 'log flag distribution'
