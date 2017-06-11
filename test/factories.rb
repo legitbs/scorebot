@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :service do
     name 'atmail'
   end
-  
+
   factory :team do
     sequence :name
     sequence :certname
@@ -11,12 +11,15 @@ FactoryGirl.define do
 
     factory :legitbs do
       name 'legitbs'
-      uuid 'deadbeef-84c4-4b55-8cef-d9471caf1f86'
+      uuid 'deadbeef-7872-499a-a060-3143de953e28'
     end
   end
 
   factory :round do
-    
+    factory :current_round do
+      created_at(Time.now - 2.minutes)
+      ended_at nil
+    end
   end
 
   factory :instance do
@@ -35,6 +38,7 @@ FactoryGirl.define do
   factory :availability do
     instance
     round
+    token
 
     status 0
     memo 'okay!'

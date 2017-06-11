@@ -9,18 +9,21 @@ class RoundFinalizerTest < ActiveSupport::TestCase
     @round = @redemption.round
     @instance = @token.instance
     @service = @instance.service
+
+    @lbs_instance = FactoryGirl.create :lbs_instance, service: @service
   end
 
   should 'be creatable with a round and service' do
     RoundFinalizer.new @round, @service
   end
-  
+
   context 'with redemptions and failed availabilities' do
     setup do
       @owned_team = @instance.team
       @redeeming_team = @redemption.team
       @idle_team = FactoryGirl.create :team
 
+      @lbs_availability = FactoryGirl.create :availability, instance: @lbs_instance, round: @round
       @failed_availability = FactoryGirl.create :down_availability, instance: @instance, round: @round
 
       @finalizer = RoundFinalizer.new @round, @service
@@ -30,7 +33,7 @@ class RoundFinalizerTest < ActiveSupport::TestCase
       assert_includes @finalizer.candidates, @token
       assert_includes @finalizer.candidates, @failed_availability
     end
-    
+
     should 'scramble scoring events consistently' do
       assert_equal @finalizer.candidates, RoundFinalizer.new(@round, @service).candidates
     end

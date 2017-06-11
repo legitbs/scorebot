@@ -85,7 +85,7 @@ Team.find_or_create_by(id: 15,
 Team.find_or_create_by(id: 16,
                        name: 'Legitimate Business Syndicate',
                        certname: 'legitbs',
-                       uuid: "deadbeef-42fb-4041-80cf-85239f6df549",
+                       uuid: "deadbeef-7872-499a-a060-3143de953e28",
                        address: "10.5.16.2"
                        )
 
