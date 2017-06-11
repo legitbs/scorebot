@@ -36,7 +36,7 @@ class Availability < ActiveRecord::Base
     service_name = instance.service.name
     team_address = instance.team.address
 
-    dir = "/home/scorebot/scripts/#{service_name}"
+    dir = Rails.root.join 'scripts', service_name
     script = 'availability'
 
     shell = ShellProcess.

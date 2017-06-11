@@ -11,7 +11,9 @@ class AvailabilityTest < ActiveSupport::TestCase
       @shell = mock('shell')
       ShellProcess.
         expects(:new).
-        with{|e| e == Rails.root.join('scripts', @instance.service.name, 'availability')}.
+        with(Rails.root.join('scripts', @instance.service.name),
+             'availability',
+             @round.id).
         returns(@shell)
 
       @token = FactoryGirl.create :token, instance: @instance
@@ -41,7 +43,7 @@ EOF
 
   should 'distribute flags' do
     @instance = FactoryGirl.create :instance
-    
+
     @flags = FactoryGirl.create_list :flag, 19, team: @instance.team
     Team.stubs(:legitbs).returns(stub('legitbs', id: 0))
     @teams = FactoryGirl.create_list :team, 19
