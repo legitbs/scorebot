@@ -24,18 +24,42 @@ $crimson: #EB242E
 $dark_crimson: darken($crimson, 35%)
 $darker_crimson: darken($crimson, 50%)
 
-// useful
-$deemphasized: desaturate($light_amber, 50%)
-$emphasized: $bright_amber
+// 2016
+$teeth: #e7d0c6
+$tan: #d19269
+$honky: #f3c6b5
+$shirt: #d4e1f4
+$lefty: #493733
+$bluegrey: #817d89
+$light_bluegrey: lighten($bluegrey, 25%)
+$tielight: #8b858b
+$light_tielight: lighten($tielight, 25%)
 
-$error: #400
+// 2017
+$pale_mustard: #f1d474
+$mustard: #bd8619
+$baby_blue: #5037f0
+$grey_grape: #7957ba
+$grape: #88198D
+$dark_grape: darken($grape, 15%)
+$superdark_grape: darken($grape, 25%)
+$superpale_blue: lighten($baby_blue, 38%)
+$paper_average: #cebea8
+
+$background_color: $dark_grape
+
+// useful
+$deemphasized: desaturate($mustard, 45%)
+$emphasized: saturate($mustard, 15%)
+
+$error: $crimson
 $error_bright: #faa
 $error_super: #fcc
 
-$content_background: $dark_amber
+$content_background: $dark_grape
 $content_text: white
 $content_highlight: $light_amber
 
 a
   &:link, &:visited
-    color: $light_amber
+    color: darken($honky, 35%)
