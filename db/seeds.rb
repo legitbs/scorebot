@@ -1,3 +1,4 @@
+# coding: utf-8
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 #
@@ -6,80 +7,80 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 Team.find_or_create_by(id: 1,
-                       certname: 'ppp',
-                       name: "Plaid Parliament of Pwning",
-                       address: '10.5.1.2',
-                       uuid: "b31d52d9-902f-4570-ae1a-9fbdde627d91")
+                       certname: "ppp",
+                       name: "PPP",
+                       address: "10.5.1.2",
+                       uuid: "1f3787cd-5de8-408f-b341-52e1371f9868")
 Team.find_or_create_by(id: 2,
-                       certname: 'bushwhackers',
-                       name: "Bushwhackers",
-                       address: '10.5.2.2',
-                       uuid: "1526cdf6-57c7-44b9-b1c4-0bc8005fd4e6")
+                       certname: "eatsleeppwnrepeat",
+                       name: "Eat Sleep Pwn Repeat",
+                       address: "10.5.2.2",
+                       uuid: "93a0b079-9def-4138-a172-d9265c65d4de")
 Team.find_or_create_by(id: 3,
-                       certname: 'samurai',
-                       name: "Samurai",
-                       address: '10.5.3.2',
-                       uuid: "13ceb49b-ea66-4c8c-9263-e3d53ef45885")
-Team.find_or_create_by(id: 4,
-                       certname: 'hitcon',
-                       name: "HITCON",
-                       address: '10.5.4.2',
-                       uuid: "f437c4d7-93fe-45a3-8ae2-5519065ee905")
-Team.find_or_create_by(id: 5,
-                       certname: 'defkor',
+                       certname: "defkor",
                        name: "DEFKOR",
-                       address: '10.5.5.2',
-                       uuid: "fce9f25c-e973-4199-88f0-c46cb83c8625")
+                       address: "10.5.3.2",
+                       uuid: "4859a35c-f02c-4ec2-a8b9-5b70a9491379")
+Team.find_or_create_by(id: 4,
+                       certname: "pasten",
+                       name: "pasten",
+                       address: "10.5.4.2",
+                       uuid: "e281c3c6-b1eb-4793-8224-e812b5422cbd")
+Team.find_or_create_by(id: 5,
+                       certname: "hitcon",
+                       name: "HITCON",
+                       address: "10.5.5.2",
+                       uuid: "0a3caf54-7169-4eaf-930d-152bcaa5bce0")
 Team.find_or_create_by(id: 6,
-                       certname: 'team-9447',
-                       name: "9447",
-                       address: '10.5.6.2',
-                       uuid: "154c295b-9ff1-4aac-ba61-c7e1c11d4035")
+                       certname: "bushwhackers",
+                       name: "Bushwhackers",
+                       address: "10.5.6.2",
+                       uuid: "d5de2ddb-5027-4beb-afee-8ad08a5dfb6a")
 Team.find_or_create_by(id: 7,
-                       certname: 'gallopsled',
-                       name: "Gallopsled",
-                       address: '10.5.7.2',
-                       uuid: "bfb7109a-e6bc-42b9-a626-2d893aa0791e")
+                       certname: "koreanbadass",
+                       name: "koreanbadass",
+                       address: "10.5.7.2",
+                       uuid: "e4b41633-5768-41b1-8109-9fbea2a6e495")
 Team.find_or_create_by(id: 8,
-                       certname: 'blue-lotus',
-                       name: "blue-lotus",
-                       address: '10.5.8.2',
-                       uuid: "003d93a8-86d1-4f4f-8a3f-1521f95cece4")
+                       certname: "teadeliverers",
+                       name: "Tea Deliverers",
+                       address: "10.5.8.2",
+                       uuid: "e64ead2d-2c6a-47c7-b507-c46520d2e446")
 Team.find_or_create_by(id: 9,
-                       certname: 'spamandhex',
-                       name: "!SpamAndHex",
-                       address: '10.5.9.2',
-                       uuid: "807b9136-93c7-4339-bad4-d110a449b4ca")
-Team.find_or_create_by(id: 10,
-                       certname: 'corndump',
-                       name: "CORNDUMP",
-                       address: '10.5.10.2',
-                       uuid: "d2d83a0b-a01c-424e-a9c6-0d412cc3ac75")
-Team.find_or_create_by(id: 11,
-                       certname: '0ops',
-                       name: "0ops",
-                       address: '10.5.11.2',
-                       uuid: "38cad61b-c2da-46db-9404-51a1e1db7fda")
-Team.find_or_create_by(id: 12,
-                       certname: '0daysober',
-                       name: "0daysober",
-                       address: '10.5.12.2',
-                       uuid: "127b3a43-5ab7-4b5a-b56b-547d26dbbd50")
-Team.find_or_create_by(id: 13,
-                       certname: 'dragonsector',
-                       name: "Dragon Sector",
-                       address: '10.5.13.2',
-                       uuid: "18f67d96-791c-425c-98ab-a384db51a806")
-Team.find_or_create_by(id: 14,
-                       certname: 'shellphish',
+                       certname: "shellphish",
                        name: "Shellphish",
-                       address: '10.5.14.2',
-                       uuid: "f65b3dd0-ed65-45df-b50b-28abb5f34934")
+                       address: "10.5.9.2",
+                       uuid: "219a3588-241f-4270-85f3-123ca13740bc")
+Team.find_or_create_by(id: 10,
+                       certname: "aoe",
+                       name: "A*0*E",
+                       address: "10.5.10.2",
+                       uuid: "ce8cf304-1e46-4510-a7e2-0f3bfb37a9c9")
+Team.find_or_create_by(id: 11,
+                       certname: "hacking4danbi",
+                       name: "hacking4danbi",
+                       address: "10.5.11.2",
+                       uuid: "44d3ced5-578b-4ab6-8cc3-2dc3df390b9c")
+Team.find_or_create_by(id: 12,
+                       certname: "spamandhex",
+                       name: "!SpamAndHex",
+                       address: "10.5.12.2",
+                       uuid: "4e216a45-c00e-4f2b-a412-d082a5cb16bc")
+Team.find_or_create_by(id: 13,
+                       certname: "rrr",
+                       name: "RRR",
+                       address: "10.5.13.2",
+                       uuid: "6c470ee8-59c2-42d9-ac41-2e5802d4790f")
+Team.find_or_create_by(id: 14,
+                       certname: "teamrocket",
+                       name: "Team Rocket ☠️",
+                       address: "10.5.14.2",
+                       uuid: "6cbea353-9c5b-4bac-a8c1-83188c41eb05")
 Team.find_or_create_by(id: 15,
-                       certname: 'lcbc',
-                       name: "LC\xE2\x86\xAFBC",
-                       address: '10.5.15.2',
-                       uuid: "5726c9eb-85eb-4bcf-b5a4-e6400cfe01bf")
+                       certname: "labrtats",
+                       name: "Lab RATs",
+                       address: "10.5.15.2",
+                       uuid: "9212af88-c9db-40e3-8462-32fc90a64535")
 
 
 Team.find_or_create_by(id: 16,
@@ -87,17 +88,22 @@ Team.find_or_create_by(id: 16,
                        certname: 'legitbs',
                        uuid: "deadbeef-7872-499a-a060-3143de953e28",
                        address: "10.5.16.2"
-                       )
+                      )
 
 regular_services = %w{
-cr00semissile rxc irk irkd tachikoma ombdsu hackermud shittyvm badlog
+untitled1
+untitled2
+forth
+untitled3
+untitled4
+colbert
+perplexity
+untitled5
 }.map do |service_name|
   Service.find_or_create_by(name: service_name)
 end
 
-livectf_services = %w{
-livectf_quals livectf_finals
-}.map do |service_name|
+livectf_services = [].map do |service_name|
   Service.find_or_create_by(name: service_name)
 end
 
@@ -109,20 +115,20 @@ end
 
 
 Timer.find_or_create_by(name: 'game').
-  update_attributes(ending: (Time.zone.parse('7-aug-2015 8pm pdt') + 14.hours))
+  update_attributes(ending: (Time.zone.parse('28-jul-2017 8pm pdt') + 14.hours))
 Timer.find_or_create_by name: 'round'
 Timer.
   find_or_create_by(name: 'friday').
-  update_attributes(ending: Time.zone.parse('7-aug-2015 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('28-jul-2017 8pm pdt'))
 Timer.
   find_or_create_by(name: 'saturday').
-  update_attributes(ending: Time.zone.parse('8-aug-2015 8pm pdt'))
+  update_attributes(ending: Time.zone.parse('29-jul-2017 8pm pdt'))
 Timer.
   find_or_create_by(name: 'sunday').
-  update_attributes(ending: Time.zone.parse('9-aug-2015 2pm pdt'))
+  update_attributes(ending: Time.zone.parse('30-jul-2017 2pm pdt'))
 
 Flag.delete_all
 
 Flag.initial_distribution
 
-Flag.collect_livectf_flags livectf_services
+# Flag.collect_livectf_flags livectf_services
