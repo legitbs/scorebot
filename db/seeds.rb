@@ -77,7 +77,7 @@ Team.find_or_create_by(id: 14,
                        address: "10.5.14.2",
                        uuid: "6cbea353-9c5b-4bac-a8c1-83188c41eb05")
 Team.find_or_create_by(id: 15,
-                       certname: "labrtats",
+                       certname: "labrats",
                        name: "Lab RATs",
                        address: "10.5.15.2",
                        uuid: "9212af88-c9db-40e3-8462-32fc90a64535")
