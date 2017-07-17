@@ -50,12 +50,15 @@ jQuery ($) ->
 
       @requeue()
     toRemnant: (now, ending) ->
-      diff =
-        s: pad(Math.abs(Math.floor(now.diffSeconds(ending) % 60)))
-        m: pad(Math.abs(Math.floor(now.diffMinutes(ending) % 60)))
-        h: pad(Math.floor(now.diffHours(ending)))
-        next: now.diffMilliseconds(ending)
-        ending: ending
-      return diff
+      try
+        diff =
+          s: pad(Math.abs(Math.floor(now.diffSeconds(ending) % 60)))
+          m: pad(Math.abs(Math.floor(now.diffMinutes(ending) % 60)))
+          h: pad(Math.floor(now.diffHours(ending)))
+          next: now.diffMilliseconds(ending)
+          ending: ending
+        return diff
+      catch
+        return {h: '00', m: '00', s: '00', next: 0, ending: now}
 
   Countdown.countdown = new Countdown
