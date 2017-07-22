@@ -1,4 +1,4 @@
 class Admin::BaseController < ApplicationController
-  before_filter :require_legitbs
+  before_action :require_legitbs
   layout 'admin'
 end
