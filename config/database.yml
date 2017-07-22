@@ -49,11 +49,7 @@ test:
 
 production:
   adapter: postgresql
-  host: bowmore
-  port: 5432
+  host: db
+  username: postgres
   database: scorebot_production
   pool: 100
-  sslrootcert: "/home/scorebot/postgres_certs/postgres_ca.crt"
-  sslcert: "/home/scorebot/postgres_certs/scorebot.crt"
-  sslkey: "/home/scorebot/postgres_certs/scorebot.key"
-  sslmode: "verify-full"
