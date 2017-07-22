@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :set_ticket, only: [:show, :edit, :update, :destroy, :resolve]
-  before_filter :require_legitbs, only: %i{ resolve }
+  before_action :require_legitbs, only: %i{ resolve }
 
   # GET /tickets
   def index
@@ -73,7 +73,7 @@ class TicketsController < ApplicationController
         current_team.tickets
       end
     end
-    
+
     # Only allow a trusted parameter "white list" through.
     def ticket_params
       params.require(:ticket).permit(:body)
