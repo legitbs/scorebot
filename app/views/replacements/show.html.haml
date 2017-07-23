@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Team:
+  = @replacement.team
+%p
+  %b Service:
+  = @replacement.service
+%p
+  %b Round:
+  = @replacement.round
+%p
+  %b Digest:
+  = @replacement.digest
+
+= link_to 'Edit', edit_replacement_path(@replacement)
+\|
+= link_to 'Back', replacements_path

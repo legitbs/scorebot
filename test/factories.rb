@@ -1,4 +1,10 @@
 FactoryGirl.define do
+  factory :replacement do
+    team nil
+    service nil
+    round nil
+    digest "MyString"
+  end
   factory :service do
     name 'atmail'
   end

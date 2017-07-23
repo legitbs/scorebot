@@ -1,0 +1,22 @@
+= form_for @replacement do |f|
+  - if @replacement.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@replacement.errors.count, "error")} prohibited this replacement from being saved:"
+      %ul
+        - @replacement.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :team
+    = f.text_field :team
+  .field
+    = f.label :service
+    = f.text_field :service
+  .field
+    = f.label :round
+    = f.text_field :round
+  .field
+    = f.label :digest
+    = f.text_field :digest
+  .actions
+    = f.submit 'Save'

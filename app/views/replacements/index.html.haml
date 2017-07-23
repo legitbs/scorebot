@@ -1,0 +1,27 @@
+%h1 Listing replacements
+
+%table
+  %thead
+    %tr
+      %th Team
+      %th Service
+      %th Round
+      %th Digest
+      %th
+      %th
+      %th
+
+  %tbody
+    - @replacements.each do |replacement|
+      %tr
+        %td= replacement.team
+        %td= replacement.service
+        %td= replacement.round
+        %td= replacement.digest
+        %td= link_to 'Show', replacement
+        %td= link_to 'Edit', edit_replacement_path(replacement)
+        %td= link_to 'Destroy', replacement, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Replacement', new_replacement_path

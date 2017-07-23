@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :replacements
   resources :tickets do
     member do
       post :resolve
