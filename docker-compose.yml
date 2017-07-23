@@ -17,7 +17,14 @@ services:
       - db
       - redis
   httpd:
-    image: httpd
+    build: ../scorebot-httpd
+    volumes:
+      - ../scorebot-httpd:/scorebot-httpd
+      - .:/scorebot
+    ports:
+      - "443:443"
+    depends_on:
+      - web
   service:
     build: .
     command: bundle exec ruby bin/service
