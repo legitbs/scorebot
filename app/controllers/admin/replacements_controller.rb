@@ -1,4 +1,4 @@
-class ReplacementsController < ApplicationController
+class Admin::ReplacementsController < Admin::BaseController
   before_action :set_replacement, only: [:show, :edit, :update, :destroy]
 
   # GET /replacements

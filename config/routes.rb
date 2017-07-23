@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :replacements
   resources :tickets do
     member do
       post :resolve
@@ -28,7 +27,8 @@ Rails.application.routes.draw do
               :redemptions,
               :instances,
               :teams,
-              :availabilities
+              :availabilities,
+              :replacements
 
     resources :services do
       resources :availabilities, controller: 'services/availabilities'
