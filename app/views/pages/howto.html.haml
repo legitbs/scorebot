@@ -16,7 +16,6 @@
           -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
           -F "tokens[]=RocyGt0kXt8z0dVM2nKqQUc4qb" \
           -F "tokens[]=gYAMrepyqzITctw5sVOxAqXWfH" \
-          --cacert ca.crt \
           -E #{current_team.certname}.crt \
           --key #{current_team.certname}.key \
           #{redemption_url}
@@ -85,6 +84,5 @@
           -F "tokens[]=ANOTHER_TOKEN_GOES_HERE" \
           -F "tokens[]=RocyGt0kXt8z0dVM2nKqQUc4qb" \
           -F "tokens[]=gYAMrepyqzITctw5sVOxAqXWfH" \
-          --cacert ./ca.crt \
           -E ./#{current_team.certname}.P12:asdfasdf \
           #{redemption_url}

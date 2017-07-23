@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  get 'replacements/index'
+
+  get 'replacements/show'
+
+  get 'replacements/new'
+
   resources :tickets do
     member do
       post :resolve
@@ -7,6 +13,8 @@ Rails.application.routes.draw do
   end
 
   resources :rounds
+
+  resources :replacements
 
   get "scoreboard", to: 'scoreboard#index', as: 'scoreboard'
   get "dashboard", to: 'dashboard#index', as: 'dashboard'

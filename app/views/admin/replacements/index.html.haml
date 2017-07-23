@@ -14,9 +14,9 @@
   %tbody
     - @replacements.each do |replacement|
       %tr
-        %td= replacement.team
-        %td= replacement.service
-        %td= replacement.round
+        %td= replacement.team.name
+        %td= replacement.service.name
+        %td= replacement.round.id
         %td= replacement.digest
         %td= link_to 'Show', replacement
         %td= link_to 'Edit', edit_replacement_path(replacement)
@@ -24,4 +24,4 @@
 
 %br
 
-= link_to 'New Replacement', new_replacement_path
+= link_to 'New Replacement', new_admin_replacement_path

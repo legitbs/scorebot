@@ -1,9 +1,6 @@
 redis_config = case Rails.env
          when 'production'
-           { host: 'bowmore',
-             port: 6379,
-             password: 'vueshosBevounWiedMontowmuzDoHondafDeyWor'
-           }
+           { host: 'redis' }
          else
            {  }
          end
