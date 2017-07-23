@@ -16,3 +16,5 @@
 /tmp
 erd.pdf
 *.pyc
+node_modules
+public/assets
