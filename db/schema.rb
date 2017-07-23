@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170723131656) do
+ActiveRecord::Schema.define(version: 20170723153202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "admin_replacements", force: :cascade do |t|
+    t.bigint "team_id"
+    t.bigint "service_id"
+    t.bigint "round_id"
+    t.string "digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["round_id"], name: "index_admin_replacements_on_round_id"
+    t.index ["service_id"], name: "index_admin_replacements_on_service_id"
+    t.index ["team_id"], name: "index_admin_replacements_on_team_id"
+  end
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "instance_id", null: false
@@ -89,8 +101,10 @@ ActiveRecord::Schema.define(version: 20170723131656) do
     t.string "digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "size"
     t.index ["round_id"], name: "index_replacements_on_round_id"
     t.index ["service_id"], name: "index_replacements_on_service_id"
+    t.index ["team_id", "service_id", "round_id"], name: "index_replacements_on_team_id_and_service_id_and_round_id", unique: true
     t.index ["team_id"], name: "index_replacements_on_team_id"
   end
 
@@ -158,6 +172,9 @@ ActiveRecord::Schema.define(version: 20170723131656) do
     t.index ["instance_id"], name: "index_tokens_on_instance_id"
   end
 
+  add_foreign_key "admin_replacements", "rounds"
+  add_foreign_key "admin_replacements", "services"
+  add_foreign_key "admin_replacements", "teams"
   add_foreign_key "replacements", "rounds"
   add_foreign_key "replacements", "services"
   add_foreign_key "replacements", "teams"
