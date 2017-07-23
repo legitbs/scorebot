@@ -4,6 +4,7 @@ class Team < ActiveRecord::Base
   has_many :captures, through: :redemptions
   has_many :instances
   has_many :tickets
+  has_many :replacements
   before_create :set_uuid
 
   after_rollback :flush_counters

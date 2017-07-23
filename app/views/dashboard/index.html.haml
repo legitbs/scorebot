@@ -20,15 +20,11 @@
                   %td.down DOWN
 
   .parcel.left
-    #tickets
-      %h1 Trouble Tickets
-      = form_for current_team.tickets.new do |f|
-        %p
-          = f.text_area :body, placeholder: "Problems? Securely send a message to Legitimate Business Syndicate. Definitely paste any tokens or UUIDs from redemptions."
-        %nav
-          %ul
-            %li= f.submit 'Submit ticket'
-            %li= link_to 'List my tickets', tickets_path
+    #replace
+      %h1 Replace
+      %ul
+        %li= link_to 'Replace a service binary', new_replacement_path
+        %li= link_to 'Get service binaries', replacements_path
     #redeem
       %h1 Redeem
       %p
@@ -42,3 +38,12 @@
           = text_field_tag 'tokens[]', '', placeholder: 'token'
           = submit_tag 'punch it'
       %iframe{id: 'redeem_target', name: 'redeem_target', style: 'display: none'}
+    #tickets
+      %h1 Trouble Tickets
+      = form_for current_team.tickets.new do |f|
+        %p
+          = f.text_area :body, placeholder: "Problems? Securely send a message to Legitimate Business Syndicate. Definitely paste any tokens or UUIDs from redemptions."
+        %nav
+          %ul
+            %li= f.submit 'Submit ticket'
+            %li= link_to 'List my tickets', tickets_path
