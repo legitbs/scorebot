@@ -8,7 +8,7 @@ class ReplacementsController < ApplicationController
   end
 
   def new
-    @services = Servuce.enabled.all
-    @replacment = current_team.replacements.new
+    @services = Service.enabled.all
+    @replacement = current_team.replacements.new
   end
 end
