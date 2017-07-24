@@ -1,2 +1,12 @@
-%h1 Replacements#show
-%p Find me in app/views/replacements/show.html.haml
+.scene
+  %h1 Replacement
+  %p= link_to 'download', download: true
+  %dl
+    %dt service
+    %dd= @replacement.service.name
+    %dt team
+    %dd= @replacement.team.name
+    %dt size
+    %dd= @replacement.size
+    %dt digest
+    %dd= @replacement.digest

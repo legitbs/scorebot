@@ -22,6 +22,10 @@ class ReplacementsController < ApplicationController
   end
 
   def show
+    @replacement = Replacement.find(params[:id])
+    if params[:download]
+      return send_file @replacement.archive_path
+    end
   end
 
   def new

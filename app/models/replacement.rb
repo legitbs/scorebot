@@ -38,8 +38,8 @@ class Replacement < ApplicationRecord
     end
     self.digest = hash_fn.hexdigest
 
-    FileUtils.mkdir_p archive_path
-    FileUtils.mkdir_p service_path
+    FileUtils.mkdir_p(File.dirname(archive_path))
+    FileUtils.mkdir_p(File.dirname(service_path))
 
     FileUtils.cp file.path, archive_path
     FileUtils.cp file.path, service_path

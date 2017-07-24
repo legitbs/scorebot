@@ -44,4 +44,6 @@
             %td= r.service.name
             %td= r.digest
             %td= r.size
-            %td x
+            %td
+              = link_to 'show', replacement_path(r)
+              = link_to 'download', replacement_path(r, download: true)
