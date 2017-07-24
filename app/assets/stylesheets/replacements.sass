@@ -5,3 +5,34 @@ body.replacements
     border: 1px solid $pale_mustard
     padding: 8px
     margin: 0 -5px
+    #filters
+      border: solid $pale_mustard
+      border-width: 1px 0
+      padding: 1em
+      margin-bottom: 1em
+      h2
+        @include permie
+        margin: 0
+        .btn
+          @include button
+          font-family: 'Ubuntu'
+      nav
+        ul
+          margin: 0
+          li
+            margin: 0.35em 0
+            &.label
+              @include permie
+              display: block
+            a:link, a:visited
+              font-size: 0.9em
+              padding: 0.25em
+              &[data-team-id='16']
+                background-color: black
+                color: $light_purple
+                border-color: $light_purple
+              &.active
+                border-width: 4px
+            a:hover[data-team-id='16']
+              color: white
+              border-color: white

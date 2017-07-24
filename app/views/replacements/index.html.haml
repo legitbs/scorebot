@@ -1,7 +1,47 @@
 .scene
   %h1 Replacements
 
-  %nav
-    team selector
-  %nav
-    service selector
+  %p= link_to 'Upload new replacement', new_replacement_path
+
+  #filters
+    %h2
+      Filters
+      = link_to 'Reset', replacements_path, class: 'btn'
+    %nav#teams
+      %ul
+        %li.label teams
+        - @teams.each do |t|
+          %li= link_to(t.certname,
+            @filters.merge(team_id: t.id),
+            title: t.name,
+            data: {team_id: t.id},
+            class: ((t.id == @filters[:team_id]) ? 'active' : ''))
+    %nav#services
+      %ul
+        %li.label services
+        - @services.each do |s|
+          %li= link_to(s.name,
+            @filters.merge(service_id: s.id),
+            class: ((s.id == @filters[:service_id]) ? 'active' : ''))
+
+  - if @replacements.empty?
+    %p No replacements found.
+  - else
+    %table
+      %thead
+        %tr
+          %th id
+          %th team
+          %th service
+          %th hash
+          %th size
+          %th actions
+      %tbody
+        - @replacements.each do |r|
+          %tr
+            %td= r.id
+            %td{title: r.team.name}= r.team.certname
+            %td= r.service.name
+            %td= r.digest
+            %td= r.size
+            %td x

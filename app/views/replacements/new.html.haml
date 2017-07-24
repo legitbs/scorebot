@@ -1,6 +1,16 @@
 .scene
   %h1 Replace Service
-  = form_for @replacement do |f|
+  = form_for @replacement, html_options: {multipart: true} do |f|
+    - if @replacement.errors.any?
+      #error_explanation
+        %ul
+          - @replacement.errors.full_messages.each do |e|
+            %li= e
     %p
       = f.label :service_id, 'Service'
       = f.select :service_id, @services.map {|s| [s.name, s.id] }
+    %p
+      = f.label :file
+      = f.file_field :file
+    %p
+      = f.submit
