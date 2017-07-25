@@ -6,7 +6,6 @@
         %tr
           %th.team_name team
           %th
-          %th place
       %tbody#scoreboard_body{data: {refresh_path: scoreboard_path(format: :json, refresh: rand(1_000_000)), refresh_interval: 15_000} }
         - place = 0
         - prev_score = Flag.count + 1
@@ -22,18 +21,13 @@
           %tr
             %th= t[:display_name]
             %td.flags
-              .points.left= place
+              .points.left= score
               .bar.left{style: "width: #{16 - place}em"} &nbsp;
               %br.clear
 %script#team_row_template{type: 'text/html'}
   %tr
     %th {{display_name}}
-    %td.logo {{{logo}}}
     %td.flags
       .points.left {{place}}
       .bar.left{style: "width: {{width}}em"} &nbsp;
       %br.clear
-%script#team_logos{type: 'text/html'}
-  - @teams.each do |t|
-    %div{id: "logo_#{t[:id]}"}
-      =team_logo t[:id]

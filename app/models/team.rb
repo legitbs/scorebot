@@ -67,6 +67,11 @@ class Team < ActiveRecord::Base
           place_buf += 1
         end
         { pos: place, team: r[:name], score: (16 - place), id: r[:id], place: place }
+        { pos: place,
+          team: r[:name],
+          score: score,
+          id: r[:id],
+          place: place] }
       end,
       display_names: Hash[data.map do |r|
                                 [r[:id], r[:display_name]]

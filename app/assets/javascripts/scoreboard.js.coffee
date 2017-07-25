@@ -8,10 +8,6 @@ jQuery ($)->
   calculateWidth = (score) ->
     score
 
-  logoHtml = $($('#team_logos').html())
-  extractLogo = (id) ->
-    logoHtml.filter("#logo_#{id}").html()
-
   class Scoreboard
     constructor: ->
       @body = $('tbody#scoreboard_body')
@@ -34,7 +30,6 @@ jQuery ($)->
 
         rows = for row in data.standings
           row['width'] = calculateWidth row['score']
-          row['logo'] = extractLogo row['id']
           row['display_name'] = data.display_names[row['id']]
           Mustache.render @template, row
         @body.html rows.join()

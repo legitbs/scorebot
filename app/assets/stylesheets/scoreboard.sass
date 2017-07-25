@@ -5,20 +5,19 @@ body.scoreboard
     display: none
 .scoreboard.scene
   .scoreboard-holder
-
     table
       $alpha_adjustment: -.15
       float: left
       margin-top: 1em
-      background-color: adjust-color($dark_amber, $alpha: $alpha_adjustment)
+      background-image: asset_url('crinkled-paper-1x.jpg')
+      color: $superdark_grape
       tbody tr:nth-child(odd)
-        background-color: adjust-color(black, $alpha: $alpha_adjustment)
+        background-color: rgba(0, 0, 0, 0.25)
       td, th.team_name
         text-align: right
         padding-right: .5em
       th
         text-align: left
-        color: $light_amber
       tbody th
         text-align: right
         width: 14em
@@ -31,9 +30,9 @@ body.scoreboard
           .points
             z-index: 1
             position: relative
-            background-color: $light_amber
             width: 4em
-            color: black
+            color: $light_amber
+            background-color: $dark_grape
             padding: 2px
             font-weight: bold
             &.left
@@ -41,7 +40,7 @@ body.scoreboard
           .bar
             z-index: 0
             position: relative
-            background-color: $light_amber
+            background-color: $dark_grape
             padding: 2px
             margin-left: -1px
             &.left
@@ -53,19 +52,18 @@ body.scoreboard
     right: 2em
     z-index: 10
     background-color: $dark_amber
+    background-image: asset_url('crinkled-paper-1x.jpg')
     text-align: center
-    border: 5px solid $light_amber
+    border: 0px
     border-radius: 5px
     box-shadow: 0px 4px 16px 2px black
     h1
       display: none
     .desc
-      background-color: $light_amber
+      @include permie
       color: black
     .timer
       padding: 2px
-      background-color: $dark_amber
-      color: $light_amber
       @include mono
 
 @media screen and (max-width: 1281px)
