@@ -31,7 +31,7 @@ services:
       - web
   service:
     build: .
-    command: bundle exec ruby bin/service
+    command: bundle exec bash
     volumes:
       - .:/scorebot
     environment:
