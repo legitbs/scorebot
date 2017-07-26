@@ -71,7 +71,7 @@ class Team < ActiveRecord::Base
           team: r[:name],
           score: score,
           id: r[:id],
-          place: place] }
+          place: place }
       end,
       display_names: Hash[data.map do |r|
                                 [r[:id], r[:display_name]]
