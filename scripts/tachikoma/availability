@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-exec sudo -i -u lightning python /home/lightning/availability $1

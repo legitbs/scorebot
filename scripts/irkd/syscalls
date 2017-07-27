@@ -1,6 +1,0 @@
-11 - execve
-
-4003 - read
-4004 - write
-4090 - mmap
-4142 - select
