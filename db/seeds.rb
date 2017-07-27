@@ -91,14 +91,16 @@ Team.find_or_create_by(id: 16,
                       )
 
 regular_services = %w{
-untitled1
-untitled2
+rubix
+babyecho
 forth
-untitled3
+babysfirst
 untitled4
 colbert
 perplexity
 untitled5
+untitled6
+untitled7
 }.map do |service_name|
   Service.find_or_create_by(name: service_name)
 end
