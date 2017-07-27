@@ -55,7 +55,7 @@ class Round < ActiveRecord::Base
               results.push tok
             end
           end
-          clear_active_connections!
+          self.class.clear_active_connections!
           Scorebot.log "worker #{w} finished"
         end
       end
