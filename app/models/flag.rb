@@ -3,7 +3,7 @@ class Flag < ActiveRecord::Base
   belongs_to :service
   has_many :captures
 
-  TOTAL_FLAGS = 8 * # service count
+  TOTAL_FLAGS = 10 * # service count
                 15 * # team count
                 1337
 
