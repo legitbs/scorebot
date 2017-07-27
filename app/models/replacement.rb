@@ -15,7 +15,7 @@ class Replacement < ApplicationRecord
 
 
   def service_path
-    File.join SERVICE_ROOT, team_id.to_s, service.name, 'service.bin'
+    File.join SERVICE_ROOT, team_id.to_s, service.name, "#{service.name}.bin"
   end
 
   def archive_path
