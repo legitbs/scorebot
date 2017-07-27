@@ -48,6 +48,7 @@ class AvailabilityCheck
 
   def join
     return unless defined? @thread
+    Round.current.clear_active_connections!
     @thread.join
   end
 
@@ -98,6 +99,7 @@ class AvailabilityCheck
             results.push av
           end
         end
+        Round.clear_active_connections!
       end
     end
 
