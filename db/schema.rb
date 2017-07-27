@@ -83,9 +83,9 @@ ActiveRecord::Schema.define(version: 20170723153202) do
   end
 
   create_table "replacements", force: :cascade do |t|
-    t.bigint "team_id"
-    t.bigint "service_id"
-    t.bigint "round_id"
+    t.bigint "team_id", null: false
+    t.bigint "service_id", null: false
+    t.bigint "round_id", null: false
     t.string "digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
