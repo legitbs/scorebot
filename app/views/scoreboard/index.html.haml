@@ -22,12 +22,12 @@
             %th= t[:display_name]
             %td.flags
               .points.left= score
-              .bar.left{style: "width: #{16 - place}em"} &nbsp;
+              .bar.left{style: "width: #{0.0004 * score}em"} &nbsp;
               %br.clear
 %script#team_row_template{type: 'text/html'}
   %tr
     %th {{display_name}}
     %td.flags
-      .points.left {{place}}
+      .points.left {{score}}
       .bar.left{style: "width: {{width}}em"} &nbsp;
       %br.clear
