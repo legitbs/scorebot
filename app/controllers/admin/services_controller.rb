@@ -10,6 +10,11 @@ class Admin::ServicesController < Admin::BaseController
   def edit
   end
 
+  def update
+    service.update_attributes(service_params)
+    redirect_to admin_services_path
+  end
+
   private
   def services
     @services ||= Service.order(name: :asc)
