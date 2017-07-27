@@ -95,12 +95,12 @@ rubix
 babyecho
 forth
 babysfirst
-untitled4
+bbs
 colbert
 perplexity
-untitled5
-untitled6
-untitled7
+notsosmugmug
+untitled4
+pppoe
 }.map do |service_name|
   Service.find_or_create_by(name: service_name)
 end
