@@ -104,7 +104,7 @@ class AvailabilityCheck
     threads.each {|t| t.join }
 
     Availability.transaction do
-      results.each(&:save)
+      results.each(&:save!)
     end
 
     results
