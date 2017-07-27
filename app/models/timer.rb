@@ -24,6 +24,8 @@ class Timer < ActiveRecord::Base
   end
 
   def ended?
+    return true if ending.nil?
+
     ending < Time.now
   end
 end
