@@ -1,7 +1,7 @@
 class Availability < ActiveRecord::Base
   belongs_to :instance
   belongs_to :round
-  belongs_to :token
+  belongs_to :token, optional: true
   scope :failed, -> { where.not(status: 0) }
   has_many :penalties
 
