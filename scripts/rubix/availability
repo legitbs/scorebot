@@ -569,15 +569,16 @@ GimmeRand.argtypes = None
 GimmeRand.restype = c_uint
 
 def handler(signum, frame):
+	print "Timeout"
 	sys.exit(-1)
 
 signal.signal(signal.SIGALRM, handler)
 signal.alarm(15)
 
 if len(sys.argv) == 2:
-	s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 4000])
+	s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 1974])
 else:
-	s = socket.create_connection(['127.0.0.1', 4000])
+	s = socket.create_connection(['127.0.0.1', 1974])
 
 
 # Pick a test to run and send it
