@@ -91,7 +91,7 @@ class Round < ActiveRecord::Base
   end
 
   def store_signature
-    self.payload = Team.for_scoreboard.to_json
+    self.payload = Team.for_scoreboard.as_json
     self.signature = OpenSSL::HMAC.hexdigest(
                                         OpenSSL::Digest::SHA1.new,
                                         self.nonce,

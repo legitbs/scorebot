@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 20170723153202) do
     t.datetime "updated_at"
     t.datetime "ended_at"
     t.string "nonce", limit: 255
-    t.json "payload"
+    t.jsonb "payload"
     t.string "signature", limit: 255
     t.json "distribution"
   end
