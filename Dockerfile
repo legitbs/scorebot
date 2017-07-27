@@ -8,4 +8,5 @@ RUN bundle install
 RUN mkdir ~/.ssh
 ADD tmp/scorebot_rsa ~/.ssh/id_rsa
 ADD tmp/scorebot_rsa.pub ~/.ssh/id_rsa.pub
+ADD tmp/known_hosts ~/.ssh/known_hosts
 ADD . /scorebot
