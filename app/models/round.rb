@@ -29,7 +29,7 @@ class Round < ActiveRecord::Base
     new_tokens = []
     Instance.find_each do |i|
       next unless i.service.enabled
-      new_tokens << Token.create(
+      new_tokens << Token.create!(
                                  instance: i,
                                  round: self
                                  )
