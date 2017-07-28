@@ -1,5 +1,28 @@
 .howto
   :markdown
+    # How Scoring Works
+
+    Each team starts with a pile of points (flags), and each service has a
+    new token every round (you capture and redeem these strings for points,
+    see below).
+
+    When your token is redeemed, you lose points, split evenly between teams
+    that have redeemed the token. The remainder accumulates until it can be
+    split evenly between teams scoring that service in a given round.
+
+    When your service fails an availability check, you lose points, split evenly
+    between teams.
+
+    When you redeem a token from another team, you get an equal share of the
+    points they lose, plus an equal share of any remainder points for that
+    service.
+
+    # Replacements
+
+    You can replace each service binary once per round. There is no penalty for
+    replacing a binary. Other teams are able to see and download your
+    replacement immediately.
+
     # How to Play
 
     Hack services, retrieve tokens. Redeem tokens, get flags. Don't fail
