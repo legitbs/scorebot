@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170723153202) do
+ActiveRecord::Schema.define(version: 20170728173501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "admin_replacements", force: :cascade do |t|
+    t.bigint "team_id"
+    t.bigint "service_id"
+    t.bigint "round_id"
+    t.string "digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["round_id"], name: "index_admin_replacements_on_round_id"
+    t.index ["service_id"], name: "index_admin_replacements_on_service_id"
+    t.index ["team_id"], name: "index_admin_replacements_on_team_id"
+  end
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "instance_id", null: false
@@ -83,9 +95,9 @@ ActiveRecord::Schema.define(version: 20170723153202) do
   end
 
   create_table "replacements", force: :cascade do |t|
-    t.bigint "team_id", null: false
-    t.bigint "service_id", null: false
-    t.bigint "round_id", null: false
+    t.bigint "team_id"
+    t.bigint "service_id"
+    t.bigint "round_id"
     t.string "digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -101,7 +113,7 @@ ActiveRecord::Schema.define(version: 20170723153202) do
     t.datetime "updated_at"
     t.datetime "ended_at"
     t.string "nonce", limit: 255
-    t.jsonb "payload"
+    t.json "payload"
     t.string "signature", limit: 255
     t.json "distribution"
   end
@@ -111,6 +123,7 @@ ActiveRecord::Schema.define(version: 20170723153202) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean "enabled"
+    t.integer "port"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -160,6 +173,9 @@ ActiveRecord::Schema.define(version: 20170723153202) do
     t.index ["instance_id"], name: "index_tokens_on_instance_id"
   end
 
+  add_foreign_key "admin_replacements", "rounds"
+  add_foreign_key "admin_replacements", "services"
+  add_foreign_key "admin_replacements", "teams"
   add_foreign_key "replacements", "rounds"
   add_foreign_key "replacements", "services"
   add_foreign_key "replacements", "teams"
