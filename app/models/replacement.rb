@@ -15,7 +15,7 @@ class Replacement < ApplicationRecord
 
 
   def service_path
-    File.join SERVICE_ROOT, team_id.to_s, service.name, "#{service.name}.bin"
+    File.join service.name, "#{service.name}.bin"
   end
 
   def archive_path
@@ -39,9 +39,18 @@ class Replacement < ApplicationRecord
     self.digest = hash_fn.hexdigest
 
     FileUtils.mkdir_p(File.dirname(archive_path))
-    FileUtils.mkdir_p(File.dirname(service_path))
+    # FileUtils.mkdir_p(File.dirname(service_path))
 
     FileUtils.cp file.path, archive_path
-    FileUtils.cp file.path, service_path
+    # FileUtils.cp file.path, service_path
+
+    scp = Cocaine::CommandLine.
+           new('scp',
+               file.path,
+               ":dest")
+
+    dest = "root@#{team.address}:/home/#{service.name}/#{service.name}.bin"
+
+    scp.run dest: dest
   end
 end
