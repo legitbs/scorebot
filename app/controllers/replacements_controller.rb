@@ -18,6 +18,7 @@ class ReplacementsController < ApplicationController
                       offset(@skip).
                       order(created_at: :desc).
                       joins(:team, :service).
+                      where(service: { enabled: true }).
                       all
   end
 
