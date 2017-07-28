@@ -8,15 +8,15 @@
 
   .field
     = f.label :team
-    = f.text_field :team
+    = f.select :team_id, Team.all.map{|t| [t.certname, t.id]}
   .field
-    = f.label :service
-    = f.text_field :service
+    = f.label :service_id, 'Service'
+    = f.select :service_id, Service.all.map {|s| [s.name, s.id] }
   .field
-    = f.label :round
-    = f.text_field :round
+    = f.label :round_id
+    = f.text_field :round_id
   .field
-    = f.label :digest
-    = f.text_field :digest
+    = f.label :file
+    = f.file_field :file
   .actions
     = f.submit 'Save'

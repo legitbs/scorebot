@@ -12,7 +12,7 @@ class Admin::ReplacementsController < Admin::BaseController
 
   # GET /replacements/new
   def new
-    @replacement = Replacement.new
+    @replacement = Replacement.new(round_id: 1, team_id: 16)
   end
 
   # GET /replacements/1/edit
@@ -53,6 +53,6 @@ class Admin::ReplacementsController < Admin::BaseController
 
     # Only allow a trusted parameter "white list" through.
     def replacement_params
-      params.require(:replacement).permit(:team_id, :service_id, :round_id, :digest)
+      params.require(:replacement).permit(:team_id, :service_id, :round_id, :file)
     end
 end
