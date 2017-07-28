@@ -498,6 +498,32 @@ def Data_9_to_8(InData):
 
 	return Output
 
+def Data_9_to_8_New(InData):
+   #don't feel like doing all the math, make a bit list then reparse it
+   Bits = ""
+   for i in InData:
+      Bits += (("0"*8)+bin(ord(i))[2:])[-8:]
+
+   Output = ""
+   i = 0
+   bytecount = 0
+   while i < len(Bits):
+      if i+9 > len(Bits):
+         break;
+
+      c = int(Bits[i+1:i+9], 2)
+      bytecount += 1
+      Output += chr(c)
+
+      if c == 0xa and ((i+9) % 8) != 0:
+         bitstoeat = 8 - (((bytecount*9)+8) % 8)
+         i += bitstoeat
+         bytecount = 0
+
+      i += 9
+
+   return Output
+
 def Data_9_to_8_fixed(InData):
 	#don't feel like doing all the math, make a bit list then reparse it
 	Bits = ""
@@ -524,7 +550,7 @@ def Data_9_to_8_fixed(InData):
 
 def SendSc(s, sc):
 	Data = s.recv(4096)
-	Data = Data_9_to_8_fixed(Data)
+	Data = Data_9_to_8_New(Data)
 	sys.stdout.write(Data)
 	sys.stdout.flush()
 
@@ -544,7 +570,7 @@ def SolveCube(s, solution):
 		# make sure we got the expected response
 		time.sleep(0.2)
 		Data = s.recv(4096)
-		Data8 = Data_9_to_8_fixed(Data)
+		Data8 = Data_9_to_8_New(Data)
 		if re.search("Invalid", Data8):
 			# unexpected response
 			print "Unexpected response: {}".format(Data8)
@@ -592,7 +618,7 @@ elif choice == 1:
 # Read the initial output
 select.select([s.fileno(), 0], [], [])
 Data = s.recv(4096)
-Data8 = Data_9_to_8_fixed(Data)
+Data8 = Data_9_to_8_New(Data)
 sys.stdout.write(Data8)
 
 # Solve the Cube and validate the response
