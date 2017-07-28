@@ -11,8 +11,9 @@ namespace :db do
                                         "#{Time.now.to_i}-#{Rails.env}.dump")
 
       dbname = Scorebot::Application.config.
-               database_configuration[Rails.env]['database']
-      sh "pg_dump -Fc -f #{output_filename} #{dbname}"
+                 database_configuration[Rails.env]['database']
+
+      sh "pg_dump -Fc -f #{output_filename} -U postgresql -h db #{dbname}"
     end
 
     task :sql => :environment do
