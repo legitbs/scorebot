@@ -6,6 +6,7 @@
       %table
         %thead
           %th service
+          %th port
           %th -15m
           %th -10m
           %th -5m
@@ -13,6 +14,7 @@
           - @instances.each do |s|
             %tr
               %th&= s.service.name
+              %td&= s.service.port
               - s.uptime_check.each do |c|
                 - if c
                   %td.ok OK

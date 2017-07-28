@@ -25,6 +25,6 @@ class Admin::ServicesController < Admin::BaseController
   end
 
   def service_params
-    params.require(:service).permit(:enabled)
+    params.require(:service).permit(:enabled, :port)
   end
 end

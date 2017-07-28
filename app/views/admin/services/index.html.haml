@@ -5,6 +5,7 @@
     %tr
       %th id
       %th name
+      %th port
       %th enabled
       %th activities
   %tbody
@@ -12,6 +13,7 @@
       %tr
         %td= link_to s.id, admin_service_path(s)
         %td= s.name
+        %td= s.port
         %td= !!s.enabled
         %td
           = link_to 'show', admin_service_path(s)
