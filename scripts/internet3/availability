@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/python
 
 from binascii import hexlify,unhexlify
 import socket
@@ -6,35 +6,36 @@ import time
 from math import ceil
 from random import randint
 import sys
+import signal
 
 MAX_INT=134217727
 MAX_SHORT=262143
 MAX_CHAR =511
 
 class PPPoETag():
-        def __init__(self,tag,value):
-                self.tag=["s",tag]
-                if type(value)==type([]):
-                        self.value=["c"]
-                        for el in value:
-                                self.value.append(el)
-                        self.size=len(self.value)-1
-                else:
-                        self.value=["s",value]
-                        self.size=2
-        def getTag(self):
-                return self.tag[1]
-        def getValue(self):
-                if type(self.value)==type([]):
-                        return self.value[1:]
-                else:
-                        return self.value
-        def length(self):
-                return self.size+4
-        def toPacket(self):
-                return self.tag,["s",self.size],self.value
-        def __str__(self):
-                return "TAG is %d\n\tSize=%s\n\tVal=%s"%(self.tag[1],self.length(),self.value)
+	def __init__(self,tag,value):
+		self.tag=["s",tag]
+		if type(value)==type([]):
+			self.value=["c"]
+			for el in value:
+				self.value.append(el)
+			self.size=len(self.value)-1
+		else:
+			self.value=["s",value]
+			self.size=2
+	def getTag(self):
+		return self.tag[1]
+	def getValue(self):
+		if type(self.value)==type([]):
+			return self.value[1:]
+		else:
+			return self.value
+	def length(self):
+		return self.size+4
+	def toPacket(self):
+		return self.tag,["s",self.size],self.value
+	def __str__(self):
+		return "TAG is %d\n\tSize=%s\n\tVal=%s"%(self.tag[1],self.length(),self.value)
 
 
 TAG_END_OF_LIST=0x0000
@@ -56,36 +57,36 @@ CODE_CRYP =0x99
 CODE_PADO = 0x07
 
 def chop(s,offset,chunks=1):
-        for x in xrange(chunks):
-                offset+=9
-                offset%=8
-                if offset==0:
-                        s=s[2:]
-                s=s[2:]
-        return (s,offset)
+	for x in xrange(chunks):
+		offset+=9
+		offset%=8
+		if offset==0:
+			s=s[2:]
+		s=s[2:]
+	return (s,offset)
 
 def parseChar(strry,offset):
-        c1=int(strry,16)
-        c1>>=(8-offset-1)
-        c1&=0x1ff
-        return c1
+	c1=int(strry,16)
+	c1>>=(8-offset-1)
+	c1&=0x1ff
+	return c1
 
 def parseShort(s,offset):
-        c1=parseChar(s[:4],offset)
-        s,offset=chop(s,offset)
-        c2=parseChar(s[:4],offset)
-        s,offset=chop(s,offset)
-        c1|=(c2<<9)
-        return c1
+	c1=parseChar(s[:4],offset)
+	s,offset=chop(s,offset)
+	c2=parseChar(s[:4],offset)
+	s,offset=chop(s,offset)
+	c1|=(c2<<9)
+	return c1
 def parseInt(s,offset):
-        c1=parseChar(s[:4],offset)
-        s,offset=chop(s,offset)
-        c2=parseChar(s[:4],offset)
-        s,offset=chop(s,offset)
-        c3=parseChar(s[:4],offset)
-        s,offset=chop(s,offset)
-        c1=(c2<<18)|(c1<<9)|c3
-        return c1
+	c1=parseChar(s[:4],offset)
+	s,offset=chop(s,offset)
+	c2=parseChar(s[:4],offset)
+	s,offset=chop(s,offset)
+	c3=parseChar(s[:4],offset)
+	s,offset=chop(s,offset)
+	c1=(c2<<18)|(c1<<9)|c3
+	return c1
 
 
 
@@ -135,97 +136,97 @@ def buildStream(objlist,debug=False):
     return hex(ret)[2:].replace("L","").zfill(bp*2)
 
 def readObjs(s,objlist,debug=False):
-        offset=0
-        ret=[]
-        for el in objlist:
-                if el=="s":
-                        c1=parseShort(s,offset)
-                        s,offset=chop(s,offset,2)
-                        ret.append(c1)
-                elif el=="c":
-                        c1=parseChar(s[:4],offset)
-                        s,offset=chop(s,offset)
-                        ret.append(c1)
-                elif type(el)==type([]):
-                        slen = el[0]
-                        ts=[]
-                        for i in xrange(slen):
-                                c1=parseChar(s[:4],offset)
-                                s,offset=chop(s,offset)
-                                ts.append(c1)
-                        ret.append(ts)
-                elif el=="i":
-                        c1=parseInt(s,offset)
-                        s,offset=chop(s,offset,3)
-                        ret.append(c1)
-                elif el=="p":
-                        c1=parseShort(s,offset)
-                        s,offset=chop(s,offset,2)
-                        c2=parseShort(s,offset)
-                        s,offset=chop(s,offset,2)
-                        slen = c2
-                        ts=[]
-                        for i in xrange(slen):
-                                c=parseChar(s[:4],offset)
-                                s,offset=chop(s,offset)
-                                ts.append(c)
-                        ret.append([c1,c2,ts])
-                else:
-                        print "ERRR ON EL %s"%el
-                        assert(0)
+	offset=0
+	ret=[]
+	for el in objlist:
+		if el=="s":
+			c1=parseShort(s,offset)
+			s,offset=chop(s,offset,2)
+			ret.append(c1)
+		elif el=="c":
+			c1=parseChar(s[:4],offset)
+			s,offset=chop(s,offset)
+			ret.append(c1)
+		elif type(el)==type([]):
+			slen = el[0]
+			ts=[]
+			for i in xrange(slen):
+				c1=parseChar(s[:4],offset)
+				s,offset=chop(s,offset)
+				ts.append(c1)
+			ret.append(ts)
+		elif el=="i":
+			c1=parseInt(s,offset)
+			s,offset=chop(s,offset,3)
+			ret.append(c1)
+		elif el=="p":
+			c1=parseShort(s,offset)
+			s,offset=chop(s,offset,2)
+			c2=parseShort(s,offset)
+			s,offset=chop(s,offset,2)
+			slen = c2
+			ts=[]
+			for i in xrange(slen):
+				c=parseChar(s[:4],offset)
+				s,offset=chop(s,offset)
+				ts.append(c)
+			ret.append([c1,c2,ts])
+		else:
+			print "ERRR ON EL %s"%el
+			assert(0)
 
-        return ret
+	return ret
 
 
 class PPPoEConnection():
-        def __init__(self,sc,mac,uniq):
-                self.sc=sc
-                self.mac=mac
-                self.uniq=uniq
-        def __str__(self):
-                return "Service name is %s\n\tForeignName is %s\n\tUniqHost is %s"%(self.sc,
-                                self.mac,
-                                self.uniq)
-
+	def __init__(self,sc,mac,uniq):
+		self.sc=sc
+		self.mac=mac
+		self.uniq=uniq
+	def __str__(self):
+		return "Service name is %s\n\tForeignName is %s\n\tUniqHost is %s"%(self.sc,
+				self.mac,
+				self.uniq)
+ 
 
 def genMac():
-        ret=["c"]
-        for x in xrange(6):
-                ret.append(randint(1,510))
-        return ret
+	ret=["c"]
+	for x in xrange(6):
+		ret.append(randint(1,510))
+	return ret
 
 
 
 
 def sendPacket(packet,s,padi=True):
-        kk=buildStream(packet)
-        if len(kk)%2==1:
-                print k.mac
-        s.sendall(unhexlify(kk))
-        if padi:
-                negotiatePADI(s)
-        time.sleep(.5)
+	kk=buildStream(packet)
+	if len(kk)%2==1:
+		print k.mac
+	s.sendall(unhexlify(kk))
+	if padi:
+		negotiatePADI(s)
+	time.sleep(.5)
 
 def addTags(packet,tags):
-        packLen=0
-        packet=packet[:]
-        for tag in tags:
-                packet.extend(tag.toPacket())
-                packLen+=tag.length()
-        packet[3][1]+=packLen
-        return packet
+	packLen=0
+	packet=packet[:]
+	for tag in tags:
+		packet.extend(tag.toPacket())
+		packLen+=tag.length()
+	packet[3][1]+=packLen
+	return packet
 
 def buildPADOPacket(dst,src,tags):
-        packet=[dst,
-                src,
-                ["s",34915],
-                ["s",0],
-                vertype,
-                pado_code,
-                ["s",0]#session
-                ]
-        nPacket=addTags(packet,tags)
-        return nPacket
+	packet=[dst,
+		src,
+		["s",34915],
+		["s",0],
+		vertype,
+		pado_code,
+		["s",0]#session
+		]
+	nPacket=addTags(packet,tags)
+	return nPacket
 
 
 
@@ -237,214 +238,214 @@ pado_code = ["c",7]
 
 
 class PPPoEClient():
-        def __init__(self,sock):
-                self.sock=sock
-                self.maxPayload=1500
-                self.acName="DefconSecondaryISP"
-                self.scName= "((('\""
-                self.mymac = genMac()
-                self.uniq=0
-                self.tags={}
-                self.acNameOk=0
-                self.scNameOk=0
-                self.checkPoll=True
-                self.conn = None
-        def negotiatePADI(self):
-                data,foreign_mac= self.getPADIPacket()
-                data=hexlify(data)
-                PADI=readObjs(data,"ccspp")[3:]
-                sc=PADI[0]
-                uniq=PADI[1]
-                if self.checkPoll:
-                        assert(sc==[257, 5, [40, 40, 40, 39, 34]])
-                        assert(uniq[0]==259)
-                        assert(uniq[1]==2)
-                uniq =          uniq[2][0]|(uniq[2][1]<<9)
-                return PPPoEConnection(PADI[0][2],foreign_mac,uniq)
+	def __init__(self,sock):
+		self.sock=sock
+		self.maxPayload=1500
+		self.acName="DefconSecondaryISP"
+		self.scName= "((('\""
+		self.mymac = genMac()
+		self.uniq=0
+		self.tags={}
+		self.acNameOk=0
+		self.scNameOk=0
+		self.checkPoll=True
+		self.conn = None
+	def negotiatePADI(self):
+		data,foreign_mac= self.getPADIPacket()
+		data=hexlify(data)
+		PADI=readObjs(data,"ccspp")[3:]
+		sc=PADI[0]
+		uniq=PADI[1]
+		if self.checkPoll:
+			assert(sc==[257, 5, [40, 40, 40, 39, 34]])
+			assert(uniq[0]==259)
+			assert(uniq[1]==2)
+		uniq = 	uniq[2][0]|(uniq[2][1]<<9)
+		return PPPoEConnection(PADI[0][2],foreign_mac,uniq)
 
-        def negotiatePADR(self):
-                data,foreign_mac= self.getPADRPacket()
-                data=hexlify(data)
-                ps="ccccpp"
-                relayLen=0
-                print self.maxPayload
-                if TAG_RELAY_SESSION_ID in self.tags:
-                        if self.maxPayload-6-9-5 > self.tags[TAG_RELAY_SESSION_ID].length():
-                                ps+="p"
-                                relayLen=self.tags[TAG_RELAY_SESSION_ID].length()
-                if TAG_AC_COOKIE in self.tags:
-                        if self.maxPayload-6-9-5-relayLen > self.tags[TAG_AC_COOKIE].length():
-                                ps+="p"
-                PADR=readObjs(data,ps)
-                for x in xrange(1,len(PADR)):
-                        if type(PADR[-x]) == type([]) and PADR[-x][1]!=2:
-                                #print PADR[-x][0], PADR[-x]
-                                assert(PADR[-x][2]==self.tags[PADR[-x][0]].getValue())
-                                print "PADR WORKED"
-        def sendPADT(self):
-                return
+	def negotiatePADR(self):
+		data,foreign_mac= self.getPADRPacket()
+		data=hexlify(data)
+		ps="ccccpp"
+		relayLen=0
+		print self.maxPayload
+		if TAG_RELAY_SESSION_ID in self.tags:
+			if self.maxPayload-6-9-5 > self.tags[TAG_RELAY_SESSION_ID].length():
+				ps+="p"
+				relayLen=self.tags[TAG_RELAY_SESSION_ID].length()
+		if TAG_AC_COOKIE in self.tags:
+			if self.maxPayload-6-9-5-relayLen > self.tags[TAG_AC_COOKIE].length():
+				ps+="p"
+		PADR=readObjs(data,ps)
+		for x in xrange(1,len(PADR)):
+			if type(PADR[-x]) == type([]) and PADR[-x][1]!=2:
+				#print PADR[-x][0], PADR[-x]
+				assert(PADR[-x][2]==self.tags[PADR[-x][0]].getValue())
+				print "PADR WORKED"
+	def sendPADT(self):
+		return
 
-        def doPadi(self):
-                self.conn = self.negotiatePADI()
-                self.foreign_mac = self.conn.mac[:]
-                self.foreign_mac.insert(0,"c")
-                self.uniq = self.conn.uniq
-                uniqTag=PPPoETag(TAG_HOST_UNIQ,self.conn.uniq)
-                self.uniq=uniqTag
-                self.tags[TAG_HOST_UNIQ]=uniqTag
-
-
-
-        def getPADIPacket(self):
-                s=self.sock
-                d=""
-                while len(d)!=18:
-                        d+=s.recv(18-len(d))
-                d=hexlify(d)
-                eth_src=[6]
-                eth_dst=[6]
-                eth_proto = "s"
-                plen ="s"
-                read_header= [eth_src,eth_dst,eth_proto,plen]
-                header= readObjs(d,read_header)
-                header_len = header[-1]+4
-                packet_len= ceil((header_len*9)/8.0)
-                charBuf=""
-                while len(charBuf) < packet_len:
-                        charBuf+=s.recv(int(packet_len-len(charBuf)))
-                if self.checkPoll:
-                        dst_eth= header[0]
-                        assert( header[1][0] == 0x1c0)
-                        for el in dst_eth:
-                                if el!= 511:
-                                        assert(0)
-                        assert(len(dst_eth)==6)
-                        assert(header[2]==34915 or header[2] == 0x8864) #check PPPoEDiscovery
-                return charBuf,header[1]
+	def doPadi(self):
+		self.conn = self.negotiatePADI()
+		self.foreign_mac = self.conn.mac[:]
+		self.foreign_mac.insert(0,"c")
+		self.uniq = self.conn.uniq
+		uniqTag=PPPoETag(TAG_HOST_UNIQ,self.conn.uniq)	
+		self.uniq=uniqTag
+		self.tags[TAG_HOST_UNIQ]=uniqTag
 
 
 
+	def getPADIPacket(self):
+		s=self.sock
+		d=""
+		while len(d)!=18:
+			d+=s.recv(18-len(d))
+		d=hexlify(d)
+		eth_src=[6]
+		eth_dst=[6]
+		eth_proto = "s"
+		plen ="s"
+		read_header= [eth_src,eth_dst,eth_proto,plen]
+		header= readObjs(d,read_header)
+		header_len = header[-1]+4
+		packet_len= ceil((header_len*9)/8.0)
+		charBuf=""
+		while len(charBuf) < packet_len:
+			charBuf+=s.recv(int(packet_len-len(charBuf)))
+		if self.checkPoll:
+			dst_eth= header[0]
+			assert( header[1][0] == 0x1c0)
+			for el in dst_eth:
+				if el!= 511:
+					assert(0)
+			assert(len(dst_eth)==6)
+			assert(header[2]==34915 or header[2] == 0x8864) #check PPPoEDiscovery
+		return charBuf,header[1]
 
-        def getKEXPacket(self):
-                s=self.sock
-                d=""
-                while len(d)!=18:
-                        d+=s.recv(18-len(d))
-                d=hexlify(d)
-                eth_src=[6]
-                eth_dst=[6]
-                eth_proto = "s"
-                plen ="s"
-                read_header= [eth_src,eth_dst,eth_proto,plen]
-                header= readObjs(d,read_header)
-                header_len = header[-1]+4
-                packet_len= ceil((header_len*9)/8.0)
-                charBuf=""
-                while len(charBuf) < packet_len:
-                        charBuf+=s.recv(int(packet_len-len(charBuf)))
-                return charBuf,header[1]
-
-
-
-        def getPADRPacket(self):
-                s=self.sock
-                d=""
-                while len(d)!=18:
-                        d+=s.recv(18-len(d))
-                d=hexlify(d)
-                eth_src=[6]
-                eth_dst=[6]
-                eth_proto = "s"
-                plen ="s"
-                read_header= [eth_src,eth_dst,eth_proto,plen]
-                header= readObjs(d,read_header)
-                header_len = header[-1]+4
-                packet_len= ceil((header_len*9)/8.0)
-                charBuf=""
-                while len(charBuf) < packet_len:
-                        charBuf+=s.recv(int(packet_len-len(charBuf)))
-                if False:#self.checkPoll:
-                        dst_eth= header[0]
-                        assert( header[0][0] == 0x1c0)
-                        for el in dst_eth:
-                                if el!= 511:
-                                        assert(0)
-                        assert(len(dst_eth)==6)
-                        assert(header[2]==34915 or header[2] == 0x8864) #check PPPoEDiscovery
-                return charBuf,header[1]
+		
 
 
-        def sendPADO(self,tags):
-                #DO NOT SEND END LIST IN THIS OR ALL HELL BREAKS LOOSE
-                for tag in tags:
-                        self.tags[tag.getTag()]=tag
-                        if tag.getTag() == TAG_MAX_PAYLOAD:
-                                self.maxPayload = tag.getValue()[0]
-                tags.insert(0,self.uniq)
-                packet=buildPADOPacket(self.foreign_mac,
-                        self.mymac,
-                        tags)
-                self.sendPacket(packet)
-                self.doPadi()
+	def getKEXPacket(self):
+		s=self.sock
+		d=""
+		while len(d)!=18:
+			d+=s.recv(18-len(d))
+		d=hexlify(d)
+		eth_src=[6]
+		eth_dst=[6]
+		eth_proto = "s"
+		plen ="s"
+		read_header= [eth_src,eth_dst,eth_proto,plen]
+		header= readObjs(d,read_header)
+		header_len = header[-1]+4
+		packet_len= ceil((header_len*9)/8.0)
+		charBuf=""
+		while len(charBuf) < packet_len:
+			charBuf+=s.recv(int(packet_len-len(charBuf)))
+		return charBuf,header[1]
 
-        def endPADO(self):
-                endList = PPPoETag(TAG_END_OF_LIST, 0)
-                tags=[self.uniq]
-                if(TAG_AC_NAME not in self.tags):
-                        scTag=PPPoETag(TAG_SERVICE_NAME,[40, 40, 40, 39, 34])
-                        acTag=PPPoETag(TAG_AC_NAME,[68, 101, 102, 99, 111, 110, 83, 101, 99, 111, 110, 100, 97, 114, 121, 73, 83, 80])
-                        for tag in [scTag,acTag]:
-                                self.tags[tag.getTag()]=tag
-                                if tag.getTag() == TAG_MAX_PAYLOAD:
-                                        self.maxPayload = tag.getValue()[0]
-                        tags.append(acTag)
-                        tags.append(scTag)
-                tags.append(endList)
+		
 
-                self.sendPacket(buildPADOPacket(self.foreign_mac,
-                        self.mymac,
-                        tags)
-                )
+	def getPADRPacket(self):
+		s=self.sock
+		d=""
+		while len(d)!=18:
+			d+=s.recv(18-len(d))
+		d=hexlify(d)
+		eth_src=[6]
+		eth_dst=[6]
+		eth_proto = "s"
+		plen ="s"
+		read_header= [eth_src,eth_dst,eth_proto,plen]
+		header= readObjs(d,read_header)
+		header_len = header[-1]+4
+		packet_len= ceil((header_len*9)/8.0)
+		charBuf=""
+		while len(charBuf) < packet_len:
+			charBuf+=s.recv(int(packet_len-len(charBuf)))
+		if False:#self.checkPoll:
+			dst_eth= header[0]
+			assert( header[0][0] == 0x1c0)
+			for el in dst_eth:
+				if el!= 511:
+					assert(0)
+			assert(len(dst_eth)==6)
+			assert(header[2]==34915 or header[2] == 0x8864) #check PPPoEDiscovery
+		return charBuf,header[1]
 
 
-        def doKex(self):
-                packet=[self.foreign_mac,
-                        self.mymac,
-                        ["s",34915],
-                        ["s",0],
-                        vertype,
-                        ["c",CODE_CRYP],
-                        ["s",0]
-                        ]
-                kex=PPPoETag(TAG_KEX,9)
-                self.keys=[randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1)]
-                kex.value=["i"]
-                kex.size=4*3
-                for el in self.keys:
-                        kex.value.append(pow(2,el,0x5aeb35b))
-                packet=addTags(packet,[self.uniq,kex])
-                self.sendPacket(packet)
-                kexer=hexlify(self.getKEXPacket()[0])
-                objs=readObjs(kexer,"sspssiiii")
-                keys=objs[-4:]
-                agreed=[]
-                for i in xrange(len(keys)):
-                        agreed.append(pow(keys[i],self.keys[i],0x5aeb35b))
+	def sendPADO(self,tags):
+		#DO NOT SEND END LIST IN THIS OR ALL HELL BREAKS LOOSE
+		for tag in tags:
+			self.tags[tag.getTag()]=tag
+			if tag.getTag() == TAG_MAX_PAYLOAD:
+				self.maxPayload = tag.getValue()[0]
+		tags.insert(0,self.uniq)
+		packet=buildPADOPacket(self.foreign_mac,
+			self.mymac,
+			tags)
+		self.sendPacket(packet)
+		self.doPadi()
 
-                        #print map(hex,[keys[i],kex.getValue()[i],self.keys[i],agreed[i]])[3]
-                        #['0x2bb7e0f', '0x3ab24e9', '0x13ec426', '0x1ac4a29']
-        def sendPacket(self,packet,padi=True):
-                #print packet
-                kk=buildStream(packet)
-                self.sock.sendall(unhexlify(kk))
-                time.sleep(.5)
+	def endPADO(self):
+		endList = PPPoETag(TAG_END_OF_LIST, 0)
+		tags=[self.uniq]
+		if(TAG_AC_NAME not in self.tags):
+			scTag=PPPoETag(TAG_SERVICE_NAME,[40, 40, 40, 39, 34])
+			acTag=PPPoETag(TAG_AC_NAME,[68, 101, 102, 99, 111, 110, 83, 101, 99, 111, 110, 100, 97, 114, 121, 73, 83, 80])
+			for tag in [scTag,acTag]:
+				self.tags[tag.getTag()]=tag
+				if tag.getTag() == TAG_MAX_PAYLOAD:
+					self.maxPayload = tag.getValue()[0]
+			tags.append(acTag)
+			tags.append(scTag)
+		tags.append(endList)
 
-        def __str__(self):
-                return "PPPoEClient for %s\n\tAC=%s\n\tMAC=%s\n\tPayloadSize=%d"%(
-                        self.scName,
-                        self.acName,
-                        self.mymac[1:],
-                        self.maxPayload)
+		self.sendPacket(buildPADOPacket(self.foreign_mac,
+			self.mymac,
+			tags)
+		)				
+
+
+	def doKex(self):
+		packet=[self.foreign_mac,
+			self.mymac,
+			["s",34915],
+			["s",0],
+			vertype,
+			["c",CODE_CRYP],
+			["s",0]
+			]
+		kex=PPPoETag(TAG_KEX,9)
+		self.keys=[randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1),randint(2,0x5aeb35b-1)]
+		kex.value=["i"]
+		kex.size=4*3
+		for el in self.keys:
+			kex.value.append(pow(2,el,0x5aeb35b))
+		packet=addTags(packet,[self.uniq,kex])
+		self.sendPacket(packet)
+		kexer=hexlify(self.getKEXPacket()[0])
+		objs=readObjs(kexer,"sspssiiii")
+		keys=objs[-4:]
+		agreed=[]
+		for i in xrange(len(keys)):
+			agreed.append(pow(keys[i],self.keys[i],0x5aeb35b))
+
+			#print map(hex,[keys[i],kex.getValue()[i],self.keys[i],agreed[i]])[3]
+			#['0x2bb7e0f', '0x3ab24e9', '0x13ec426', '0x1ac4a29']
+	def sendPacket(self,packet,padi=True):
+		#print packet
+		kk=buildStream(packet)
+		self.sock.sendall(unhexlify(kk))
+		time.sleep(.5)
+
+	def __str__(self):
+		return "PPPoEClient for %s\n\tAC=%s\n\tMAC=%s\n\tPayloadSize=%d"%(
+			self.scName,
+			self.acName,
+			self.mymac[1:],
+			self.maxPayload)
 
 
 from random import randint
@@ -454,41 +455,45 @@ def handler(signum, frame):
         sys.exit(-1)
 
 def doPoll():
-        s=socket.socket()
+	s=socket.socket()
 
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(30)
+	signal.signal(signal.SIGALRM, handler)
+	signal.alarm(30)
 
-        IP = "10.5.{}.2".format(sys.argv[1])
-        #s.connect(("127.0.0.1",2001))
-        s.connect((IP,2001))
-        pp=PPPoEClient(s)
-        pp.doPadi()
-        pp.doKex()
-        pp.getPADIPacket()
-        ops = randint(3,6)
-        mLen=0
-        for x in xrange(4):
-                num=randint(1,4)
-                tags=[]
-                if num==1:
-                        cookie=PPPoETag(TAG_AC_COOKIE, [randint(0,511) for _ in range(randint(4,1200))])
-                        mLen+=cookie.length()
-                        tags.append(cookie)
-                if num==2:
-                        maxPayload=PPPoETag(TAG_MAX_PAYLOAD, randint(600,1499) )
-                        #tags.append(maxPayload)
-                if num==3:
-                        cookie=PPPoETag(TAG_RELAY_SESSION_ID, [randint(0,511) for _ in range(randint(4,1200))])
-                        tags.append(cookie)
-                        mLen+=cookie.length()
+	IP = "10.5.{}.2".format(sys.argv[1])
+	#s.connect(("127.0.0.1",2001))
+	s.connect((IP,2001))
+	pp=PPPoEClient(s)
+	pp.doPadi()
+	pp.doKex()
+	pp.getPADIPacket()
+	ops = randint(3,6)
+	mLen=0
+	for x in xrange(4):
+		num=randint(1,4)
+		tags=[]
+		if num==1:
+			cookie=PPPoETag(TAG_AC_COOKIE, [randint(0,511) for _ in range(randint(4,1200))])
+			mLen+=cookie.length()
+			tags.append(cookie)
+		if num==2:
+			maxPayload=PPPoETag(TAG_MAX_PAYLOAD, randint(600,1499) )
+			#tags.append(maxPayload)
+		if num==3:
+			cookie=PPPoETag(TAG_RELAY_SESSION_ID, [randint(0,511) for _ in range(randint(4,1200))])
+			tags.append(cookie)
+			mLen+=cookie.length()
+			
+		if num==4:
+			scTag=PPPoETag(TAG_SERVICE_NAME,[40, 40, 40, 39, 34])
+			acTag=PPPoETag(TAG_AC_NAME,[68, 101, 102, 99, 111, 110, 83, 101, 99, 111, 110, 100, 97, 114, 121, 73, 83, 80])
+			tags.append(scTag)
+			tags.append(acTag)
+		pp.sendPADO(tags)
+	pp.endPADO()
+	pp.negotiatePADR()
 
-                if num==4:
-                        tags.append(scTag)
-                        tags.append(acTag)
-                pp.sendPADO(tags)
-        pp.endPADO()
-        pp.negotiatePADR()
 
+doPoll()
 
 exit(0)
