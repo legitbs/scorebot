@@ -41,6 +41,8 @@ class AvailabilityCheck
       @history_lock.synchronize do
         timing_history << duration
       end
+
+      Round.clear_active_connections!
     end
 
     wait
