@@ -45,6 +45,26 @@
       %th other
       %td= @team.other_ctr
 
+%h2 successful redemptions
+
+%table
+  %thead
+    %tr
+      %th id
+      %th instance
+      %th round
+      %th token
+      %th captures
+  %tbody
+    - @team.redemptions.order(id: :desc).limit(@round_limit * 30).each do |r|
+      %tr
+        %td= link_to r.id, admin_redemption_path(r.id)
+        %td= link_to r.token.instance.id, admin_instance_path(r.token.instance_id)
+        %td= link_to r.round_id, admin_round_path(r.round_id)
+        %td= link_to r.token.to_fake_string, admin_token_path(r.token_id)
+        %td= r.captures.count
+
+
 %h2 service availability
 
 %p
