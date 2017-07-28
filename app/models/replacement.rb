@@ -45,12 +45,10 @@ class Replacement < ApplicationRecord
     # FileUtils.cp file.path, service_path
 
     scp = Cocaine::CommandLine.
-           new('scp',
-               file.path,
-               ":dest")
+           new('scp', ':path :dest')
 
     dest = "root@#{team.address}:/home/#{service.name}/#{service.name}.bin"
 
-    scp.run dest: dest
+    scp.run path: file.path, dest: dest
   end
 end

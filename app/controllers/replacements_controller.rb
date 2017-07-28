@@ -50,6 +50,7 @@ class ReplacementsController < ApplicationController
       @replacement.errors.add :base, "already replaced this round"
     rescue => e
       @replacement.errors.add :base, "problem dog: #{e.message}"
+      logger.info e.backtrace
     end
 
     render action: 'new'
