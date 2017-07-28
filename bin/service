@@ -153,4 +153,5 @@ loop do
   # Process.detach pid
 
   break if @ending
+  Round.clear_active_connections!
 end
