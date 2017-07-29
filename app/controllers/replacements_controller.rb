@@ -10,6 +10,7 @@ class ReplacementsController < ApplicationController
     per_page = 50
 
     @page = (params[:page] || 1).to_i
+    return redirect_to(replacements_path(@filters)) if @page < 1
     @skip = (@page - 1) * per_page
 
     @replacements = Replacement.

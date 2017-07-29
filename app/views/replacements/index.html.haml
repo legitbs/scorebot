@@ -24,6 +24,14 @@
             @filters.merge(service_id: s.id),
             class: ((s.id == @filters[:service_id]) ? 'active' : ''))
 
+    %nav#pages
+      %ul
+        %li.label pages
+        %li= link_to('prev page',
+          @filters.merge(page: @page - 1))
+        %li= link_to('next page',
+          @filters.merge(page: @page + 1))
+
   - if @replacements.empty?
     %p No replacements found.
   - else
