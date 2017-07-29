@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2017 day1 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+Availability.where(id: 514..515).each(&:fix_availability)
+
+quarter = Service.find_by(name: 'quarter')
+quarter_tokens = Token.where(instance_id: quarter.instances.map(&:id),
+                             round_id: 43)
+
+hitcon = Team.find_by(certname: 'hitcon')
+
+quarter_tokens.each do |t|
+  Redemption.create(token: t, team: hitcon, round_id: 43)
+end
