@@ -4,7 +4,7 @@ module AdminHelper
   end
 
   def describe_token(t)
-    link_to "#{t.id} #{t.to_fake_string.truncate(8)}"
+    link_to "#{t.id} #{t.to_fake_string.truncate(8)}", admin_token_path(t)
   end
 
   def time_ago(t)
