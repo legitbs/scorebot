@@ -1,5 +1,9 @@
 %h1 Availabilities
 
+%nav
+  = link_to 'older', admin_availbilities_path(offset: @oof + 200)
+  = link_to 'newer', admin_availbilities_path(offset: @oof - 200) if @oof > 199
+
 %table
   %thead
     %tr
