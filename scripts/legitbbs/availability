@@ -279,4 +279,4 @@ if passed:
         sys.exit(0)
 
 print "failed"
-sys.exit(1)
+sys.exit(0)
