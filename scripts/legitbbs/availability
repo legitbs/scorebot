@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./legitbbs-poller.py > /tmp/legitbbs-poller.out
+/scorebot/scripts/legitbbs/legitbbs-poller.py > /tmp/legitbbs-poller.out
 exit $?
