@@ -16,7 +16,7 @@ class ReplacementsController < ApplicationController
                       where(@filters).
                       limit(50).
                       offset(@skip).
-                      order(created_at: :desc).
+                      order(round_id: :desc, created_at: :desc).
                       joins(:team, :service).
                       where(services: { enabled: true }).
                       all
