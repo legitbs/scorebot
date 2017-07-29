@@ -444,7 +444,7 @@ def pc( s, stack ):
 		exit(1)
 
 	if y.find('> ') == -1:
-		y = read(4096)
+		y = read( s, 4096)
 
 def upa(s, stack):
 	print '[INFO] Testing upa'
