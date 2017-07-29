@@ -4,6 +4,8 @@ import select
 import random
 import time
 
+sys.exit(0)
+
 #POSITIVE
 positivepolls = ["ainta",
             "itici",
@@ -36,7 +38,7 @@ positivepolls = ["ainta",
             "ploym",
             "orked",
             "Frost"]
-    
+
 #NEGATIVE
 negativepolls = ["KCmzA",
                  "M2Ttq",
@@ -129,20 +131,20 @@ polls = [
 
 
 def Data_8_to_9(InData):
-	#don't feel like doing all the math, make a bit list then reparse it
-	Bits = ""
-	for i in InData:
-		Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
+        #don't feel like doing all the math, make a bit list then reparse it
+        Bits = ""
+        for i in InData:
+                Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
 
-	#now add in enough bits to make sure we can send full bytes
-	if len(Bits) % 8:
-		Bits += "0"*(8-(len(Bits) % 8))
+        #now add in enough bits to make sure we can send full bytes
+        if len(Bits) % 8:
+                Bits += "0"*(8-(len(Bits) % 8))
 
-	Output = ""
-	for i in xrange(0, len(Bits), 8):
-		Output += chr(int(Bits[i:i+8], 2))
+        Output = ""
+        for i in xrange(0, len(Bits), 8):
+                Output += chr(int(Bits[i:i+8], 2))
 
-	return Output
+        return Output
 
 def Data_9_to_8(InData):
     #don't feel like doing all the math, make a bit list then reparse it
@@ -180,7 +182,7 @@ def sendhook(state,qa):
         if "passed" == state:
                 return([state,"GOODBYE\n"])
         return([state,""])
-        
+
 def recvhook(state,buf,qa):
         print "GOT %d BYTES"%len(buf)
         if "YIBM" in buf:
@@ -189,7 +191,7 @@ def recvhook(state,buf,qa):
                 state = "passed"
         if "?" in buf:
                 state = "needsy"
-                
+
         return(state)
 
 transactions = 0
@@ -222,45 +224,45 @@ passed = False
 while(1):
 
         print "preselect"
-	(r,w,e) = select.select([s.fileno(), 0], [], [],.4)
+        (r,w,e) = select.select([s.fileno(), 0], [], [],.4)
         print "postselect"
 #	(r,w,e) = select.select([s.fileno(), 0], [s.fileno(), 0], [])
-	if len(r) == 0:
+        if len(r) == 0:
                 print "y pump"
                 Data = Data_8_to_9("y\n")
-		s.send(Data)
-		continue
+                s.send(Data)
+                continue
 
         transactions += 1
 
         if state == "passed":
                 passed = True
-        
-	#read from one and send to the other
-	try:
-		if r[0] == s.fileno():
-			Data = s.recv(4096)
-			if len(Data) == 0:
-				break;
-			Data = Data_9_to_8(Data)
+
+        #read from one and send to the other
+        try:
+                if r[0] == s.fileno():
+                        Data = s.recv(4096)
+                        if len(Data) == 0:
+                                break;
+                        Data = Data_9_to_8(Data)
                         state = recvhook(state,Data,qa)
                         if state == "passed":
                                 passed = True
 
-			sys.stdout.write(Data)
-			sys.stdout.flush()
+                        sys.stdout.write(Data)
+                        sys.stdout.flush()
 #		else:
-			state,Data = sendhook(state,qa)
+                        state,Data = sendhook(state,qa)
                         time.sleep(.1)
                         sys.stdout.write("SENDING>>>\n")
                         sys.stdout.write(Data)
                         sys.stdout.write("\n<<<<<<\n")
-			Data = Data_8_to_9(Data)
-			s.send(Data)
+                        Data = Data_8_to_9(Data)
+                        s.send(Data)
                         time.sleep(.1)
-	except Exception as ex:
-		print ex
-		break
+        except Exception as ex:
+                print ex
+                break
 
         print state
         if transactions > 1000:
