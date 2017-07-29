@@ -9,6 +9,7 @@ import random
 import string
 import urllib
 import binascii
+import signal
 
 HTTP_DATE_STRING = "Sun, 10 Jul 2017 11:12:30 GMT"
 HTTP_SERVER_STRING = "defcon1"
@@ -63,6 +64,42 @@ def Get27BitNumber( x ):
 	else:
 		return x	
 
+def Data_8_to_9_Bits_FlushNewline(InData, Bits=""):
+	for i in InData:
+		Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
+
+		if ord(i) == 0xa:
+			print "Flushing newline"
+			if len(Bits) % 8:
+				Bits += "0"*(8-(len(Bits) % 8))
+			
+	return Bits
+
+
+def Data_8_to_9_Bits(InData, Bits=""):
+	for i in InData:
+		Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
+
+	return Bits
+
+def Append_9Bit_List_Bits( InData, InBits ):
+	for i in InData:
+		InBits += (("0"*9)+bin(i)[2:])[-9:] 
+
+	return InBits
+
+def Convert_9Bit_Bytes( Bits ):
+	#add in enough bits to make sure we can send full bytes
+	if len(Bits) % 8:
+		Bits += "0"*(8-(len(Bits) % 8))
+
+	Output = ""
+	for i in xrange(0, len(Bits), 8):
+		Output += chr(int(Bits[i:i+8], 2))
+
+	return Output
+
+
 def Data_8_to_9(InData):
 	#don't feel like doing all the math, make a bit list then reparse it
 	Bits = ""
@@ -95,10 +132,12 @@ def Data_9_to_8(InData):
 		c = int(Bits[i+1:i+9], 2)
 		bytecount += 1
 		Output += chr(c)
-		if c == 0xa:
+
+		if c == 0xa and ((i+9) % 8) != 0:
 			bitstoeat = 8 - (((bytecount*9)+8) % 8)
 			i += bitstoeat
 			bytecount = 0
+
 		i += 9
 
 	return Output
@@ -122,15 +161,14 @@ def GetRandomHTMPage( ):
 
 def GetNextLine( s, recv_line ):
 	if len(recv_line) == 0:
-		time.sleep( 0.1 )
+		time.sleep( 0.2 )
 		data9 = s.recv( 4096 )
 		data8 = Data_9_to_8( data9 )
 
 		lines = data8.rstrip('\n').split('\n')
 
-		#print "GOT: %d lines\n" % len(lines)
+		print "GOT: %s\n" % data8
 		print "Lines: ", lines
-		#print "Data8: ", binascii.hexlify(data8)
 
 		recv_line = lines[1:]
 
@@ -185,7 +223,7 @@ def Test_HTTP_GET(s):
 
 	s.send( Data_8_to_9( http_request ) )
 	
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	# Find page
 	page_response = "HTTP/1.%d 200 OK\nDate: %s\nServer: %s\nConnection: close\nContent-Type: text/html\n\n" % (http_version, HTTP_DATE_STRING, HTTP_SERVER_STRING)
@@ -258,7 +296,7 @@ def Test_PHP( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 	
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response ) 
 
@@ -271,6 +309,168 @@ def Test_PHP( s ):
 		return -1
 
 	return 0
+
+def DoSendUploadInlineFile_9bit( s, filename, file_data ):
+	token_value = 0x1337
+
+	get_string = urllib.urlencode( { 'inline' : 'yes', 'token' : "%d" % token_value } )
+
+	http_version = random.randint( 0, 1 )
+
+	boundary_string = rand_url_var( 20 )
+
+	http_request = "GET /upload.php?%s HTTP/1.%d\nContent-Disposition: form-data; filename=\"%s\";\nContent-Type: multipart/form-data; boundary=\"%s\";\n" % (get_string, http_version, filename, boundary_string)
+
+	http_request += "----%s\n" % boundary_string
+	http_request_9bit_part = Append_9Bit_List_Bits( file_data, Data_8_to_9_Bits( http_request ) )
+	http_request_9bit = Data_8_to_9_Bits( "\n----%s\n\n" % boundary_string, http_request_9bit_part )
+
+	send_data = Convert_9Bit_Bytes( http_request_9bit )
+	# DEBUG::
+	#print "UPLOAD REQUEST (len=%d): %s\n" % (len(send_data), Data_9_to_8( send_data ))
+ 
+	s.send( send_data )
+
+	# Check Upload Success
+	page_response = "HTTP/1.%d 200 OK\nDate: %s\nServer: %s\nConnection: close\nContent-Type: text/html\n\n" % (http_version, HTTP_DATE_STRING, HTTP_SERVER_STRING)
+	page_response += "<html>\n <head>\n  <title>Upload File</title>\n </head>\n <body>\n Upload Success: %s\n\n </body>\n</html>" % filename
+ 
+	time.sleep( 1 )
+
+	got_response, match_code = CheckResponse( s, page_response )
+
+	if ( match_code == -1 ):
+		print "ERROR: DoSendUploadInlineFile_9bit: Data did not match!"
+	
+		print "Expected: ", page_response
+		print "Got: ", got_response
+	
+		return -1
+
+	return 0
+
+def TestSendInlineFile_9bit( s, filename, file_data ):
+	if DoSendUploadInlineFile_9bit( s, filename, file_data ) == -1:
+		return -1
+
+	print "TestSendInlineFile_9bit:: Receiving response (file_data=%d)" % len(file_data)
+
+	# =================================
+	http_version = random.randint( 0, 1 )
+
+	http_request = "GET /upload/%s.htm HTTP/1.%d\n\n" % (filename, http_version)
+
+	print "HTTP INLINE FILE REQUEST: %s\n" % http_request
+
+	page_response = "HTTP/1.%d 200 OK\r\nDate: %s\r\nServer: %s\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n" % (http_version, HTTP_DATE_STRING, HTTP_SERVER_STRING)
+
+	s.send( Data_8_to_9( http_request ) )
+
+	time.sleep( 1 )
+
+	page_response_9bit = Append_9Bit_List_Bits( file_data, Data_8_to_9_Bits_FlushNewline( page_response )  )
+	#http_request_9bit_part = Append_9Bit_List_Bits( file_data, Data_8_to_9_Bits( http_request ) )
+
+	expected_receive_data = Convert_9Bit_Bytes( Data_8_to_9_Bits( "\r\n", page_response_9bit ) )
+	#expected_receive_data = Convert_9Bit_Bytes( page_response_9bit ) + Data_8_to_9( "\r\n" )
+
+	print "RESPONSE BITS: %d\n" % len(page_response_9bit)
+
+	rx_byte_count = 0
+	rx_byte_lastpos = 0
+	
+	while rx_byte_lastpos < len(expected_receive_data):
+		rx_data = s.recv( len(expected_receive_data) - rx_byte_lastpos )
+		
+		rx_byte_count = len(rx_data)
+
+		print "[%d,%d,%d]" % (rx_byte_lastpos, rx_byte_count, len(expected_receive_data))
+
+		receive_chunk = expected_receive_data[rx_byte_lastpos:rx_byte_lastpos+rx_byte_count]
+
+		if ( rx_data != receive_chunk ):
+			print "RX Data: %s\n" % binascii.hexlify( rx_data )
+			print "EX Data: %s\n" % binascii.hexlify( receive_chunk )
+			print "Didn't match! (%d,%d)" % (len(rx_data), len(expected_receive_data))
+
+			return -1
+
+		rx_byte_lastpos += rx_byte_count
+
+		print "MATCH"
+		
+
+	print "9-bit data all match!"
+
+	return 0
+
+
+def DoSendUploadInlineFile( s, filename, file_data ):
+
+	token_value = 0x1337
+
+	get_string = urllib.urlencode( { 'inline' : 'yes', 'token' : "%d" % token_value } )
+
+	http_version = random.randint( 0, 1 )
+
+	boundary_string = rand_url_var( 40 )
+
+	http_request = "GET /upload.php?%s HTTP/1.%d\nContent-Disposition: form-data; filename=\"%s\";\nContent-Type: multipart/form-data; boundary=\"%s\";\n" % (get_string, http_version, filename, boundary_string)
+
+	http_request += "----%s\n" % boundary_string
+	http_request += file_data
+	http_request += "\n----%s\n\n" % boundary_string
+
+	print "UPLOAD REQUEST: %s\n" % http_request
+
+	# Check Upload Success
+	page_response = "HTTP/1.%d 200 OK\nDate: %s\nServer: %s\nConnection: close\nContent-Type: text/html\n\n" % (http_version, HTTP_DATE_STRING, HTTP_SERVER_STRING)
+	page_response += "<html>\n <head>\n  <title>Upload File</title>\n </head>\n <body>\n Upload Success: %s\n\n </body>\n</html>" % filename
+
+	s.send( Data_8_to_9( http_request ) )
+
+	time.sleep( 1 )
+
+	got_response, match_code = CheckResponse( s, page_response )
+
+	if ( match_code == -1 ):
+		print "ERROR: DoSendUploadInlineFile: Data did not match!"
+	
+		print "Expected: ", page_response
+		print "Got: ", got_response
+	
+		return -1
+
+	return 0	
+
+def TestSendInlineFile( s, filename, orig_filedata, verify_filedata ):
+	if DoSendUploadInlineFile( s, filename, orig_filedata ) == -1:
+		return -1
+
+	http_version = random.randint( 0, 1 )
+
+	http_request = "GET /upload/%s.php HTTP/1.%d\n\n" % (filename, http_version)
+
+	print "HTTP INLINE FILE REQUEST: %s\n" % http_request
+
+	page_response = "HTTP/1.%d 200 OK\nDate: %s\nServer: %s\nConnection: close\nContent-Type: text/html\n\n" % (http_version, HTTP_DATE_STRING, HTTP_SERVER_STRING)
+	page_response += "%s" % verify_filedata
+
+	s.send( Data_8_to_9( http_request ) )
+
+	time.sleep( 1 )
+
+	got_response, match_code = CheckResponse( s, page_response )
+
+	if ( match_code == -1 ):
+		print "ERROR: Test_PHP_Upload_MATH: Data did not match!"
+		print "Expected: ", page_response
+		print "Got: ", got_response
+
+		return -1
+
+	return 0
+	
 
 def DoPostUploadFile( s, file_data ):
 	post_string = urllib.urlencode( { 'user' : 'legitbs_poller_user', 'pass' : 'legitbs_poll_pass', 'upload_filedata' : file_data } )
@@ -287,7 +487,7 @@ def DoPostUploadFile( s, file_data ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -339,7 +539,7 @@ def Test_PHP_Upload_GET( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -390,7 +590,7 @@ def Test_PHP_Upload_POST( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -448,7 +648,7 @@ def Test_PHP_Upload_COOKIE( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -547,7 +747,7 @@ def Test_PHP_Upload_SETCOOKIE( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -638,7 +838,7 @@ def Test_PHP_Upload_MATH( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -694,7 +894,7 @@ def Test_Fail( s ):
 
 	s.send( Data_8_to_9( http_request ) )
 
-	#time.sleep( 1 )
+	time.sleep( 1 )
 
 	got_response, match_code = CheckResponse( s, page_response )
 
@@ -708,11 +908,31 @@ def Test_Fail( s ):
 	return 0
 	
 
+def handler(signum, frame):
+        print "Timeout"
+        sys.exit(-1)
 
-if len(sys.argv) == 3:
-	s = socket.create_connection(['10.5.' + sys.argv[1] + '.2', sys.argv[2]])
+signal.signal(signal.SIGALRM, handler)
+signal.alarm(30)
+
+#if len(sys.argv) == 3:
+if len(sys.argv) == 2:
+	#s = socket.create_connection(['10.5.' + sys.argv[1] + '.2', sys.argv[2]])
+	s = socket.create_connection(['10.5.' + sys.argv[1] + '.2', 80])
 else:
 	s = socket.create_connection(['127.0.0.1', 4000])
+
+rand_seed = binascii.hexlify( os.urandom( 20 ) )
+
+# DEBUG
+#rand_seed = "311ee4558269f4483310899b89e6f87c5253f88e"
+#rand_seed = "1e7a2850b551abf13de7f53c6ee088189b55a5ca"
+#rand_seed = "35693b6fbcfd0173eb6d2b7bd43c8d8dd80e4dd1"
+random.seed( rand_seed )
+
+print "[POLLER CONNECTED] RAND STATE: ", rand_seed
+
+#time.sleep( 5 )
 
 # Send request
 # Test Count
@@ -721,10 +941,10 @@ test_count = random.randint(1, 4)
 for test_number in range(0, test_count):
 	print "Round: %d\n" % test_number
 
-	test_type = random.randint(0,5)
+	test_type = random.randint(0,6)
 
 	# TODO: Remove after debugging
-	#test_type = 3
+	#test_type = 5
 
 	if test_type == 0:
 		result = Test_HTTP_GET(s)
@@ -734,12 +954,24 @@ for test_number in range(0, test_count):
 		result = Test_PHP( s )
 	elif test_type == 3 or test_type == 4:
 		result = Test_PHP_Upload( s )
+	elif test_type == 5:
+		filedata_9bit = []
+		for _ in xrange(random.randint(40, 600)):
+			new_val = random.randint( 0, 0x1FF )
+			while new_val == 0xA:
+				new_val = random.randint( 0, 0x1FF )
+
+			filedata_9bit.append( new_val )
+
+		filename = rand_url_var( 20 )
+
+		result = TestSendInlineFile_9bit( s, filename, filedata_9bit )
 	else:
 		result = Test_Fail( s ) 
 
 	if ( result != 0 ):
 		sys.exit( -1 )
 
-	time.sleep( 0.5 )
+	time.sleep( 0.4 )
 
 sys.exit(0)

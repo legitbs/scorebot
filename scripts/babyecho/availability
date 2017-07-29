@@ -25,6 +25,32 @@ def Data_8_to_9(InData):
 
 	return Output
 
+def Data_9_to_8_New(InData):
+   #don't feel like doing all the math, make a bit list then reparse it
+   Bits = ""
+   for i in InData:
+      Bits += (("0"*8)+bin(ord(i))[2:])[-8:]
+
+   Output = ""
+   i = 0
+   bytecount = 0
+   while i < len(Bits):
+      if i+9 > len(Bits):
+         break;
+
+      c = int(Bits[i+1:i+9], 2)
+      bytecount += 1
+      Output += chr(c)
+
+      if c == 0xa and ((i+9) % 8) != 0:
+         bitstoeat = 8 - (((bytecount*9)+8) % 8)
+         i += bitstoeat
+         bytecount = 0
+
+      i += 9
+
+   return Output
+
 def Data_9_to_8(InData):
 	#don't feel like doing all the math, make a bit list then reparse it
 	Bits = ""
@@ -59,7 +85,7 @@ def Test_Echo(s):
 	# read it back
 	time.sleep(0.2)
 	data9 = s.recv(4096)
-	data8 = Data_9_to_8(data9)
+	data8 = Data_9_to_8_New(data9)
 
 	match = ''
 	m = re.search("^([a-zA-Z0-9]+).*Reading", data8, re.DOTALL)
@@ -143,7 +169,7 @@ def Test_Fmtstr(s):
 	# read it back
 	time.sleep(0.2)
 	data9 = s.recv(4096)
-	data8 = Data_9_to_8(data9)
+	data8 = Data_9_to_8_New(data9)
 
 	match = ''
 	m = re.search(regexp, data8, re.DOTALL)
@@ -156,20 +182,21 @@ def Test_Fmtstr(s):
 	return -1
 
 def handler(signum, frame):
+	print "Timeout"
 	sys.exit(-1)
 
 signal.signal(signal.SIGALRM, handler)
 signal.alarm(15)
 
 if len(sys.argv) == 2:
-	s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 4001])
+	s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 4000])
 else:
-	s = socket.create_connection(['127.0.0.1', 4001])
+	s = socket.create_connection(['127.0.0.1', 4000])
 
 # read the banner
 time.sleep(0.2)
 data9 = s.recv(4096)
-data8 = Data_9_to_8(data9)
+data8 = Data_9_to_8_New(data9)
 m = re.search("Reading", data8)
 if m is None:
 	sys.exit(-1)
