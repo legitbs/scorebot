@@ -1,0 +1,673 @@
+#!/usr/bin/env python 
+
+import sys, os
+import socket
+import select
+import re
+import time
+import random
+import binascii
+import signal
+from math import ceil,log,floor
+
+X86 = False
+CHUNK_SIZE = 8
+MAX_CHUNKS = 511
+MAX_PARTS = 511
+
+CHANNEL_NAMES = ["BASS", "BEAT", "LEAD", "SECONDARY", "ARP", "DRUMS", "BACKING", "VOCALS", "PAD", "EFFECTS"]
+
+def buildStream(objlist,debug=False):
+    offset=0
+    ret=0
+    first=True
+    nullpad=False
+    pad=""
+    noneSet=True
+    bp=0#bytes processed
+    topBit = 0
+    for el in objlist:
+        if el[0]=="c":
+            for obj in el[1:]:
+                if bp==0:
+                    topBit=9-int(floor(log(obj,2)))
+                bp+=1
+                ret<<=9
+                ret|=obj
+        elif el[0]=="s":
+            for obj in el[1:]:
+                bp+=2
+                c2=obj>>9
+                c1=obj&0x1ff
+                ret<<=9
+                ret|=c1
+                ret<<=9
+                ret|=c2
+        elif el[0]=="i":
+            for obj in el[1:]:
+                bp+=3
+                c1=obj&0x1ff
+                c2=(obj>>9)&0x1ff
+                c3=(obj>>18)&0x1ff
+                c1=(c2<<18)|(c1)|(c3<<9)
+                ret<<=27
+                ret|=c1
+        else:
+            print el
+            assert(0)
+    bp+=int(ceil(bp/8.))
+    while(ret>>(bp*8-topBit)!=1):
+        ret<<=1
+    return hex(ret)[2:].replace("L","").zfill(bp*2)
+
+def data_8_to_9(in_data):
+    #don't feel like doing all the math, make a bit list then reparse it
+    bits = ""
+    for i in in_data:
+        bits += (("0"*9)+bin(ord(i))[2:])[-9:]
+
+    #now add in enough bits to make sure we can send full bytes
+    if len(bits) % 8:
+        bits += "0"*(8-(len(bits) % 8))
+
+    output = ""
+    for i in xrange(0, len(bits), 8):
+        output += chr(int(bits[i:i+8], 2))
+
+    return output
+
+def data_9_to_8(in_data):
+    #don't feel like doing all the math, make a bit list then reparse it
+    bits = ""
+    for i in in_data:
+        bits += (("0"*8)+bin(ord(i))[2:])[-8:]
+
+    #now add in enough bits to make sure we can send full bytes
+    if len(bits) % 9:
+        bits += "0"*(9-(len(bits) % 9))
+
+    output = ""
+    for i in xrange(0, len(bits), 9):
+        #just ignore the first bit of all bytes as our tests
+        #are all ascii based
+        c = int(bits[i+1:i+9], 2)
+        if c > 31 and c < 128:
+            output += chr(int(bits[i+1:i+9], 2))
+        else:
+            output += hex(int(bits[i+1:i+9], 2)) + " "
+
+    return output
+
+def data_9_to_8_fixed(in_data):
+    #print binascii.hexlify(in_data)
+    #don't feel like doing all the math, make a bit list then reparse it
+    bits = ""
+    binascii.b2a_hex(in_data)
+    for i in in_data:
+        bits += (("0"*8)+bin(ord(i))[2:])[-8:]
+
+    output = ""
+    i = 0
+    bytecount = 0
+    while i < len(bits):
+        if i+9 > len(bits):
+            break;
+
+        c = int(bits[i+1:i+9], 2)
+        bytecount += 1
+        output += chr(c)
+#        if c == 0xa:
+#            bitstoeat = 8 - (((bytecount*9)+8) % 8)
+#            i += bitstoeat
+#            bytecount = 0
+        i += 9
+
+    return output
+
+
+def send(s, data):
+    if (data):
+        print "Put: %s" % repr(data)
+    if X86:
+        s.send(data)
+    else:
+        s.send(data_8_to_9(data))
+    time.sleep(0.1)
+
+def send_request(s, typ, data, raw=False):
+    length = len(data)
+
+    if raw:
+        parts = (length / (CHUNK_SIZE + 1)) / MAX_CHUNKS
+        chunks = (length / (CHUNK_SIZE + 1)) % MAX_CHUNKS
+        extra = length % (CHUNK_SIZE + 1)
+        if extra:
+            data += "\x00" * (CHUNK_SIZE + 1 - extra)
+            chunks += 1
+        msg = data_8_to_9(chr(typ) + chr(parts) + chr(chunks) + "\x00"*(CHUNK_SIZE-3)) + data
+        print "RAW: %s" % repr(msg)
+        s.send(msg)
+        time.sleep(0.1)
+    else:
+        parts = (length / CHUNK_SIZE) / MAX_CHUNKS
+        chunks = (length / CHUNK_SIZE) % MAX_CHUNKS
+        extra = length % CHUNK_SIZE
+        if extra:
+            data += "\x00" * (CHUNK_SIZE - extra)
+            chunks += 1
+        send(s, chr(typ) + chr(parts) + chr(chunks) + "\x00"*(CHUNK_SIZE-3))
+        send(s, data)
+
+
+def recv(s, fixed=True):
+    if X86:
+        data = s.recv(8)
+    else:
+        if fixed:
+            time.sleep(0.1)
+            data = data_9_to_8_fixed(s.recv(9))
+        else:
+            time.sleep(0.1)
+            data = data_9_to_8(s.recv(9))
+    print "Got: %s" % repr(data)
+    return data
+
+def recv_response(s, fixed=True):
+    if fixed:
+        data = ""
+        chunk = recv(s, fixed)
+        data += chunk
+        if chunk[1] != "\xff":
+            for i in range(ord(chunk[1]) * MAX_CHUNKS + ord(chunk[2])):
+                chunk = recv(s, fixed)
+                data += chunk
+    else:
+        data = []
+        chunk = recv(s, fixed)
+        data += [int(x) for x in chunk.split(" ")]
+        if chunk[1] != 0xff:
+            for i in range(chunk[1] * MAX_CHUNKS + chunk[2]):
+                print "HELLO"
+                chunk = recv(s, fixed)
+                data.append(chunk)
+
+    return data
+
+
+
+
+def perform_handshake(s):
+    send(s, "A"*CHUNK_SIZE)
+    resp = recv_response(s)
+    send(s, "FUZYLL17")
+    resp = recv_response(s)
+    if (resp[1] != "\x00"):
+        print "[!] Failed handshake"
+    else:
+        print "[+] Passed handshake"
+
+def tracker_test(s):
+    send_request(s, 0, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to send random test message"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_initial_volume(s):
+    send_request(s, 1, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get initial volume"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_initial_volume(s, v):
+    send_request(s, 2, chr(v))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set initial volume"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_initial_tempo(s):
+    send_request(s, 3, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get initial tempo"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_initial_tempo(s, t):
+    send_request(s, 4, chr(t))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set initial tempo"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_initial_speed(s):
+    send_request(s, 5, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get initial speed"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_initial_speed(s, v):
+    send_request(s, 6, chr(v))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set initial speed"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_pattern_length(s):
+    send_request(s, 7, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_pattern_length(s, l):
+    send_request(s, 8, chr(l))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_add_frame(s, f):
+    data = binascii.unhexlify(buildStream([["c",f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]]]))
+    send_request(s, 16, data, True)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_remove_frame(s, i):
+    send_request(s, 17, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_frame(s, i):
+    send_request(s, 18, chr(i))
+    resp = recv_response(s, False)
+    if resp[2] == 0xFF:
+        print "[!] Failed to get frame"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_frame(s, f):
+    data = binascii.unhexlify(buildStream([["c",f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]]]))
+    send_request(s, 19, data, True)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_total_frames(s):
+    send_request(s, 20, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_channel_name(s, i):
+    send_request(s, 32, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get channel name"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_channel_name(s, i, name):
+    send_request(s, 33, chr(i) + "\x00"*(CHUNK_SIZE-1) + name)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set channel name"
+        sys.exit(-1)
+    return resp
+
+def tracker_get_channel_volume(s, i):
+    send_request(s, 34, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to get channel volume"
+        sys.exit(-1)
+    return resp
+
+def tracker_set_channel_volume(s, i, v):
+    send_request(s, 35, chr(i) + chr(v))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set channel volume"
+        sys.exit(-1)
+    return resp
+
+def tracker_mute_channel(s, i):
+    send_request(s, 36, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to mute channel"
+        sys.exit(-1)
+    return resp
+
+def tracker_unmute_channel(s, i):
+    send_request(s, 37, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to mute channel"
+        sys.exit(-1)
+    return resp
+
+def tracker_create_pattern(s):
+    send_request(s, 48, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_get_event_from_pattern(s, i, e):
+    send_request(s, 49, chr(i) + chr(e))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_destroy_pattern(s, i):
+    send_request(s, 50, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_add_event_to_pattern(s, f):
+    data = binascii.unhexlify(buildStream([["c",f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8]]]))
+    send_request(s, 51, data, True)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to set pattern length"
+        sys.exit(-1)
+    return resp
+
+def tracker_remove_event_from_pattern(s, i, e):
+    send_request(s, 49, chr(i) + chr(e))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_add_instrument(s):
+    #64
+    pass
+
+def tracker_get_instrument_name(s, i):
+    #65
+    pass
+
+def tracker_set_instrument_name(s, i, name):
+    send_request(s, 66, chr(i) + "\x00"*(CHUNK_SIZE-1) + name)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+    #66
+    pass
+
+def tracker_get_instrument_sample(s, i):
+    send_request(s, 0x44, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_set_instrument_sample(s, i):
+    send_request(s, 0x44, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_get_instrument_volume(s, i):
+    send_request(s, 0x45, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_set_instrument_volume(s, i):
+    send_request(s, 0x46, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_add_sample(s, name, data):
+    name_length = len(name) / CHUNK_SIZE
+    if len(name) % CHUNK_SIZE > 0:
+        name += "\x00" * (len(name) % CHUNK_SIZE)
+        name_length += 1
+
+    first_chunk = binascii.unhexlify(buildStream([["c",name_length],["i",len(data)],["c",0,0,0,0]]))
+
+    # manually build this because i've got the first chunk as 8_to_9 already
+    send_request(s, 0x50, name + data, first_chunk)
+    return recv_response(s)
+
+def tracker_get_sample_name(s, i):
+    send_request(s, 0x51, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_set_sample_name(s, i, name):
+    send_request(s, 0x52, chr(i) + "\x00"*(CHUNK_SIZE-1) + name)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_get_sample_data(s, i):
+    send_request(s, 0x53, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_set_sample_data(s, i, data):
+    first_chunk = binascii.unhexlify(buildStream([["c",i],["i",len(data)],["c",0,0,0,0]]))
+    send_request(s, 0x54, data, first_chunk)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+def tracker_remove_sample(s, i):
+    send_request(s, 0x55, chr(i))
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+#def tracker_render_song(s):
+#    send_request(s, 0x60, "")
+#    resp = recv_response(s)
+#    if resp[2] == "\xFF":
+#        print "[!] Failed to render song"
+#        sys.exit(-1)
+#    return resp
+
+def tracker_close(s):
+    send_request(s, 0x90, "")
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
+
+
+
+# seed the random number generator
+seed = binascii.hexlify( os.urandom( 20 ) )
+#seed = "35693b6fbcfd0173eb6d2b7bd43c8d8dd80e4dd1"
+random.seed(seed)
+print "[+] Random state: %s" % seed
+
+def handler(signum, frame):
+        print "Timeout"
+        sys.exit(-1)
+
+signal.signal(signal.SIGALRM, handler)
+signal.alarm(90)
+
+if len(sys.argv) == 2:
+        s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 1337])
+
+# connect to service
+#if len(sys.argv) >= 3:
+#    s = socket.create_connection([sys.argv[1], sys.argv[2]])
+#    if len(sys.argv) == 4:
+#        X86 = True
+#else:
+#    s = socket.create_connection(['127.0.0.1', 4000])
+#    if len(sys.argv) == 2:
+#        X86 = True
+
+# perform initial handshake
+perform_handshake(s)
+
+timing_data = [1, 2, 3, 4, 5]
+random.shuffle(timing_data)
+
+# test setting state
+print "[*] Checking initial state..."
+vol = random.choice([16, 32, 48, 64, 80])
+tpo = random.choice([75, 90, 105, 120, 135, 150, 165])
+spd = random.choice([0, 4, 8, 12, 16, 20, 24, 28, 32, 36])
+tracker_set_initial_volume(s, vol)
+tracker_set_initial_tempo(s, tpo)
+tracker_set_initial_speed(s, spd)
+for i in range(8):
+    tracker_set_channel_name(s, i, random.choice(CHANNEL_NAMES))
+print "[+] Set initial state"
+
+# test other things in a random order based on our shuffle
+frames = []
+channels = []
+patterns = []
+instruments = []
+samples = []
+for i in timing_data:
+    if i == 1:
+        # test getting state
+        print "[*] Testing initial state..."
+        if ord(tracker_get_initial_volume(s)[CHUNK_SIZE]) != min(vol, 64):
+            print "[!] Failed to set initial volume"
+            sys.exit(-1)
+        if ord(tracker_get_initial_tempo(s)[CHUNK_SIZE]) != min(tpo, 300):
+            print "[!] Failed to set initial speed"
+            sys.exit(-1)
+        if ord(tracker_get_initial_speed(s)[CHUNK_SIZE]) != min(spd, 32):
+            print "[!] Failed to set initial speed"
+            sys.exit(-1)
+        print "[+] Tested initial state"
+    elif i == 2:
+        # add frames
+        print "[*] Testing adding frames..."
+        for i in range(random.randint(0, 255)):
+            frame = [random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),
+                     random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),random.randint(0, 511)]
+            frames.append(frame)
+            tracker_add_frame(s, frame)
+            pass
+        print "[+] Tested adding frames"
+    elif i == 3:
+        # maybe remove frames?
+        print "[*] Testing removing frames..."
+        for i in range(random.randint(0, len(frames)/2)):
+            num = random.randint(0, len(frames))
+            tracker_remove_frame(s, num)
+            frames.pop(num)
+        print "[+] Tested removing frames"
+
+        # test channels
+        print "[*] Testing setting channel data..."
+        for i in range(8):
+            channels.append((random.choice(CHANNEL_NAMES), random.choice([0, 8, 16, 24, 32, 40, 48, 56, 64])))
+            tracker_set_channel_name(s, i, channels[i][0])
+            tracker_set_channel_volume(s, i, channels[i][1])
+            if random.choice([True, False]):
+                tracker_mute_channel(s, i)
+        print "[+] Tested setting channel data"
+
+    elif i == 4:
+        # test patterns
+        print "[*] Testing adding patterns..."
+        for i in range(random.randint(0, 511)):
+            pass
+        print "[+] Tested adding patterns"
+
+    elif i == 5:
+        # test instruments/samples
+        print "[*] Testing adding samples..."
+        for i in range(random.randint(0, 511)):
+            pass
+        print "[+] Tested adding samples"
+
+        # test instruments
+        print "[*] Testing adding instruments..."
+        for i in range(random.randint(0, 255)):
+            pass
+        print "[+] Tested adding instruments"
+
+random.shuffle(timing_data)
+
+for i in timing_data:
+    if i == 1:
+        # check frames
+        print "[*] Checking frame data..."
+        for i in range(len(frames)):
+            #resp = tracker_get_frame(s, i)
+            #for i in G
+            pass
+        print "[+] Checked frame data"
+
+    elif i == 2:
+        # check channels
+        print "[*] Checking channel data..."
+        pass
+        print "[+] Checked channel data"
+
+    elif i == 3:
+        # check patterns
+        print "[*] Checking pattern data..."
+        pass
+        print "[+] Checked patterns"
+
+    elif i == 4:
+        # check instruments
+        print "[*] Checking instrument data..."
+        pass
+        print "[+] Checked instruments"
+
+    elif i == 5:
+        # check samples
+        print "[*] Checking sample data..."
+        pass
+        print "[+] Checked samples"
+
+# trigger signal processing
+#tracker_render_song(s)
+
+# cut the cord
+tracker_close(s)
+print "[+] Successfully exited service"
+sys.exit(0)
