@@ -6,7 +6,7 @@ jQuery ($)->
 
 
   calculateWidth = (score) ->
-    0.0004 * score
+    8 + score
 
   class Scoreboard
     constructor: ->
