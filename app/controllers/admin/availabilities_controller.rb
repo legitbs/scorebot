@@ -5,7 +5,8 @@ class Admin::AvailabilitiesController < Admin::BaseController
     @availabilities = Availability.
                         order(created_at: :desc).
                         limit(Team.count * Service.count).
-                        offset(@oof)
+                        offset(@oof).
+                        all
   end
 
   def show
