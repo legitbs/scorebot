@@ -3,6 +3,7 @@ import socket
 import select
 import random
 import time
+import signal
 
 #POSITIVE
 positivepolls = ["ainta",
