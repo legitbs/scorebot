@@ -2,16 +2,68 @@
 
 %p
   %b Team:
-  = @replacement.team
+  = @replacement.team.name
 %p
   %b Service:
-  = @replacement.service
+  = @replacement.service.name
 %p
   %b Round:
-  = @replacement.round
+  = @replacement.round_id
 %p
   %b Digest:
   = @replacement.digest
+
+%h1 Same as
+%table
+  %thead
+    %tr
+      %th id
+      %th round
+      %th team
+      %th activities
+  %tbody
+    - @sames.each do |r|
+      %tr
+        %td= link_to r.id, admin_replacement_path(r)
+        %td= r.round_id
+        %td= r.team.name
+        %td
+          = link_to 'show', admin_replacement_path(r)
+
+%h1 This team's
+%table
+  %thead
+    %tr
+      %th id
+      %th round
+      %th digest
+      %th activities
+  %tbody
+    - @teams.each do |r|
+      %tr
+        %td= link_to r.id, admin_replacement_path(r)
+        %td= r.round_id
+        %td=r.digest.truncate(16)
+        %td
+          = link_to 'show', admin_replacement_path(r)
+          = 'this one' if r.id == @replacement.id
+          = 'after this one' if r.id == @next&.id
+
+%h1 Redemptions against me
+%table
+  %thead
+    %tr
+      %th id
+      %th round
+      %th scorer
+      %th activities
+  %tbody
+    - @redemptions.each do |red|
+      %tr
+        %td= red.id
+        %td= red.round_id
+        %td= red.team.name
+        %td blah
 
 = link_to 'Edit', edit_replacement_path(@replacement)
 \|

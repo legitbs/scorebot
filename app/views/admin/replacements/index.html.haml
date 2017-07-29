@@ -3,6 +3,7 @@
 %table
   %thead
     %tr
+      %th id
       %th Team
       %th Service
       %th Round
@@ -14,12 +15,13 @@
   %tbody
     - @replacements.each do |replacement|
       %tr
+        %td= replacement.id
         %td= replacement.team.name
         %td= replacement.service.name
         %td= replacement.round.id
-        %td= replacement.digest
-        %td= link_to 'Show', replacement
-        %td= link_to 'Edit', edit_replacement_path(replacement)
+        %td= replacement.digest.truncate(16)
+        %td= link_to 'Show', admin_replacement_path(replacement)
+        %td= link_to 'Edit', edit_admin_replacement_path(replacement)
         %td= link_to 'Destroy', replacement, method: :delete, data: { confirm: 'Are you sure?' }
 
 %br

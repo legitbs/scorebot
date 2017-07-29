@@ -8,6 +8,41 @@ class Admin::ReplacementsController < Admin::BaseController
 
   # GET /replacements/1
   def show
+    @sames = Replacement.
+               where(digest: @replacement.digest).
+               order(created_at: :asc).
+               all
+
+    @teams = Replacement.
+               where(team_id: @replacement.team_id,
+                     service: @replacement.service).
+               order(created_at: :asc).
+               all
+
+    @next = Replacement.
+              where(team_id: @replacement.team_id,
+                    service: @replacement.service).
+              where('id > ?', @replacement.id).
+              order(id: :asc).
+              first
+
+    @instance = Instance.
+                  where(team: @replacement.team,
+                        service: @replacement.service).
+                  first
+
+    @tokens = @instance.
+                tokens.
+                where('created_at > ?',
+                      @replacement.created_at)
+
+    if @next
+      @tokens = @tokens.
+                  where('created_at < ?',
+                        @next.created_at)
+    end
+
+    @redemptions = @tokens.map(&:redemptions).flatten
   end
 
   # GET /replacements/new
