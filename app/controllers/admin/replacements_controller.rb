@@ -3,7 +3,7 @@ class Admin::ReplacementsController < Admin::BaseController
 
   # GET /replacements
   def index
-    @replacements = Replacement.all
+    @replacements = Replacement.order(round_id: :asc, id: :asc).all
   end
 
   # GET /replacements/1
