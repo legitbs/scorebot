@@ -15,5 +15,6 @@ quarter_tokens = Token.where(instance_id: quarter.instances.map(&:id),
 hitcon = Team.find_by(certname: 'hitcon')
 
 quarter_tokens.each do |t|
+  next if t.instance.team_id == 16
   Redemption.create(token: t, team: hitcon, round_id: 43)
 end
