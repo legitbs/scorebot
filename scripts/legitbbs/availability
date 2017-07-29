@@ -1,4 +1,4 @@
 #!/bin/bash
 
 /scorebot/scripts/legitbbs/legitbbs-poller.py $1 | base64
-exit $?
+exit ${PIPESTATUS[0]}
