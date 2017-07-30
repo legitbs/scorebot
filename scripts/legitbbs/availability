@@ -169,6 +169,11 @@ def Data_9_to_8(InData):
             i += 9
     return Output
 
+def send_wrapper( s, Data ):
+	time.sleep( 0.5 )
+	s.send( Data )
+	time.sleep( 0.5 )
+
 #connect then allow us to transfer data
 #s = socket.create_connection([sys.argv[1],sys.argv[2]])
 
@@ -252,7 +257,7 @@ while(1):
     if len(r) == 0:
         print "y pump"
         Data = Data_8_to_9("y\n")
-        s.send(Data)
+        send_wrapper(s, Data)
         continue
 
         transactions += 1
@@ -261,10 +266,12 @@ while(1):
                 passed = True
         
     #read from one and send to the other
-#    try:
-    if True:
+    try:
+#    if True:
         if r[0] == s.fileno():
+	    time.sleep( 0.5 )
             Data = s.recv(4096)
+	    time.sleep( 0.5 )
             if len(Data) == 0:
                 break;
             Data = Data_9_to_8(Data)
@@ -281,11 +288,12 @@ while(1):
             sys.stdout.write(Data.encode("base64"))
             sys.stdout.write("\n<<<<<<\n")
             Data = Data_8_to_9(Data)
-            s.send(Data)
+            send_wrapper(s, Data)
             time.sleep(.1)
-#    except Exception as ex:
-#        print ex
-#        break
+    except socket.error as ex:
+        passed= True
+        print "Socket Error: ", ex
+        break
 
     print state
     if transactions > 1000:
