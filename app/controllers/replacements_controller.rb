@@ -25,6 +25,9 @@ class ReplacementsController < ApplicationController
 
   def show
     @replacement = Replacement.find(params[:id])
+    unless @replacement.service.enabled
+      raise ActiveRecord::RecordNotFound
+    end
     if params[:download]
       return send_file @replacement.archive_path
     end
