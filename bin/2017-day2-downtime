@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+$stderr.puts "#{Time.now} Loading 2017 day1 reprocess script"
+require ::File.expand_path('../../config/environment',  __FILE__)
+
+puts "if you aren't running this on a copy of the db..."
+puts "you already fucked up, hit ctrl-c now"
+gets
+
+legitbbs = Service.find_by name: 'legitbbs'
+instances = legitbbs.instances
+avs = instances.map(&:availabilities).flatten
+
+avs.each(&:fix_availability)
+
+half = Service.find_by name: 'half'
+instances = half.instances
+avs = instances.map(&:availabilities).flatten
+
+half_digest = '757378e8601295ea389e97d18068c49a7b426c91d08ea0595693d3b60eb10f71'
+
+puts
+
+avs.each.with_index do |a, i|
+  print "\r#{i}\t#{avs.count}"
+  repl = Replacement.
+           where('created_at < ?', a.created_at).
+           where(team_id: a.instance.team_id,
+                 service_id: a.instance.service_id).
+           order(created_at: :desc).
+           first
+
+  next if repl && (repl.digest != half_digest)
+
+  a.fix_availability
+end
