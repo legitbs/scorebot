@@ -3,21 +3,30 @@
 import sys, os
 import socket
 import select
+import string
+import signal
 import re
 import time
 import random
 import binascii
-import signal
 from math import ceil,log,floor
 
+DEBUG = False
 X86 = False
 CHUNK_SIZE = 8
 MAX_CHUNKS = 511
 MAX_PARTS = 511
 
-CHANNEL_NAMES = ["BASS", "BEAT", "LEAD", "SECONDARY", "ARP", "DRUMS", "BACKING", "VOCALS", "PAD", "EFFECTS"]
+CHANNEL_NAMES = ["BASS", "BEAT", "LEAD", "SECONDARY", "ARP", "DRUMS", "BACKING", "VOCALS", "PAD", "EFFECTS", "COUNTER"]
+INSTRUMENT_NAMES = ["PIANO", "CAT PIANO", "ELECTRIC ORGAN", "XYLOPHONE", "GLOCKENSPIEL", "TRIANGLE", "MARIMBA",
+                    "BONGOS", "KICK", "DJEMBE", "OPEN HI-HAT", "CLOSED HI-HAT", "SNARE", "TAIKO", "TABLA",
+                    "HI-TOM", "MID-TOM", "LO-TOM", "ACCORDION", "AIR HORN", "BAGPIPE", "CLARINET", "FLUTE",
+                    "HARMONICA", "KAZOO", "NEY", "OCARINA", "PICCOLO", "QUENA", "SAXOPHONE" "TROMBONE", "TRUMPET",
+                    "UILLEANN PIPES", "VUVUZELA", "HARP", "LUTE", "GUITAR", "BALALAIKA", "BANJO", "BIWA", "MANDOLIN",
+                    "SITAR", "VIOLIN", "VIOLA", "CELLO", "CONTRABASS", "SAW", "SINE", "SUPERSAW", "BELL", "RAMP"]
 
 def buildStream(objlist,debug=False):
+    # WARNING: HERE BE DRAGONS - THIS IS bja's CODE
     offset=0
     ret=0
     first=True
@@ -126,7 +135,7 @@ def data_9_to_8_fixed(in_data):
 
 
 def send(s, data):
-    if (data):
+    if DEBUG:
         print "Put: %s" % repr(data)
     if X86:
         s.send(data)
@@ -145,7 +154,8 @@ def send_request(s, typ, data, raw=False):
             data += "\x00" * (CHUNK_SIZE + 1 - extra)
             chunks += 1
         msg = data_8_to_9(chr(typ) + chr(parts) + chr(chunks) + "\x00"*(CHUNK_SIZE-3)) + data
-        print "RAW: %s" % repr(msg)
+        if DEBUG:
+            print "RAW: %s" % repr(msg)
         s.send(msg)
         time.sleep(0.1)
     else:
@@ -156,7 +166,8 @@ def send_request(s, typ, data, raw=False):
             data += "\x00" * (CHUNK_SIZE - extra)
             chunks += 1
         send(s, chr(typ) + chr(parts) + chr(chunks) + "\x00"*(CHUNK_SIZE-3))
-        send(s, data)
+        if (len(data) > 0):
+            send(s, data)
 
 
 def recv(s, fixed=True):
@@ -169,7 +180,8 @@ def recv(s, fixed=True):
         else:
             time.sleep(0.1)
             data = data_9_to_8(s.recv(9))
-    print "Got: %s" % repr(data)
+    if DEBUG:
+        print "Got: %s" % repr(data)
     return data
 
 def recv_response(s, fixed=True):
@@ -187,13 +199,18 @@ def recv_response(s, fixed=True):
         data += [int(x) for x in chunk.split(" ")]
         if chunk[1] != 0xff:
             for i in range(chunk[1] * MAX_CHUNKS + chunk[2]):
-                print "HELLO"
                 chunk = recv(s, fixed)
                 data.append(chunk)
 
     return data
 
 
+def random_string(i):
+    return "".join([random.choice(string.ascii_uppercase) for x in range(i)])
+
+def random_data(i):
+    # FIXME: always have a high bit set to work around bug in bja's buildStream
+    return [random.randint(1, 511) for x in range(0, i)]
 
 
 def perform_handshake(s):
@@ -405,9 +422,12 @@ def tracker_remove_event_from_pattern(s, i, e):
         sys.exit(-1)
     return resp
 
-def tracker_add_instrument(s):
-    #64
-    pass
+def tracker_add_instrument(s, i, name):
+    send_request(s, 64, chr(i) + "\x00"*(CHUNK_SIZE-1) + name)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        sys.exit(-1)
+    return resp
 
 def tracker_get_instrument_name(s, i):
     #65
@@ -419,8 +439,6 @@ def tracker_set_instrument_name(s, i, name):
     if resp[2] == "\xFF":
         sys.exit(-1)
     return resp
-    #66
-    pass
 
 def tracker_get_instrument_sample(s, i):
     send_request(s, 0x44, chr(i))
@@ -453,14 +471,27 @@ def tracker_set_instrument_volume(s, i):
 def tracker_add_sample(s, name, data):
     name_length = len(name) / CHUNK_SIZE
     if len(name) % CHUNK_SIZE > 0:
-        name += "\x00" * (len(name) % CHUNK_SIZE)
+        name += "\x00" * (CHUNK_SIZE - (len(name) % CHUNK_SIZE))
         name_length += 1
 
-    first_chunk = binascii.unhexlify(buildStream([["c",name_length],["i",len(data)],["c",0,0,0,0]]))
+    data_length = len(data)
+    if len(data) % CHUNK_SIZE > 0:
+        data += ([0] * (CHUNK_SIZE - (len(data) % CHUNK_SIZE)))
 
-    # manually build this because i've got the first chunk as 8_to_9 already
-    send_request(s, 0x50, name + data, first_chunk)
-    return recv_response(s)
+    audio = ""
+    for i in range(len(data)/CHUNK_SIZE):
+        d = data[i*CHUNK_SIZE:(i*CHUNK_SIZE)+8]
+        audio += binascii.unhexlify(buildStream([["c",d[0],d[1],d[2],d[3],d[4],d[5],d[6],d[7]]]))
+
+    first_chunk = binascii.unhexlify(buildStream([["c",name_length],["i",data_length],["c",0,0,0,0]]))
+
+    msg = first_chunk + data_8_to_9(name) + audio
+    send_request(s, 0x50, msg, True)
+    resp = recv_response(s)
+    if resp[2] == "\xFF":
+        print "[!] Failed to add sample"
+        sys.exit(-1)
+    return resp
 
 def tracker_get_sample_name(s, i):
     send_request(s, 0x51, chr(i))
@@ -521,25 +552,22 @@ seed = binascii.hexlify( os.urandom( 20 ) )
 random.seed(seed)
 print "[+] Random state: %s" % seed
 
+
 def handler(signum, frame):
         print "Timeout"
         sys.exit(-1)
 
 signal.signal(signal.SIGALRM, handler)
-signal.alarm(90)
+signal.alarm(60)
 
-if len(sys.argv) == 2:
-        s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 1337])
 
 # connect to service
-#if len(sys.argv) >= 3:
-#    s = socket.create_connection([sys.argv[1], sys.argv[2]])
-#    if len(sys.argv) == 4:
-#        X86 = True
-#else:
-#    s = socket.create_connection(['127.0.0.1', 4000])
-#    if len(sys.argv) == 2:
-#        X86 = True
+if len(sys.argv) >= 2:
+    s = socket.create_connection(["10.5.{}.2".format(sys.argv[1]), 1337])
+else:
+    sys.exit(-1)
+
+
 
 # perform initial handshake
 perform_handshake(s)
@@ -582,8 +610,9 @@ for i in timing_data:
     elif i == 2:
         # add frames
         print "[*] Testing adding frames..."
-        for i in range(random.randint(0, 255)):
-            frame = [random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),
+        for i in range(random.randint(0, 63)):
+            # frame 1 can't be 0 because of a bug in bja's buildStream
+            frame = [random.randint(1, 511),random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),
                      random.randint(0, 511),random.randint(0, 511),random.randint(0, 511),random.randint(0, 511)]
             frames.append(frame)
             tracker_add_frame(s, frame)
@@ -593,7 +622,7 @@ for i in timing_data:
         # maybe remove frames?
         print "[*] Testing removing frames..."
         for i in range(random.randint(0, len(frames)/2)):
-            num = random.randint(0, len(frames))
+            num = random.randint(0, len(frames)-1)
             tracker_remove_frame(s, num)
             frames.pop(num)
         print "[+] Tested removing frames"
@@ -611,21 +640,27 @@ for i in timing_data:
     elif i == 4:
         # test patterns
         print "[*] Testing adding patterns..."
-        for i in range(random.randint(0, 511)):
-            pass
+        for i in range(random.randint(1, 31)):
+            patterns.append(tracker_create_pattern(s)[CHUNK_SIZE])
+            # TODO: add events to patterns
         print "[+] Tested adding patterns"
 
     elif i == 5:
-        # test instruments/samples
+        # test samples
         print "[*] Testing adding samples..."
-        for i in range(random.randint(0, 511)):
-            pass
+        for i in range(random.randint(1, 31)):
+            name = random_string(16)
+            data = random_data(random.randint(1, 199))
+            sample = (ord(tracker_add_sample(s, name, data)[CHUNK_SIZE]), name, data)
+            samples.append(sample)
         print "[+] Tested adding samples"
 
         # test instruments
         print "[*] Testing adding instruments..."
-        for i in range(random.randint(0, 255)):
-            pass
+        for i in range(random.randint(0, len(samples)-1)):
+            instrument = (random.choice(samples)[0], random.choice(INSTRUMENT_NAMES))
+            instruments.append(instrument)
+            tracker_add_instrument(s, instrument[0], instrument[1])
         print "[+] Tested adding instruments"
 
 random.shuffle(timing_data)
@@ -634,16 +669,18 @@ for i in timing_data:
     if i == 1:
         # check frames
         print "[*] Checking frame data..."
-        for i in range(len(frames)):
-            #resp = tracker_get_frame(s, i)
-            #for i in G
-            pass
+        #for i in range(len(frames)):
+        #    resp = tracker_get_frame(s, i)
+        #    print repr(resp)
+        #    pass
         print "[+] Checked frame data"
 
     elif i == 2:
         # check channels
         print "[*] Checking channel data..."
-        pass
+        for i in range(8):
+            name = tracker_get_channel_name(s, i)[CHUNK_SIZE:]
+            vol = tracker_get_channel_volume(s, i)[CHUNK_SIZE]
         print "[+] Checked channel data"
 
     elif i == 3:
