@@ -608,12 +608,12 @@ def handler(signum, frame):
         sys.exit(-1)
 
 signal.signal(signal.SIGALRM, handler)
-signal.alarm(30)
+signal.alarm(90)
 
 
 uut = socket.create_connection([address, port])
 
-try_count = random.randint( 5, 30 )
+try_count = random.randint( 5, 15 )
 
 for _ in xrange(try_count):
 
