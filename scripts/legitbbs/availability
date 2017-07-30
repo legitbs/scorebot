@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+
 import sys, os
 import socket
 import select
 import random
 import time
+import binascii
 import signal
 
 #POSITIVE
@@ -130,20 +133,20 @@ polls = [
 
 
 def Data_8_to_9(InData):
-	#don't feel like doing all the math, make a bit list then reparse it
-	Bits = ""
-	for i in InData:
-		Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
+    #don't feel like doing all the math, make a bit list then reparse it
+    Bits = ""
+    for i in InData:
+        Bits += (("0"*9)+bin(ord(i))[2:])[-9:]
 
-	#now add in enough bits to make sure we can send full bytes
-	if len(Bits) % 8:
-		Bits += "0"*(8-(len(Bits) % 8))
+    #now add in enough bits to make sure we can send full bytes
+    if len(Bits) % 8:
+        Bits += "0"*(8-(len(Bits) % 8))
 
-	Output = ""
-	for i in xrange(0, len(Bits), 8):
-		Output += chr(int(Bits[i:i+8], 2))
+    Output = ""
+    for i in xrange(0, len(Bits), 8):
+        Output += chr(int(Bits[i:i+8], 2))
 
-	return Output
+    return Output
 
 def Data_9_to_8(InData):
     #don't feel like doing all the math, make a bit list then reparse it
@@ -159,12 +162,15 @@ def Data_9_to_8(InData):
             c = int(Bits[i+1:i+9], 2)
             bytecount += 1
             Output += chr(c)
-            if c == 0xa:
+            if c == 0xa and ((i+9) % 8) != 0:
                     bitstoeat = 8 - (((bytecount*9)+8) % 8)
                     i += bitstoeat
                     bytecount = 0
             i += 9
     return Output
+
+#connect then allow us to transfer data
+#s = socket.create_connection([sys.argv[1],sys.argv[2]])
 
 def handler(signum, frame):
         print "Timeout"
@@ -178,8 +184,13 @@ if len(sys.argv) == 2:
 else:
         s = socket.create_connection(['127.0.0.1', 2001])
 
-#connect then allow us to transfer data
-#s = socket.create_connection([sys.argv[1],sys.argv[2]])
+rand_seed = binascii.hexlify( os.urandom( 20 ) )
+
+# DEBUG
+#rand_seed = "35693b6fbcfd0173eb6d2b7bd43c8d8dd80e4dd1"
+random.seed( rand_seed )
+
+print "[POLLER CONNECTED] RAND STATE: ", rand_seed
 
 
 
@@ -234,49 +245,50 @@ passed = False
 
 while(1):
 
-        print "preselect"
-	(r,w,e) = select.select([s.fileno(), 0], [], [],.4)
-        print "postselect"
-#	(r,w,e) = select.select([s.fileno(), 0], [s.fileno(), 0], [])
-	if len(r) == 0:
-                print "y pump"
-                Data = Data_8_to_9("y\n")
-		s.send(Data)
-		continue
+    print "preselect"
+    (r,w,e) = select.select([s.fileno(), 0], [], [],.4)
+    print "postselect"
+#   (r,w,e) = select.select([s.fileno(), 0], [s.fileno(), 0], [])
+    if len(r) == 0:
+        print "y pump"
+        Data = Data_8_to_9("y\n")
+        s.send(Data)
+        continue
 
         transactions += 1
 
         if state == "passed":
                 passed = True
         
-	#read from one and send to the other
-	try:
-		if r[0] == s.fileno():
-			Data = s.recv(4096)
-			if len(Data) == 0:
-				break;
-			Data = Data_9_to_8(Data)
-                        state = recvhook(state,Data,qa)
-                        if state == "passed":
-                                passed = True
+    #read from one and send to the other
+#    try:
+    if True:
+        if r[0] == s.fileno():
+            Data = s.recv(4096)
+            if len(Data) == 0:
+                break;
+            Data = Data_9_to_8(Data)
+            state = recvhook(state,Data,qa)
+            if state == "passed":
+                passed = True
 
-			sys.stdout.write(Data.encode("base64"))
-			sys.stdout.flush()
-#		else:
-			state,Data = sendhook(state,qa)
-                        time.sleep(.1)
-                        sys.stdout.write("SENDING>>>\n")
-                        sys.stdout.write(Data.encode("base64"))
-                        sys.stdout.write("\n<<<<<<\n")
-			Data = Data_8_to_9(Data)
-			s.send(Data)
-                        time.sleep(.1)
-	except Exception as ex:
-		print ex
-		break
+            sys.stdout.write(Data.encode("base64"))
+            sys.stdout.flush()
+#       else:
+            state,Data = sendhook(state,qa)
+            time.sleep(.1)
+            sys.stdout.write("SENDING>>>\n")
+            sys.stdout.write(Data.encode("base64"))
+            sys.stdout.write("\n<<<<<<\n")
+            Data = Data_8_to_9(Data)
+            s.send(Data)
+            time.sleep(.1)
+#    except Exception as ex:
+#        print ex
+#        break
 
-        print state
-        if transactions > 1000:
+    print state
+    if transactions > 1000:
                 print "breaking on transactions"
                 break
 
